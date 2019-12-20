@@ -27,4 +27,8 @@ userSchema.pre('save', async function() {
   this.password = await hash(this.password, saltRounds);
 });
 
-module.exports = mongoose.model('User', userSchema);
+userSchema.methods.isCorrectPassword = async function(password) {
+  return await hashCompare(password, this.password);
+}
+
+module.exports = Mongoose.model('User', userSchema);

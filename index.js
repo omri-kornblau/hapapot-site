@@ -2,6 +2,7 @@ const Express = require('express');
 const Boom = require('express-boom');
 const Mongoose = require('mongoose');
 const BodyParser = require('body-parser');
+const CookieParser = require('cookie-parser');
 const Logger = require('morgan');
 const Path = require('path')
 
@@ -27,8 +28,10 @@ app.use(BodyParser.urlencoded({ extended: false }));
 app.use(BodyParser.json());
 app.use(Logger('dev'));
 app.use(Boom())
+app.use(CookieParser());
 app.use(Express.static(Path.join(__dirname, '../client/build')));
 app.use('/api', require('./routes/users'));
+app.use('/api', require('./routes/authentication'));
 
 if (ServerConfig.enviornment === 'production') {
   app.use(express.static('client/build'));

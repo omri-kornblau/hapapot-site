@@ -23,22 +23,4 @@ router.post(`/user`, async (req, res) => {
   }
 });
 
-router.put(`/user/:id`, async (req, res) => {
-  const {id} = req.params;
-  const user = await userModel.findByIdAndUpdate(id, req.body);
-  return res.status(202).send({
-    error: false,
-    user
-  });
-});
-
-router.delete(`/user/:id`, async (req, res) => {
-  const {id} = req.params;
-  const user = await userModel.findByIdAndDelete(id);
-  return res.status(202).send({
-    error: false,
-    user
-  });
-});
-
 module.exports = router
