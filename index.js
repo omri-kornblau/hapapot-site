@@ -1,4 +1,5 @@
 const Express = require('express');
+const Boom = require('express-boom');
 const Mongoose = require('mongoose');
 const BodyParser = require('body-parser');
 const Logger = require('morgan');
@@ -25,6 +26,7 @@ const app = Express();
 app.use(BodyParser.urlencoded({ extended: false }));
 app.use(BodyParser.json());
 app.use(Logger('dev'));
+app.use(Boom())
 app.use(Express.static(Path.join(__dirname, '../client/build')));
 app.use('/api', require('./routes/users'));
 
