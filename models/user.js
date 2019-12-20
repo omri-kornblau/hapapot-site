@@ -1,9 +1,30 @@
 const Mongoose = require('mongoose');
+const Bcrypt = require('bcrypt');
+const Joi = require('joi');
+const promisify = require('util').promisify;
 
-const userSchema = new Mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+const hashCompare = promisify(Bcrypt.compare);
+const hash = promisify(Bcrypt.hash);
+// Used for hashing
+const saltRounds = 10;
+
+const joiFormat = Joi.object().keys({
+  username: Joi.string().required().min(3).max(20),
+  email: Joi.string().email().required(),
+  password: Joi.string().required().min(6).max(20)
+}).unknown(true);
+
+const mongoFormat = {
+  username: { type: String, unique: true },
+  email: { type: String, unique: true },
+  password: { type: String }
+}
+
+const userSchema = new Mongoose.Schema(mongoFormat);
+
+userSchema.pre('save', async function() {
+  await Joi.validate(this, joiFormat);
+  this.password = await hash(this.password, saltRounds);
 });
 
 module.exports = mongoose.model('User', userSchema);
