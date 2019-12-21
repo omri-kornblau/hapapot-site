@@ -12,11 +12,8 @@ const ServerConfig = require('./config/server')
 // Import models
 require('./models/user');
 
-const serverPort = ServerConfig.port || 8080
-const mongoDbUrl = DbConfig.url || "mongodb://localhost:27017"
-
 // Connect to mongo db
-Mongoose.connect(mongoDbUrl, { useNewUrlParser: true });
+Mongoose.connect(DbConfig.url, { useNewUrlParser: true });
 const db = Mongoose.connection;
 db.once('open', () => console.log('Connected to MongoDB'));
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -31,13 +28,13 @@ app.use(Express.static(Path.join(__dirname, '../client/build')));
 app.use('/api', require('./routes/users'));
 app.use('/api', require('./routes/authentication'));
 
-if (ServerConfig.enviornment === 'production') {
+if (ServerConfig.production) {
   app.use(express.static('client/build'));
   app.get('*', (req, res) => {
       res.sendFile(Path.resolve(__dirname, 'client', 'build', 'index.html'))
   });
 }
 
-app.listen(serverPort, () => {
-  console.log(`Server running on port ${serverPort}`);
+app.listen(ServerConfig.port, () => {
+  console.log(`Server running on port ${ServerConfig.port}`);
 });

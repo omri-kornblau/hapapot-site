@@ -9,7 +9,7 @@ const handleErrors = require('./errors-handler');
 const UserModel = Mongoose.model('User');
 const router = Express.Router();
 
-const secretKey = 'hapapotsecretkey';
+const secretKey = require('../config/server').secretTokenKey;
 
 router.post('/authenticate', handleErrors(async (req, res) => {
   const { email, password } = req.body;
