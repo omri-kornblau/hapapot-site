@@ -1,9 +1,18 @@
-exports.handle = (res, err) => {
-  if (err.name === "ValidationError") {
-    return res.boom.badRequest('Given user is not valid', err.details);
-  } else if (err.code === 11000) {
-    return res.boom.badRequest('User already exists', { field: err.keyValue });
+const routeError = (req, res, next) => err => {
+  if (err.isBoom) {
+    res.status(err.output.statusCode).send(err.output.payload);
+  } else if (err.isJoi) {
+    res.status(400).send(err);
   } else {
-    return res.boom.internal();
+    next(err);
   }
 }
+
+const handleAsyncErrors = fn => (req, res, next) => {
+  const fnReturn = fn(req, res, next);
+  return Promise
+    .resolve(fnReturn)
+    .catch(routeError(req, res, next));
+}
+
+module.exports = handleAsyncErrors;

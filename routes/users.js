@@ -1,26 +1,22 @@
 const Mongoose = require('mongoose');
 const Express = require('express');
 
-const ErrorsHandler = require('./errors-handler')
+const handleErrors = require('./errors-handler');
 
 const router = Express.Router()
-const userModel = Mongoose.model('User');
+const UserModel = Mongoose.model('User');
 
 router.get(`/user`, async (req, res) => {
-  const users = await userModel.find();
+  const users = await UserModel.find();
   return res.send(users);
 });
 
-router.post(`/user`, async (req, res) => {
-  try {
-    const user = await userModel.create(req.body);
-    return res.status(201).send({
-      error: false,
-      user
-    });
-  } catch (err) {
-    return ErrorsHandler.handle(res, err);
-  }
-});
+router.post(`/user`, handleErrors(async (req, res) => {
+  const user = await UserModel.create(req.body);
+  return res.status(201).send({
+    error: false,
+    user
+  });
+}));
 
 module.exports = router
