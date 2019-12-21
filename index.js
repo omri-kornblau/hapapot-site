@@ -5,12 +5,17 @@ const CookieParser = require('cookie-parser');
 const Logger = require('morgan');
 const Path = require('path')
 
+const AsyncErrorsHandler = require('./errors/express-async-errors');
+const ErrorsRouter = require('./errors/errors-router');
+
 // Import configurations
 const DbConfig = require('./config/database')
 const ServerConfig = require('./config/server')
 
 // Import models
 require('./models/user');
+
+AsyncErrorsHandler.patchRouter(ErrorsRouter.route);
 
 // Connect to mongo db
 Mongoose.connect(DbConfig.url, { useNewUrlParser: true });

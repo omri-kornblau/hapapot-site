@@ -1,11 +1,9 @@
 const Jwt = require('jsonwebtoken');
 const Boom = require('boom');
 
-const handleErrors = require('./routes/errors-handler');
-
 const secretKey = require('./config/server').secretTokenKey;
 
-exports.withAuth = handleErrors(async (req, res, next) => {
+exports.withAuth = async (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
     throw Boom.unauthorized('Unauthorized: No token provided');
@@ -18,4 +16,4 @@ exports.withAuth = handleErrors(async (req, res, next) => {
       throw Boom.unauthorized('Unauthorized: Invalid token');
     }
   }
-});
+}

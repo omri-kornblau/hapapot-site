@@ -4,14 +4,13 @@ const Jwt = require('jsonwebtoken');
 const Boom = require('boom');
 
 const withAuth = require('../middleware').withAuth;
-const handleErrors = require('./errors-handler');
 
 const UserModel = Mongoose.model('User');
 const router = Express.Router();
 
 const secretKey = require('../config/server').secretTokenKey;
 
-router.post('/authenticate', handleErrors(async (req, res) => {
+router.post('/authenticate', async (req, res) => {
   const { email, password } = req.body;
   const user = await UserModel.findOne({ email });
   if (!user) {
@@ -27,7 +26,7 @@ router.post('/authenticate', handleErrors(async (req, res) => {
     expiresIn: '1h'
   });
   return res.cookie('token', token, { httpOnly: true }).send();
-}));
+});
 
 router.get('/checktoken', withAuth, (req, res) => {
   res.send();

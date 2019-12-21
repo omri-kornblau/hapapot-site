@@ -10,7 +10,7 @@ const errorRoutes = [
   }
 ];
 
-const routeError = (req, res, next) => err => {
+exports.route = (req, res, next) => err => {
   const matchedAnyError = errorRoutes.some(route => {
     if (route.condition(err)) {
       route.handler(res, err);
@@ -19,12 +19,3 @@ const routeError = (req, res, next) => err => {
   });
   return matchedAnyError ? null : next(err.message)
 }
-
-const handleAsyncErrors = fn => (req, res, next) => {
-  const fnReturn = fn(req, res, next);
-  return Promise
-    .resolve(fnReturn)
-    .catch(routeError(req, res, next));
-}
-
-module.exports = handleAsyncErrors;
