@@ -27,7 +27,7 @@ import routes from "routes.js";
 
 import logo from "assets/img/react-logo.png";
 
-class Admin extends React.Component {
+class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,7 +54,7 @@ class Admin extends React.Component {
   };
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/home") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -65,7 +65,7 @@ class Admin extends React.Component {
       } else {
         return null;
       }
-    })
+    });
   };
   getBrandText = path => {
     for (let i = 0; i < routes.length; i++) {
@@ -95,10 +95,7 @@ class Admin extends React.Component {
             }}
             toggleSidebar={this.toggleSidebar}
           />
-          <div
-            className="main-panel"
-            ref="mainPanel"
-          >
+          <div className="main-panel" ref="mainPanel">
             <RTLNavbar
               {...this.props}
               brandText={this.getBrandText(this.props.location.pathname)}
@@ -117,4 +114,4 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+export default Home;
