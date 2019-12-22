@@ -20,7 +20,8 @@ import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 
-import AdminLayout from "layouts/Admin.jsx";
+import HomeLayout from "layouts/Home";
+import LoginPage from "layouts/Login"
 
 import "assets/scss/black-dashboard-react.scss";
 import "assets/css/nucleo-icons.css";
@@ -30,8 +31,9 @@ const hist = createBrowserHistory();
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
-      <Route path="/admin" render={props => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/admin/dashboard" />
+      <Route path="/login" render={props => <LoginPage {...props} />} />
+      <Route path="/home" render={props => <HomeLayout {...props} />} />
+      <Redirect from="/" to="/home" />
     </Switch>
   </Router>
   , document.getElementById("root")

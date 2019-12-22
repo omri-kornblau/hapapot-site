@@ -31,63 +31,56 @@ var routes = [
     name: "Dashboard",
     icon: "tim-icons icon-chart-pie-36",
     component: Dashboard,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/icons",
     name: "Icons",
     icon: "tim-icons icon-atom",
     component: Icons,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/map",
     name: "Map",
     icon: "tim-icons icon-pin",
     component: Map,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/notifications",
     name: "Notifications",
     icon: "tim-icons icon-bell-55",
     component: Notifications,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/user-profile",
     name: "User Profile",
     icon: "tim-icons icon-single-02",
     component: UserProfile,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/tables",
     name: "Table List",
     icon: "tim-icons icon-puzzle-10",
     component: TableList,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/typography",
     name: "Typography",
     icon: "tim-icons icon-align-center",
     component: Typography,
-    layout: "/admin"
+    layout: "/home"
   },
   {
     path: "/rtl-support",
     name: "RTL Support",
     icon: "tim-icons icon-world",
     component: Rtl,
-    layout: "/admin"
-  },
-  {
-    path: "/login",
-    name: "התחברות",
-    icon: "tim-icons icon-world",
-    component: LoginPage,
-    layout: "/admin"
+    layout: "/home"
   }
 ];
 export default routes;
