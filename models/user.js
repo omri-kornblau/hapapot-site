@@ -11,28 +11,33 @@ const saltRounds = 10;
 
 const joiFormat = Joi.object().keys({
   username: Joi.string().required().min(3).max(20),
-  email: Joi.string().email().required(),
-  password: Joi.string().required().min(6).max(20)
+  password: Joi.string().required().min(6).max(20),
+  birthday: Joi.string().isoDate().required(),
+  single: Joi.boolean().required(),
+  cartype: Joi.number().integer(),
+  nickname: Joi.array().items(Joi.string()),
+  picture: Joi.string()
 }).unknown(true);
 
 const mongoFormat = {
   username: { type: String, unique: true },
-  email: { type: String, unique: true },
-  password: { type: String }
+  password: { type: String },
+  birthday: { type: String },
+  single: { type: Boolean },
+  cartype: { type: Number },
+  nickname: { type: Array },
+  picture: { type: String }
 }
 
 const userSchema = new Mongoose.Schema(mongoFormat);
 
 userSchema.pre('save', async function() {
   await Joi.validate(this, joiFormat);
-  const existingUsers = await User.find({ email: this.email });
-  if (existingUsers.length > 0) {
-    throw Boom.badRequest('User already exsits');
-  }
   this.password = await hash(this.password, saltRounds);
 });
 
 userSchema.methods.isCorrectPassword = async function(password) {
+  console.log(this.password, password);
   return await hashCompare(password, this.password);
 }
 
