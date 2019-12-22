@@ -3,7 +3,7 @@ import { Route, Redirect } from "react-router";
 
 import Auther from '../../authentication';
 
-class PrivateRoute extends Route {
+class PrivateRoute extends React.Component {
   state = {
     haveAccess: false,
     loadedData: false
@@ -23,11 +23,12 @@ class PrivateRoute extends Route {
 
   render() {
     const { loadedData, haveAccess } = this.state;
+    const { component: Component } = this.props
     if (!loadedData) { return null }
-    return (haveAccess ?
-        this.props.component(this.props)
+    return <Route render={props => (
+      haveAccess ? <Component {...props}/>
         : <Redirect to='/login' />
-    );
+    )}/>
   }
 }
 
