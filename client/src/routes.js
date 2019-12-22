@@ -15,72 +15,40 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import Dashboard from "views/Dashboard.jsx";
-import Icons from "views/Icons.jsx";
-import Map from "views/Map.jsx";
-import Notifications from "views/Notifications.jsx";
-import Rtl from "views/Rtl.jsx";
-import TableList from "views/TableList.jsx";
-import Typography from "views/Typography.jsx";
+import Main from "views/Main.jsx";
+import AboutUs from "views/AboutUs.jsx";
 import UserProfile from "views/UserProfile.jsx";
-import LoginPage from "views/LoginPage.jsx";
+import Statistics from "views/Statistics.jsx";
 
 var routes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    icon: "tim-icons icon-chart-pie-36",
-    component: Dashboard,
-    layout: "/home"
-  },
-  {
-    path: "/icons",
-    name: "Icons",
-    icon: "tim-icons icon-atom",
-    component: Icons,
-    layout: "/home"
-  },
-  {
-    path: "/map",
-    name: "Map",
-    icon: "tim-icons icon-pin",
-    component: Map,
-    layout: "/home"
-  },
-  {
-    path: "/notifications",
-    name: "Notifications",
-    icon: "tim-icons icon-bell-55",
-    component: Notifications,
-    layout: "/home"
-  },
-  {
-    path: "/user-profile",
-    name: "User Profile",
-    icon: "tim-icons icon-single-02",
-    component: UserProfile,
-    layout: "/home"
-  },
-  {
-    path: "/tables",
-    name: "Table List",
-    icon: "tim-icons icon-puzzle-10",
-    component: TableList,
-    layout: "/home"
-  },
-  {
-    path: "/typography",
-    name: "Typography",
-    icon: "tim-icons icon-align-center",
-    component: Typography,
-    layout: "/home"
-  },
-  {
-    path: "/rtl-support",
-    name: "RTL Support",
-    icon: "tim-icons icon-world",
-    component: Rtl,
+    path: "/main",
+    name: "בית",
+    icon: "icon-calendar-60",
+    component: Main,
     layout: "/home"
   }
+  {
+    path: "/aboutus",
+    name: "קצת עלינו",
+    icon: "icon-satisfied",
+    component: AboutUs,
+    layout: "/home"
+  } 
+  {
+    path: "/userprofile",
+    name: "האזור האישי",
+    icon: "icon-single-02",
+    component: UserProfile,
+    layout: "/home"
+  }
+  {
+    path: "/statistics",
+    name: "האזור האישי",
+    icon: "icon-chart-bar-32",
+    component: Statistics,
+    layout: "/home"
+  }
+
 ];
 export default routes;
