@@ -10,7 +10,7 @@ exports.withAuth = async (req, res, next) => {
   } else {
     try {
       const decoded = await Jwt.verify(token, secretKey)
-      req.email = decoded.email;
+      req.username = decoded.username;
       next();
     } catch (err) {
       throw Boom.unauthorized('Unauthorized: Invalid token');
