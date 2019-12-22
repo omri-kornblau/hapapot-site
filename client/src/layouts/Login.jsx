@@ -30,7 +30,7 @@ class LoginPage extends React.Component {
     super(props);
     this.state = {
       userData: {
-        email: "",
+        username: "",
         password: ""
       },
       failedLogin: false
@@ -85,13 +85,13 @@ class LoginPage extends React.Component {
                 <Row className="text-right">
                   <Col className="text-right pr-1" md="7">
                     <FormGroup>
-                      <label> כתובת אימייל </label>
+                      <label> שם משתמש </label>
                       <Input
                         className="text-right"
-                        type="email"
-                        name="email"
-                        placeholder="הכנסת כתובת מייל"
-                        value={this.state.email}
+                        type="username"
+                        name="username"
+                        placeholder="הכנס שם משתמש"
+                        value={this.state.username}
                         onChange={this.onInputChange}
                         required
                       />

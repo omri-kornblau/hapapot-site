@@ -11,17 +11,17 @@ const router = Express.Router();
 const secretKey = require('../config/server').secretTokenKey;
 
 router.post('/authenticate', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await UserModel.findOne({ email });
+  const { username, password } = req.body;
+  const user = await UserModel.findOne({ username });
   if (!user) {
-    throw Boom.badRequest('Incorrect email or password');
+    throw Boom.badRequest('Incorrect username or password');
   }
   const isCorrect = await user.isCorrectPassword(password);
   if (!isCorrect) {
-    throw Boom.badRequest('Incorrect email or password');
+    throw Boom.badRequest('Incorrect username or password');
   }
   // Issue token
-  const payload = { email };
+  const payload = { username };
   const token = Jwt.sign(payload, secretKey, {
     expiresIn: '1h'
   });
