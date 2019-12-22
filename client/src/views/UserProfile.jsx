@@ -80,7 +80,7 @@ class UserProfile extends React.Component {
                 </CardBody>
                 <CardFooter>
                   <Button className="btn-fill" color="primary" type="submit">
-                    Save
+                    שמור
                   </Button>
                 </CardFooter>
               </Card>
