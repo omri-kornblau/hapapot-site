@@ -1,77 +1,120 @@
+/*!
 
+=========================================================
+* Black Dashboard React v1.0.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-react
+* Copyright 2019 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
 import React from "react";
-// javascript plugin used to create scrollbars on windows
-import PerfectScrollbar from "perfect-scrollbar";
 import { Route, Switch } from "react-router-dom";
 
-import DemoNavbar from "components/Navbars/DemoNavbar.jsx";
+// core components
+import RTLNavbar from "components/Navbars/RTLNavbar.jsx";
 import Footer from "components/Footer/Footer.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
 
 import routes from "routes.js";
 
-var ps;
+import logo from "assets/img/react-logo.png";
 
-class Dashboard extends React.Component {
+class Admin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      backgroundColor: "black",
-      activeColor: "info"
+      sidebarOpened:
+        document.documentElement.className.indexOf("nav-open") !== -1
     };
-    this.mainPanel = React.createRef();
   }
   componentDidMount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps = new PerfectScrollbar(this.mainPanel.current);
-      document.body.classList.toggle("perfect-scrollbar-on");
-    }
-  }
-  componentWillUnmount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps.destroy();
-      document.body.classList.toggle("perfect-scrollbar-on");
-    }
+    // on this page, we need on the body tag the classes .rtl and .menu-on-right
+    document.body.classList.add("rtl", "menu-on-right");
+    document.body.classList.add("white-content");
   }
   componentDidUpdate(e) {
     if (e.history.action === "PUSH") {
-      this.mainPanel.current.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
       document.scrollingElement.scrollTop = 0;
+      this.refs.mainPanel.scrollTop = 0;
     }
   }
-  handleActiveClick = color => {
-    this.setState({ activeColor: color });
+  // this function opens and closes the sidebar on small devices
+  toggleSidebar = () => {
+    document.documentElement.classList.toggle("nav-open");
+    this.setState({ sidebarOpened: !this.state.sidebarOpened });
   };
-  handleBgClick = color => {
-    this.setState({ backgroundColor: color });
+  getRoutes = routes => {
+    return routes.map((prop, key) => {
+      if (prop.layout === "/admin") {
+        return (
+          <Route
+            path={prop.layout + prop.path}
+            component={prop.component}
+            key={key}
+          />
+        );
+      } else {
+        return null;
+      }
+    })
+  };
+  getBrandText = path => {
+    for (let i = 0; i < routes.length; i++) {
+      if (
+        this.props.location.pathname.indexOf(
+          routes[i].layout + routes[i].path
+        ) !== -1
+      ) {
+        return routes[i].name;
+      }
+    }
+    return "Brand";
   };
   render() {
     return (
-      <div className="wrapper">
-        <Sidebar
-          {...this.props}
-          routes={routes}
-          bgColor={this.state.backgroundColor}
-          activeColor={this.state.activeColor}
-        />
-        <div className="main-panel" ref={this.mainPanel}>
-          <DemoNavbar {...this.props} />
-          <Switch>
-            {routes.map((prop, key) => {
-              return (
-                <Route
-                  path={prop.layout + prop.path}
-                  component={prop.component}
-                  key={key}
-                />
-              );
-            })}
-          </Switch>
-          <Footer fluid />
+      <>
+        <div className="wrapper">
+          <Sidebar
+            {...this.props}
+            routes={routes}
+            bgColor="primary"
+            rtlActive
+            logo={{
+              outterLink: "https://www.creative-tim.com/",
+              text: "הפאפות",
+              imgSrc: logo
+            }}
+            toggleSidebar={this.toggleSidebar}
+          />
+          <div
+            className="main-panel"
+            ref="mainPanel"
+          >
+            <RTLNavbar
+              {...this.props}
+              brandText={this.getBrandText(this.props.location.pathname)}
+              toggleSidebar={this.toggleSidebar}
+              sidebarOpened={this.state.sidebarOpened}
+            />
+            <Switch>{this.getRoutes(routes)}</Switch>
+            {// we don't want the Footer to be rendered on map page
+            this.props.location.pathname.indexOf("maps") !== -1 ? null : (
+              <Footer fluid />
+            )}
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 }
 
-export default Dashboard;
+export default Admin;

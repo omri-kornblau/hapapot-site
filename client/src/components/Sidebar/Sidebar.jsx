@@ -1,63 +1,104 @@
+/*!
 
+=========================================================
+* Black Dashboard React v1.0.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-react
+* Copyright 2019 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+/*eslint-disable*/
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
+// nodejs library to set properties for components
+import { PropTypes } from "prop-types";
+
+// reactstrap components
 import { Nav } from "reactstrap";
-// javascript plugin used to create scrollbars on windows
-import PerfectScrollbar from "perfect-scrollbar";
-
-import logo from "logo.svg";
-
-var ps;
 
 class Sidebar extends React.Component {
   constructor(props) {
     super(props);
     this.activeRoute.bind(this);
-    this.sidebar = React.createRef();
   }
   // verifies if routeName is the one active (in browser input)
   activeRoute(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
   }
-  componentDidMount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps = new PerfectScrollbar(this.sidebar.current, {
-        suppressScrollX: true,
-        suppressScrollY: false
-      });
-    }
-  }
-  componentWillUnmount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps.destroy();
-    }
-  }
+  linkOnClick = () => {
+    document.documentElement.classList.remove("nav-open");
+  };
   render() {
-    return (
-      <div
-        className="sidebar"
-        data-color={this.props.bgColor}
-        data-active-color={this.props.activeColor}
-      >
-        <div className="logo">
+    const { bgColor, routes, logo } = this.props;
+    let logoImg = null;
+    let logoText = null;
+    if (logo !== undefined) {
+      if (logo.outterLink !== undefined) {
+        logoImg = (
           <a
-            href="https://www.creative-tim.com"
+            href={logo.outterLink}
             className="simple-text logo-mini"
+            target="_blank"
+            onClick={this.props.toggleSidebar}
           >
             <div className="logo-img">
-              <img src={logo} alt="react-logo" />
+              <img src={logo.imgSrc} alt="react-logo" />
             </div>
           </a>
+        );
+        logoText = (
           <a
-            href="https://www.creative-tim.com"
+            href={logo.outterLink}
             className="simple-text logo-normal"
+            target="_blank"
+            onClick={this.props.toggleSidebar}
           >
-            Papot
+            {logo.text}
           </a>
-        </div>
-        <div className="sidebar-wrapper" ref={this.sidebar}>
+        );
+      } else {
+        logoImg = (
+          <Link
+            to={logo.innerLink}
+            className="simple-text logo-mini"
+            onClick={this.props.toggleSidebar}
+          >
+            <div className="logo-img">
+              <img src={logo.imgSrc} alt="react-logo" />
+            </div>
+          </Link>
+        );
+        logoText = (
+          <Link
+            to={logo.innerLink}
+            className="simple-text logo-normal"
+            onClick={this.props.toggleSidebar}
+          >
+            {logo.text}
+          </Link>
+        );
+      }
+    }
+    return (
+      <div className="sidebar" data={bgColor}>
+        <div className="sidebar-wrapper" ref="sidebar">
+          {logoImg !== null || logoText !== null ? (
+            <div className="logo">
+              {logoImg}
+              {logoText}
+            </div>
+          ) : null}
           <Nav>
-            {this.props.routes.map((prop, key) => {
+            {routes.map((prop, key) => {
+              if (prop.redirect) return null;
               return (
                 <li
                   className={
@@ -70,6 +111,7 @@ class Sidebar extends React.Component {
                     to={prop.layout + prop.path}
                     className="nav-link"
                     activeClassName="active"
+                    onClick={this.props.toggleSidebar}
                   >
                     <i className={prop.icon} />
                     <p>{prop.name}</p>
@@ -83,5 +125,27 @@ class Sidebar extends React.Component {
     );
   }
 }
+
+Sidebar.defaultProps = {
+  bgColor: "primary",
+  routes: [{}]
+};
+
+Sidebar.propTypes = {
+  bgColor: PropTypes.oneOf(["primary", "blue", "green"]),
+  routes: PropTypes.arrayOf(PropTypes.object),
+  logo: PropTypes.shape({
+    // innerLink is for links that will direct the user within the app
+    // it will be rendered as <Link to="...">...</Link> tag
+    innerLink: PropTypes.string,
+    // outterLink is for links that will direct the user outside the app
+    // it will be rendered as simple <a href="...">...</a> tag
+    outterLink: PropTypes.string,
+    // the text of the logo
+    text: PropTypes.node,
+    // the image src of the logo
+    imgSrc: PropTypes.string
+  })
+};
 
 export default Sidebar;
