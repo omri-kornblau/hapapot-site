@@ -7,6 +7,7 @@ const Path = require('path')
 
 const AsyncErrorsHandler = require('./errors/express-async-errors');
 const ErrorsRouter = require('./errors/errors-router');
+const withAuth = require('./middleware').withAuth;
 
 // Import configurations
 const DbConfig = require('./config/database')
@@ -30,8 +31,8 @@ app.use(BodyParser.json());
 app.use(Logger('dev'));
 app.use(CookieParser());
 app.use(Express.static(Path.join(__dirname, '../client/build')));
-app.use('/api', require('./routes/users'));
-app.use('/api', require('./routes/authentication'));
+app.use('/api', withAuth, require('./routes/users'));
+app.use('/auth', require('./routes/authentication'));
 
 if (ServerConfig.production) {
   app.use(Express.static('client/build'));

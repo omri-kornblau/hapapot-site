@@ -4,7 +4,7 @@ const Auther = {};
 
 Auther.authenticate = async userData => {
   try {
-    await Axios.post('/api/authenticate', userData);
+    await Axios.post('/auth/authenticate', userData);
     return true;
   } catch (err) {
     return false;
@@ -13,7 +13,7 @@ Auther.authenticate = async userData => {
 
 Auther.checkToken = async () => {
   try {
-    await Axios.get('/api/checktoken');
+    await Axios.get('/auth/checktoken');
     return true;
   } catch (err) {
     return false;
