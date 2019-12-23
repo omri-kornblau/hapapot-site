@@ -47,11 +47,11 @@ const daySchema = new Mongoose.Schema(mongoFormat);
 daySchema.pre('save', async function() {
   await Joi.validate(this, dayJoiFormat);
   const { date } = this;
-  this.events.forEach(event => {
+  await Promise.all(this.events.map(async event => {
     if (!event.eventkey) {
       event.eventkey = await hash(event.name + date);
     }
-  });
+  }));
 });
 
 const Day = Mongoose.model('Day', daySchema);
