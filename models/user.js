@@ -15,7 +15,7 @@ const joiFormat = Joi.object().keys({
   birthday: Joi.string().isoDate().required(),
   single: Joi.boolean().required(),
   cartype: Joi.number().integer(),
-  nickname: Joi.array().items(Joi.string()),
+  nicknames: Joi.array().items(Joi.string()),
   picture: Joi.string()
 }).unknown(true);
 
@@ -25,7 +25,7 @@ const mongoFormat = {
   birthday: { type: String },
   single: { type: Boolean },
   cartype: { type: Number },
-  nickname: { type: Array },
+  nicknames: { type: Array },
   picture: { type: String }
 }
 
