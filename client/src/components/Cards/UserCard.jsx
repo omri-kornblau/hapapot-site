@@ -1,16 +1,31 @@
 import React from "react";
-
 import { Card, CardFooter, CardBody, CardText } from "reactstrap";
+
+import Utils from "../../utils";
 
 class UserCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: props.userData
+      userData: props.userdata
     };
+  }
+  componentWillReceiveProps(props) {
+    this.setState({
+      userData: props.userdata
+    });
   }
   getCardBackgroundColor() {
     return this.state.userData.single ? "bg-success" : "bg-danger";
+  }
+  getRandomNickname() {
+    if (!this.state.userData.nicknames) {
+      return "";
+    } else {
+      return this.state.userData.nicknames[
+        Math.floor(Math.random() * this.state.userData.nicknames.length)
+      ];
+    }
   }
 
   render() {
@@ -29,9 +44,11 @@ class UserCard extends React.Component {
                 className="avatar"
                 src={require("assets/img/emilyz.jpg")}
               />
-              <h5 className="title">this.state.userData.NickName</h5>
+              <h5 className="title">{this.getRandomNickname()}</h5>
             </a>
-            <p className="birthday">this.state.userData.Birthday</p>
+            <p className="birthday">
+              {Utils.formatDate(this.state.userData.birthday)}
+            </p>
           </div>
           <div className="card-description"></div>
         </CardBody>

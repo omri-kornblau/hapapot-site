@@ -2,14 +2,6 @@ import React from "react";
 import { Row, Col } from "reactstrap";
 
 import UserCard from "components/Cards/UserCard";
-
-const fakeUser = {
-  NickName: "cscs",
-  Birthday: "Birthday",
-  single: false
-};
-
-const amountOfUsers = 15;
 const renderUsersCards = (users, size) => {
   return users.map(user => {
     return (
@@ -20,10 +12,22 @@ const renderUsersCards = (users, size) => {
   });
 };
 
-const users = Array(amountOfUsers)
-  .fill(0)
-  .map(() => fakeUser);
 class UserProfile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userData: {}
+    };
+  }
+  async componentDidMount() {
+    try {
+      const res = await Axios.get("/api/user");
+      this.setState({
+        userData: res.data
+      });
+    } catch (err) {}
+  }
+
   render() {
     return (
       <>
