@@ -15,6 +15,7 @@ const ServerConfig = require('./config/server')
 
 // Import models
 require('./models/user');
+require('./models/day');
 
 AsyncErrorsHandler.patchRouter(ErrorsRouter.route);
 
@@ -31,7 +32,8 @@ app.use(BodyParser.json());
 app.use(Logger('dev'));
 app.use(CookieParser());
 app.use(Express.static(Path.join(__dirname, '../client/build')));
-app.use('/api', withAuth, require('./routes/users'));
+app.use('/api/user', withAuth, require('./routes/users'));
+app.use('/api/calendar', withAuth, require('./routes/calendar'));
 app.use('/auth', require('./routes/authentication'));
 
 if (ServerConfig.production) {

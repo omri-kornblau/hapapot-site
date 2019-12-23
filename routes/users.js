@@ -13,13 +13,13 @@ const sendUser = (res, status, userFromDb) => {
   });
 }
 
-router.get(`/user`, async (req, res) => {
+router.get(`/`, async (req, res) => {
   const { username } = req;
   const user = await UserModel.findOne({ username })
   return res.send(user);
 });
 
-router.post(`/user`, async (req, res) => {
+router.post(`/`, async (req, res) => {
   const user = req.body;
   const existingUsers = await UserModel.find({ username: user.username });
 
