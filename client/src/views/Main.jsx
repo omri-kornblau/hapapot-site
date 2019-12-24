@@ -70,7 +70,7 @@ class Main extends React.Component {
                     date={this.state.selectedDay.date}
                     onClick={() => {
                       this.props.history.push(
-                        `/day/${this.getSelectedLinkPath()}`
+                        `day/${this.getSelectedLinkPath()}`
                       );
                     }}
                   />
