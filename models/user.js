@@ -16,7 +16,10 @@ const joiFormat = Joi.object().keys({
   single: Joi.boolean().required(),
   cartype: Joi.number().integer(),
   nicknames: Joi.array().items(Joi.string()),
-  picture: Joi.string()
+  picture: Joi.string(),
+  firstname: Joi.string(),
+  lastname: Joi.string(),
+  aboutme: Joi.string()
 }).unknown(true);
 
 const mongoFormat = {
@@ -26,7 +29,10 @@ const mongoFormat = {
   single: { type: Boolean },
   cartype: { type: Number },
   nicknames: { type: Array },
-  picture: { type: String }
+  picture: { type: String },
+  firstname: { type: String },
+  lastname: { type: String },
+  aboutme: { type: String }
 }
 
 const userSchema = new Mongoose.Schema(mongoFormat);

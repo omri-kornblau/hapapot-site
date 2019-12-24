@@ -1,5 +1,5 @@
 import React from "react";
-
+import Axios from "axios";
 import {
   Button,
   Card,
@@ -11,10 +11,64 @@ import {
   Form,
   Input,
   Row,
-  Col
+  Col,
+  Label
 } from "reactstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Utils from "../utils";
+import UserCard from "components/Cards/UserCard";
+import Defaults from "../defaults/defaults";
 
 class UserProfile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userData: Defaults.UserData
+    };
+  }
+
+  async componentDidMount() {
+    try {
+      const res = await Axios.get("/api/user");
+      this.setState({
+        userData: res.data
+      });
+    } catch (err) {}
+  }
+
+  onNicknamesChange = event => {
+    const userData = this.state.userData;
+    const { value, name } = event.target;
+    userData[name] = value.split(",");
+    this.setState({
+      userData
+    });
+  };
+  onCheckboxChange = event => {
+    const userData = this.state.userData;
+    const { checked, name } = event.target;
+    userData[name] = checked;
+    this.setState({ userData });
+  };
+  onInputChange = event => {
+    const userData = this.state.userData;
+    const { value, name } = event.target;
+    userData[name] = value;
+    this.setState({ userData });
+  };
+  handleDateChange = date => {
+    const userData = this.state.userData;
+    userData.birthday = new Date(date);
+    this.setState({ userData });
+  };
+  postChanges = async () => {
+    try {
+      const res = await Axios.post("/api/user", this.state.userData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   render() {
     return (
       <>
@@ -32,8 +86,22 @@ class UserProfile extends React.Component {
                         <FormGroup>
                           <label>שם משתמש</label>
                           <Input
-                            defaultValue=""
+                            value={this.state.userData.username}
+                            onChange={this.onInputChange}
+                            name="username"
                             placeholder="השם של המשתמש"
+                            type="text"
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col className="px-md-1" md="6">
+                        <FormGroup>
+                          <label>ססימה</label>
+                          <Input
+                            name="password"
+                            value=""
+                            onChange={this.onInputChange}
+                            placeholder="זה סוד"
                             type="text"
                           />
                         </FormGroup>
@@ -44,7 +112,9 @@ class UserProfile extends React.Component {
                         <FormGroup>
                           <label>שם פרטי</label>
                           <Input
-                            defaultValue=""
+                            name="firstname"
+                            value={this.state.userData.firstname}
+                            onChange={this.onInputChange}
                             placeholder="איך שאמא קוראת לך שהיא כועסת"
                             type="text"
                           />
@@ -54,21 +124,71 @@ class UserProfile extends React.Component {
                         <FormGroup>
                           <label>שם משפחה</label>
                           <Input
-                            defaultValue=""
+                            name="lastname"
+                            value={this.state.userData.lastname}
+                            onChange={this.onInputChange}
                             placeholder="שם משפחה"
                             type="text"
                           />
                         </FormGroup>
                       </Col>
                     </Row>
-
+                    <Row>
+                      <Col className="pr-md-1" md="6">
+                        <FormGroup>
+                          <label>
+                            כינויים ( יש לשים פסיק בין כינוי לכינוי)
+                          </label>
+                          <Input
+                            value={this.state.userData.nicknames.join(",")}
+                            onChange={this.onNicknamesChange}
+                            name="nicknames"
+                            placeholder="דוגי זה יהיה השמות שלך באתר"
+                            type="text"
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="pr-md-1" md="6">
+                        <FormGroup>
+                          <label>יום הולדת</label>
+                          <DatePicker
+                            name="birthday"
+                            value={Utils.formatDate(
+                              this.state.userData.birthday
+                            )}
+                            selected={new Date(this.state.userData.birthday)}
+                            onChange={this.handleDateChange}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup check>
+                          <Label check>
+                            <p>רווק?</p>
+                            <Input
+                              onChange={this.onCheckboxChange}
+                              checked={this.state.userData.single}
+                              name="single"
+                              type="checkbox"
+                            />
+                            <span className="form-check-sign">
+                              <span className="check" />
+                            </span>
+                          </Label>
+                        </FormGroup>
+                      </Col>
+                    </Row>
                     <Row>
                       <Col md="8">
                         <FormGroup>
                           <label>קצת עלי</label>
                           <Input
                             cols="80"
-                            defaultValue=""
+                            name="aboutme"
+                            value={this.state.userData.aboutme}
+                            onChange={this.onInputChange}
                             placeholder="היי שלום ספר לי על עצמך"
                             rows="4"
                             type="textarea"
@@ -79,44 +199,18 @@ class UserProfile extends React.Component {
                   </Form>
                 </CardBody>
                 <CardFooter>
-                  <Button className="btn-fill" color="primary" type="submit">
-                    Save
+                  <Button
+                    className="btn-fill"
+                    color="primary"
+                    onClick={this.postChanges}
+                  >
+                    שמור
                   </Button>
                 </CardFooter>
               </Card>
             </Col>
             <Col md="4">
-              <Card className="card-user ">
-                <CardBody className="bg-danger">
-                  <CardText />
-                  <div className="author">
-                    <div className="block block-one" />
-                    <div className="block block-two" />
-                    <div className="block block-three" />
-                    <div className="block block-four" />
-                    <a href="#pablo" onClick={e => e.preventDefault()}>
-                      <img
-                        alt="..."
-                        className="avatar"
-                        src={require("assets/img/emilyz.jpg")}
-                      />
-                      <h5 className="title">props.userData.NickName</h5>
-                    </a>
-                    <p className="birthday">props.userData.Birthday</p>
-                  </div>
-                  <div className="card-description"></div>
-                </CardBody>
-                <CardFooter>
-                  <div className="button-container">
-                    <Button className="btn-icon btn-round" color="facebook">
-                      <i className="fab fa-facebook" />
-                    </Button>
-                    <Button className="btn-icon btn-round" color="Instegram">
-                      <i className="fab fa-instegram" />
-                    </Button>
-                  </div>
-                </CardFooter>
-              </Card>
+              <UserCard userdata={this.state.userData}></UserCard>
             </Col>
           </Row>
         </div>
