@@ -1,12 +1,13 @@
-const Mongoose = require('mongoose');
-const Bcrypt = require('bcrypt');
-const Joi = require('joi');
-const promisify = require('util').promisify;
+const Mongoose = require("mongoose");
+const Bcrypt = require("bcrypt");
+const Joi = require("joi");
+const promisify = require("util").promisify;
 
 const hash = promisify(Bcrypt.hash);
 
 const carsJoiFormat = Joi.object().pattern(
-  Joi.any(), Joi.array().items(Joi.string())
+  Joi.any(),
+  Joi.array().items(Joi.string())
 );
 
 const singleItemJoiFormat = Joi.object().keys({
@@ -15,7 +16,8 @@ const singleItemJoiFormat = Joi.object().keys({
 });
 
 const itemsJoiFormat = Joi.object().pattern(
-  Joi.any(), Joi.array().items(singleItemJoiFormat)
+  Joi.any(),
+  Joi.array().items(singleItemJoiFormat)
 );
 
 const eventJoiFormat = Joi.object().keys({
@@ -28,32 +30,44 @@ const eventJoiFormat = Joi.object().keys({
   moneylink: Joi.string().uri()
 });
 
-const dayJoiFormat = Joi.object().keys({
-  date: Joi.string().isoDate().required(),
-  events: Joi.array().items(eventJoiFormat).required(),
-  users: Joi.array().items(Joi.string()).required(),
-  rating: Joi.number().min(0).max(10)
-}).unknown(true);
+const dayJoiFormat = Joi.object()
+  .keys({
+    date: Joi.string()
+      .isoDate()
+      .required(),
+    events: Joi.array()
+      .items(eventJoiFormat)
+      .required(),
+    users: Joi.array()
+      .items(Joi.string())
+      .required(),
+    rating: Joi.number()
+      .min(0)
+      .max(10)
+  })
+  .unknown(true);
 
 const mongoFormat = {
   date: { type: String, unique: true },
   events: { type: Array },
   users: { type: Array },
   rating: { type: Number }
-}
+};
 
 const daySchema = new Mongoose.Schema(mongoFormat);
 
-daySchema.pre('save', async function() {
+daySchema.pre("save", async function() {
   await Joi.validate(this, dayJoiFormat);
   const { date } = this;
-  await Promise.all(this.events.map(async event => {
-    if (!event.eventkey) {
-      event.eventkey = await hash(event.name + date);
-    }
-  }));
+  await Promise.all(
+    this.events.map(async event => {
+      if (!event.eventkey) {
+        event.eventkey = await hash(event.name + date);
+      }
+    })
+  );
 });
 
-const Day = Mongoose.model('Day', daySchema);
+const Day = Mongoose.model("Day", daySchema);
 
 module.exports = Day;
