@@ -1,16 +1,16 @@
-//import Main from "views/Main.jsx";
+import Main from "views/Main.jsx";
 import AboutUs from "views/AboutUs.jsx";
 import UserProfile from "views/UserProfile.jsx";
 //import Statistics from "views/Statistics.jsx";
 
 var routes = [
-  /*{
+  {
     path: "/main",
     name: "בית",
     icon: "tim-icons icon-calendar-60",
     component: Main,
     layout: "/home"
-  }*/
+  },
   {
     path: "/aboutus",
     name: "קצת עלינו",
