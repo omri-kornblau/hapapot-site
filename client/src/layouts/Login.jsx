@@ -84,7 +84,7 @@ class LoginPage extends React.Component {
                           type="username"
                           name="username"
                           placeholder="הכנס שם משתמש"
-                          value={this.state.username}
+                          value={this.state.userData.username}
                           onChange={this.onInputChange}
                           required
                         />
@@ -98,7 +98,7 @@ class LoginPage extends React.Component {
                           type="password"
                           name="password"
                           placeholder="הכנס סיסמה"
-                          value={this.state.password}
+                          value={this.state.userData.password}
                           onChange={this.onInputChange}
                           required
                         />
