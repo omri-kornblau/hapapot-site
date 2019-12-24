@@ -1,8 +1,6 @@
 const Mongoose = require('mongoose');
 const Express = require('express');
 
-const withAuth = require('../middleware');
-
 const router = Express.Router()
 const UserModel = Mongoose.model('User');
 

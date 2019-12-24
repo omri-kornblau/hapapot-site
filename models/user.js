@@ -37,7 +37,6 @@ userSchema.pre('save', async function() {
 });
 
 userSchema.methods.isCorrectPassword = async function(password) {
-  console.log(this.password, password);
   return await hashCompare(password, this.password);
 }
 
