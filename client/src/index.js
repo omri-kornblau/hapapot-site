@@ -9,6 +9,8 @@ import HomeLayout from "layouts/Home";
 import LoginPage from "layouts/Login"
 
 import "assets/scss/black-dashboard-react.scss";
+import "assets/css/custom-grid.css";
+import "assets/css/main.css";
 import "assets/css/nucleo-icons.css";
 
 const history = createBrowserHistory();
