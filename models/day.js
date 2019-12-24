@@ -38,7 +38,7 @@ const dayJoiFormat = Joi.object().keys({
 const mongoFormat = {
   date: { type: String, unique: true },
   events: { type: Array },
-  users: { type: String },
+  users: { type: Array },
   rating: { type: Number }
 }
 
