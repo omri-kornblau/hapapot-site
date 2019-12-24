@@ -5,13 +5,20 @@ const moment = require('moment');
 
 const router = Express.Router()
 const DayModel = Mongoose.model('Day');
+const UserModel = Mongoose.model('User');
 
 const weeksToShow = 2;
 const daysToShow = weeksToShow * 7;
 
+const getCalendarDayFromDbDay = (dbDay, usersAmount) => {
+  const attendance = 100 * (dbDay.users.length / usersAmount);
+  const { date, events } = dbDay;
+  return { attendance, date, events };
+}
+
 const getCalendarChunk = async (req, res) => {
   const emptyDay = {
-    participants: 0,
+    attendance: 0,
     events: [],
     date: ""
   }
@@ -25,15 +32,15 @@ const getCalendarChunk = async (req, res) => {
     .subtract(chunk, 'weeks');
   const dateRangeEnd = startOfWeek.clone()
     .add(7*(weeksToShow - chunk) - 1, 'days');
-  relevantDays = await DayModel.find({ date: {
+  const relevantDays = await DayModel.find({ date: {
       $gte: dateRangeStart.toISOString(),
       $lt: dateRangeEnd.toISOString()
     }
   }).sort('date');
+  const usersAmount = await UserModel.count();
 
   let dbDatesIndex = 0;
-  const calendar = [];
-  for (let idx = 0; idx < daysToShow; idx++) {
+  const calendar = Object.keys(Array(daysToShow).fill(0)).map(idx => {
     const currentDbDay = relevantDays[dbDatesIndex];
     const currentCalDate = dateRangeStart.clone().add(idx, 'days');
     const currentDay = {...emptyDay};
@@ -41,12 +48,11 @@ const getCalendarChunk = async (req, res) => {
     if (!!currentDbDay) {
       if (currentCalDate.isSame(currentDbDay.date, 'day')) {
         dbDatesIndex += 1;
-        calendar.push(currentDbDay);
-        continue;
+        return getCalendarDayFromDbDay(currentDbDay, usersAmount);
       }
     }
-    calendar.push(currentDay);
-  }
+    return currentDay;
+  });
 
   res.send(calendar);
 }
