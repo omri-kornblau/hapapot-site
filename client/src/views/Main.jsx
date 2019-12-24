@@ -25,7 +25,7 @@ class Main extends React.Component {
   async componentDidMount() {
     try {
       const res = await Axios.get("/api/calendar/0");
-      this.setState({ days: res.data });
+      this.setState({ days: res.data, selectedDay: res.data[0] });
     } catch (err) {
 
     }
