@@ -33,8 +33,8 @@ app.use(Logger("dev"));
 app.use(CookieParser());
 app.use(Express.static(Path.join(__dirname, "../client/build")));
 app.use("/api", require("./routes/aboutus"));
+app.use("/api", require("./routes/day"));
 app.use("/api/user", withAuth, require("./routes/users"));
-app.use("/api/calendar", withAuth, require("./routes/calendar"));
 app.use("/auth", require("./routes/authentication"));
 
 if (ServerConfig.production) {
