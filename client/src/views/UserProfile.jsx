@@ -65,7 +65,6 @@ class UserProfile extends React.Component {
   postChanges = async () => {
     try {
       const res = await Axios.post("/api/user", this.state.userData);
-      console.log(res);
     } catch (err) {
       console.log(err);
     }

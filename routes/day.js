@@ -13,7 +13,6 @@ router.get(`/day/:date`, async (req, res) => {
   const usersData = await Promise.all(
     day.users.map(async user => {
       const userFromDb = await UserModel.findOne({ username: user });
-      console.log(userFromDb);
       return userFromDb.nicknames[0];
     })
   );
