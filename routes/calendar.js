@@ -1,9 +1,7 @@
 const Mongoose = require('mongoose');
-const Express = require('express');
 const Boom = require('boom');
 const moment = require('moment');
 
-const router = Express.Router()
 const DayModel = Mongoose.model('Day');
 const UserModel = Mongoose.model('User');
 
@@ -16,7 +14,7 @@ const getCalendarDayFromDbDay = (dbDay, usersAmount) => {
   return { attendance, date, events };
 }
 
-const getCalendarChunk = async (req, res) => {
+exports.getCalendarChunk = async (req, res) => {
   const emptyDay = {
     attendance: 0,
     events: [],
@@ -56,7 +54,3 @@ const getCalendarChunk = async (req, res) => {
 
   res.send(calendar);
 }
-
-router.get(`/:chunk`, getCalendarChunk);
-
-module.exports = router;
