@@ -14,7 +14,7 @@ Defaults.UserData = {
 };
 
 Defaults.Day = {
-  date: new Date(),
+  date: "",
   events: [],
   users: [],
   rating: 0
