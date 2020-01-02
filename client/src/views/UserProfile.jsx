@@ -16,18 +16,21 @@ import {
 } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 import Utils from "../utils";
 import UserCard from "components/Cards/UserCard";
+import StatusMessage from "components/Status/StatusBadge"
 import Defaults from "../defaults/defaults";
 
 class UserProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: Defaults.UserData
+      userData: Defaults.UserData,
+      triedUpdate: false,
+      updateSucceeded: false
     };
   }
-
   async componentDidMount() {
     try {
       const res = await Axios.get("/api/user");
@@ -36,7 +39,6 @@ class UserProfile extends React.Component {
       });
     } catch (err) {}
   }
-
   onNicknamesChange = event => {
     const userData = this.state.userData;
     const { value, name } = event.target;
@@ -65,9 +67,11 @@ class UserProfile extends React.Component {
   postChanges = async () => {
     try {
       const res = await Axios.post("/api/user", this.state.userData);
+      this.setState({ updateSucceeded: true });
     } catch (err) {
-      console.log(err);
+      this.setState({ updateSucceeded: false });
     }
+    this.setState({ triedUpdate: true })
   };
   render() {
     return (
@@ -199,13 +203,22 @@ class UserProfile extends React.Component {
                   </Form>
                 </CardBody>
                 <CardFooter>
-                  <Button
-                    className="btn-fill"
-                    color="primary"
-                    onClick={this.postChanges}
-                  >
-                    שמור
-                  </Button>
+                  <Row>
+                    <Col className="text-center" sm="12">
+                      <Button
+                        className="btn-fill"
+                        color="primary"
+                        onClick={this.postChanges}
+                      >
+                        שמור
+                      </Button>
+                    </Col>
+                    <Col className="text-center" sm="12">
+                      { this.state.triedUpdate ?
+                          <StatusMessage success={this.state.updateSucceeded}/>
+                          : ""}
+                    </Col>
+                  </Row>
                 </CardFooter>
               </Card>
             </Col>

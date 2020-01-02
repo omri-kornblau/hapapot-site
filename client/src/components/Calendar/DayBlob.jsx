@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import moment from 'moment'
 
 class DayBlob extends React.Component {
   constructor(props) {
@@ -7,22 +7,29 @@ class DayBlob extends React.Component {
     this.state = {
       attendance: props.attendance,
       events: props.events,
-      date: ""
+      selected: false,
+      date: props.date
     }
   }
   componentWillReceiveProps(props) {
-    this.setState({...props});
+    this.setState({ selected: props.selected });
   }
-  getBackgroundColor() {
-    return `hsl(220, ${this.state.attendance}%, 60%)`;
+  getFillerHeight() {
+    return `${100 - this.state.attendance}%`
   }
 
   render() {
     return (
       <div
         onClick = {this.props.onClick}
-        style={{backgroundColor: this.getBackgroundColor()}}
-        className="day-blob">
+        className={`day-blob ${this.state.selected ? 'active' : ''}`}>
+        <div
+          className="day-blob-filler"
+          style={{top: this.getFillerHeight()}}>
+        </div>
+        <div className="day-blob-mask">
+          {moment(this.state.date).format("DD")}
+        </div>
       </div>
     )
   }
