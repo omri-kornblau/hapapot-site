@@ -116,7 +116,7 @@ class Day extends React.Component {
             </Button>
           </Col>
           <Col className="text-center" xs="6">
-            <Button className="btn-warning">
+            <Button className="btn-danger">
               <i className="tim-icons icon-simple-remove" />
             </Button>
           </Col>

@@ -12,4 +12,8 @@ Utils.formatTime = isoDate => {
   return dateTime.format("HH:mm");
 };
 
+Utils.toRange = (num, rangeStart, rangeEnd, numRange=100) => {
+  return (num * (rangeEnd - rangeStart) / numRange) + rangeStart;
+}
+
 module.exports = Utils;
