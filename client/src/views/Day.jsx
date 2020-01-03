@@ -6,7 +6,7 @@ import {
   Row,
   Col,
   Card,
-  CardBody,
+  CardBody
 } from "reactstrap";
 import Axios from "axios";
 
@@ -116,7 +116,8 @@ class Day extends React.Component {
               onClick={async () => {
                 await Axios.get(`/api/attend/day/${this.state.day.date}`);
                 await this.fetchDay();
-              }}>
+              }}
+            >
               <i className="tim-icons icon-check-2"></i>
             </Button>
           </Col>
@@ -126,7 +127,8 @@ class Day extends React.Component {
               onClick={async () => {
                 await Axios.get(`/api/absent/day/${this.state.day.date}`);
                 await this.fetchDay();
-              }}>
+              }}
+            >
               <i className="tim-icons icon-simple-remove"></i>
             </Button>
           </Col>
