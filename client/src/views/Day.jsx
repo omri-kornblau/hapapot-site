@@ -6,9 +6,7 @@ import {
   Row,
   Col,
   Card,
-  CardFooter,
   CardBody,
-  CardText
 } from "reactstrap";
 import Axios from "axios";
 
@@ -19,29 +17,31 @@ class Day extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dayData: Defaults.Day
+      day: Defaults.Day
     };
+    this.state.date = this.props.location.pathname
+      .split("/")
+      .slice(2)
+      .join("/");
   }
   async componentDidMount() {
     try {
-      const pathFromDay = this.props.location.pathname
-        .split("/")
-        .slice(2)
-        .join("/");
-      const res = await Axios.get(`/api/${pathFromDay}`);
-      this.setState({
-        dayData: res.data
-      });
+      await this.fetchDay();
     } catch (err) {
       console.log(err);
     }
+  }
+  async fetchDay() {
+    const res = await Axios.get(`/api/${this.state.date}`);
+    this.setState({
+      day: res.data
+    });
   }
   peopleFromCars = cars => {
     return Object.values(cars).reduce((sum, car) => sum + 1 + car.length, 0);
   };
   renderUserTable = () => {
-    return this.state.dayData.users.map(user => {
-      console.log(user);
+    return this.state.day.users.map(user => {
       return (
         <tr>
           <td>{user}</td>
@@ -51,7 +51,7 @@ class Day extends React.Component {
     });
   };
   renderEventsTable = () => {
-    return this.state.dayData.events.map(event => (
+    return this.state.day.events.map(event => (
       <tr>
         <td>
           {event.name} <i className={event.icon} />
@@ -67,7 +67,7 @@ class Day extends React.Component {
     return (
       <div className="content text-right">
         <h4 className="text-center title">
-          {Utils.formatDate(this.state.dayData.date)}
+          {Utils.formatDate(this.state.day.date)}
         </h4>
         <Row>
           <Col md="6">
@@ -111,13 +111,23 @@ class Day extends React.Component {
         </Row>
         <Row>
           <Col className="text-center" xs="6">
-            <Button className="btn-success">
-              <i className="tim-icons icon-check-2" />
+            <Button
+              className="btn-sm btn-success"
+              onClick={async () => {
+                await Axios.get(`/api/attend/day/${this.state.day.date}`);
+                await this.fetchDay();
+              }}>
+              <i className="tim-icons icon-check-2"></i>
             </Button>
           </Col>
           <Col className="text-center" xs="6">
-            <Button className="btn-danger">
-              <i className="tim-icons icon-simple-remove" />
+            <Button
+              className="btn-sm btn-danger"
+              onClick={async () => {
+                await Axios.get(`/api/absent/day/${this.state.day.date}`);
+                await this.fetchDay();
+              }}>
+              <i className="tim-icons icon-simple-remove"></i>
             </Button>
           </Col>
         </Row>

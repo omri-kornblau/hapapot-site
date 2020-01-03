@@ -13,6 +13,7 @@ class DayBlob extends React.Component {
   }
   componentWillReceiveProps(props) {
     this.setState({ selected: props.selected });
+    this.setState({...props});
   }
   getFillerHeight() {
     return `${100 - this.state.attendance}%`
