@@ -18,17 +18,17 @@ import Defaults from "../defaults/defaults";
 class Event extends React.Component {
   constructor(props) {
     super(props);
+    const path = this.props.location.pathname.split("/").slice(2);
+    this.name = path[1];
+    this.date = path[3];
+    this.queryPath = path.join("/");
     this.state = {
       eventData: Defaults.event
     };
   }
   async componentDidMount() {
     try {
-      const pathFromEvent = this.props.location.pathname
-        .split("/")
-        .slice(2)
-        .join("/");
-      const res = await Axios.get(`/api/${pathFromEvent}`);
+      const res = await Axios.get(`/api/${this.queryPath}`);
       this.setState({
         eventData: res.data
       });
@@ -58,8 +58,8 @@ class Event extends React.Component {
 
   addOne = item => async () => {
     try {
-      const eventDate = this.state.eventData.data;
-      const eventName = this.state.eventData.eventKey;
+      const eventDate = this.date;
+      const eventName = this.name;
       const res = await Axios.get("/api/event/item/add-one", {
         params: {
           item,
@@ -78,8 +78,8 @@ class Event extends React.Component {
 
   subOne = item => async () => {
     try {
-      const eventDate = this.state.eventData.data;
-      const eventName = this.state.eventData.eventKey;
+      const eventDate = this.date;
+      const eventName = this.name;
       const res = await Axios.get("/api/event/item/sub-one", {
         params: {
           item,

@@ -2,13 +2,16 @@ const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Boom = require("boom");
 
+const Utils = require("../utils");
+
 const DayModel = Mongoose.model("Day");
 
 exports.getEvent = async (req, res) => {
   const { name, date } = req.params;
-  const day = await DayModel.findOne({
-    date: { $regex: RegExp(`^${date}`, "i") }
-  });
+  const day = await DayModel.findOne({ date });
+  if (!day) {
+    throw Boom.badRequest("Day not found");
+  }
 
   let current_event = false;
   day.events.forEach(element => {
@@ -36,22 +39,23 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
     date: eventDate
   });
 
+  if (!day) {
+    throw Boom.badRequest("Day not found");
+  }
+
   const eventFromDb = _.find(day.events, "name", eventName);
   if (!eventFromDb) {
     throw Boom.badRequest("Event not found");
   }
 
-  eventFromDb.items[item].users[username] = _.get(
-    eventFromDb.items[item].users,
-    req.username,
-    0
-  ) += amount;
+  eventFromDb.items[item].users[username] =
+    _.get(eventFromDb.items[item].users, username, 0) + amount;
 
   return DayModel.updateOne({ date: eventDate }, day);
 };
 
 exports.addOne = async (req, res) => {
-  const { item, eventDate, eventName } = req.params;
+  const { item, eventDate, eventName } = req.query;
   const updateEvent = await addAmount(
     item,
     eventDate,
@@ -63,7 +67,7 @@ exports.addOne = async (req, res) => {
 };
 
 exports.subOne = async (req, res) => {
-  const { item, eventDate, eventName } = req.params;
+  const { item, eventDate, eventName } = req.query;
   const updateEvent = await addAmount(
     item,
     eventDate,
