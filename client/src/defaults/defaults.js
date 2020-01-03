@@ -74,12 +74,10 @@ Defaults.Day = {
 };
 
 Defaults.event = {
-  name: "מסיבה",
-  eventkey: "shalom",
+  name: "",
+  eventkey: "",
   icon: "icon-bag-16",
-  cars: {
-    ido: ["omrik"]
-  },
+  cars: {},
   items: {},
   time: new Date(),
   moneylink: ""
