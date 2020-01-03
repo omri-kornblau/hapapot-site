@@ -14,6 +14,8 @@ router.get('/api/aboutus', withAuth, UserRoutes.getUsers)
 
 router.get('/api/calendar/:chunk', CalendarRoutes.getCalendarChunk)
 router.get('/api/day/:date', DayRoutes.getDay)
+router.get('/api/attend/day/:date', withAuth, DayRoutes.attendDay)
+router.get('/api/absent/day/:date', withAuth, DayRoutes.absentDay)
 
 router.post('/auth/authenticate', AuthRoutes.register)
 router.get('/auth/checktoken', withAuth, AuthRoutes.checkToken)

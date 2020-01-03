@@ -17,6 +17,7 @@
   background-color: hsl(220, 70%, 50%);
   width: 101%;
   height: 101%;
+  transition: top ease-in-out 0.3s;
 }
 
 .day-blob-mask {

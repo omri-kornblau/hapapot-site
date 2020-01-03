@@ -21,15 +21,21 @@ class Main extends React.Component {
     super(props);
     this.state = {
       days: [],
-      selectedDay: {}
+      selectedDay: {},
+      chunk: 0
     }
   }
   async componentDidMount() {
     try {
-      const res = await Axios.get("/api/calendar/0");
-      this.setState({ days: res.data });
-      this.setState({ selectedDay: res.data[0][0] });
-    } catch (err) { }
+      await this.fetchCalendar();
+      this.setState({ selectedDay: this.state.days[0] });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async fetchCalendar() {
+    const res = await Axios.get(`/api/calendar/${this.state.chunk}`);
+    this.setState({ days: res.data });
   }
   getSelectedLinkPath() {
     return this.state.selectedDay.date
@@ -70,9 +76,9 @@ class Main extends React.Component {
               <Row className="justify-content-between">
                 <Button
                   className="btn-sm btn-success"
-                  onClick={() => {
-                    this.props.history.push(
-                      `day/${this.getSelectedLinkPath()}`);
+                  onClick={async () => {
+                    await Axios.get(`/api/attend/day/${this.getSelectedLinkPath()}`);
+                    await this.fetchCalendar();
                   }}>
                   <i className="tim-icons icon-check-2"></i>
                 </Button>
@@ -86,9 +92,9 @@ class Main extends React.Component {
                 </Button>
                 <Button
                   className="btn-sm btn-danger"
-                  onClick={() => {
-                    this.props.history.push(
-                      `day/${this.getSelectedLinkPath()}`);
+                  onClick={async () => {
+                    await Axios.get(`/api/absent/day/${this.getSelectedLinkPath()}`);
+                    await this.fetchCalendar();
                   }}>
                   <i className="tim-icons icon-simple-remove"></i>
                 </Button>
