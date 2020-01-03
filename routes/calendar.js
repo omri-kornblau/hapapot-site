@@ -3,6 +3,8 @@ const Mongoose = require('mongoose');
 const Boom = require('boom');
 const moment = require('moment');
 
+const Utils = require('../utils');
+
 const DayModel = Mongoose.model('Day');
 const UserModel = Mongoose.model('User');
 
@@ -33,20 +35,21 @@ exports.getCalendarChunk = async (req, res) => {
     .add(daysInWeek*(weeksToShow - chunk) - 1, 'days');
   const relevantDaysFromDb = await DayModel.find({
     date: {
-      $gte: dateRangeStart.toISOString(),
-      $lt: dateRangeEnd.toISOString()
+      $gte: Utils.dateToDayQuery(dateRangeStart),
+      $lte: Utils.dateToDayQuery(dateRangeEnd)
     }
   }).sort('date');
   const usersAmount = await UserModel.count();
 
   let dbDatesIndex = 0;
   const calendar =
-    _.range(weeksToShow).map(__ =>
-      _.range(daysInWeek).map(__ => {
+    _.range(weeksToShow).map(weekIdx =>
+      _.range(daysInWeek).map(dayIdx => {
         const currentDbDay = relevantDaysFromDb[dbDatesIndex];
-        const currentCalDate = dateRangeStart.add(1, 'day');
-        const currentDay = _.clone(emptyDay)
-        currentDay.date = currentCalDate.toISOString();
+        const currentDay = _.clone(emptyDay);
+        const currentCalDate = dateRangeStart.clone()
+          .add(weekIdx*daysInWeek + dayIdx, 'day');
+        currentDay.date = Utils.dateToDayQuery(currentCalDate);
         if (!!currentDbDay) {
           if (currentCalDate.isSame(currentDbDay.date, 'day')) {
             dbDatesIndex += 1;

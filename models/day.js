@@ -33,7 +33,6 @@ const eventJoiFormat = Joi.object().keys({
 const dayJoiFormat = Joi.object()
   .keys({
     date: Joi.string()
-      .isoDate()
       .required(),
     events: Joi.array()
       .items(eventJoiFormat)
