@@ -2,6 +2,7 @@ import Main from "views/Main.jsx";
 import AboutUs from "views/AboutUs.jsx";
 import UserProfile from "views/UserProfile.jsx";
 import Day from "views/Day";
+import Event from "views/Event";
 //import Statistics from "views/Statistics.jsx";
 
 var routes = [
@@ -34,6 +35,14 @@ var routes = [
     name: "יום",
     icon: "ani ohev othh",
     component: Day,
+    layout: "/home",
+    showOnMenu: false
+  },
+  {
+    path: "/event",
+    name: "אירוע",
+    icon: "ani ohev othh",
+    component: Event,
     layout: "/home",
     showOnMenu: false
   }
