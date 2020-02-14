@@ -7,6 +7,7 @@ import PrivateRoute from "components/Auth/PrivateRoute"
 
 import HomeLayout from "layouts/Home";
 import LoginPage from "layouts/Login"
+import SignUpPage from "layouts/SignUp"
 
 import "assets/scss/black-dashboard-react.scss";
 import "assets/css/custom-grid.css";
@@ -19,6 +20,7 @@ ReactDOM.render(
   <Router history={history}>
     <Switch>
       <Route path="/login" render={props => <LoginPage {...props} />} />
+      <Route path="/signup" render={props => <SignUpPage {...props} />} />
       <PrivateRoute path="/home" component={props => <HomeLayout {...props} />} />
       <Redirect from="/" to="/home" />
     </Switch>

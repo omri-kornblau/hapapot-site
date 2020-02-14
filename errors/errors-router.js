@@ -11,6 +11,7 @@ const errorRoutes = [
 ];
 
 exports.route = (req, res, next) => err => {
+  console.error(err);
   const matchedAnyError = errorRoutes.some(route => {
     if (route.condition(err)) {
       route.handler(res, err);

@@ -1,0 +1,203 @@
+import React from "react";
+import { Redirect } from "react-router";
+import Axios from "axios";
+import _ from "lodash";
+
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CardTitle,
+  FormGroup,
+  Input,
+  Row,
+  Col,
+  Form,
+  Container,
+  Jumbotron,
+  Label
+} from "reactstrap";
+import DatePicker from "react-datepicker";
+import { defaults } from "chart.js";
+
+import Defaults from "../defaults/defaults";
+
+class SignUpPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userData: Defaults.UserData,
+      failedLogin: false,
+      redirectToReferrer: false
+    };
+    this.state.userData.passwordConfirmation = "";
+  }
+  componentDidMount() {
+    document.body.classList.add("rtl", "menu-on-right");
+    document.body.classList.add("white-content");
+  }
+  onInputChange = event => {
+    const userData = this.state.userData;
+    const { value, name } = event.target;
+    userData[name] = value;
+    this.setState({ userData });
+  };
+  onCheckboxChange = event => {
+    const userData = this.state.userData;
+    const { checked, name } = event.target;
+    userData[name] = checked;
+    this.setState({ userData });
+  };
+  onDateChange = date => {
+    const userData = this.state.userData;
+    userData.birthday = new Date(date);
+    this.setState({ userData });
+  };
+  onFileChange = event => {
+    console.log(event);
+    const userData = this.state.userData;
+    userData.picture = event.target.files[0];
+    console.log(userData.picture);
+    this.setState({ userData });
+  }
+  createInputs = () => {
+    const placeHolderPrefix = "";
+    return _.keys(Defaults.UserDataAttributes).map(key => {
+      const currentAttr = Defaults.UserDataAttributes[key];
+      const currentLabel = currentAttr.label;
+
+      if (currentAttr.type === "file")
+        return (
+          <FormGroup>
+            <label>{currentLabel}</label>
+            <Input
+              type={currentAttr.type}
+              name={key}
+              accept=".jpg,.png"
+              onChange={this.onFileChange}
+              required={currentAttr.required}
+            />
+            <span className="btn btn-sm btn-primary">
+              העלה
+            </span>
+          </FormGroup>
+        );
+      if (currentAttr.type === "datepicker") {
+        return (
+          <FormGroup>
+            <label>{currentLabel}</label>
+            <DatePicker
+              name="birthday"
+              value={Defaults.UserData[key]}
+              selected={new Date(Defaults.UserData[key])}
+              onChange={this.onDateChange}
+            />
+          </FormGroup>
+        );
+      }
+      if (currentAttr.type === "checkbox") {
+        return (
+          <FormGroup check>
+            <Label check>
+              <p>{currentAttr.label}</p>
+              <Input
+                onChange={this.onCheckboxChange}
+                name={key}
+                type={currentAttr.type}
+              />
+              <span className="form-check-sign">
+                <span className="check" />
+              </span>
+            </Label>
+          </FormGroup>
+        )
+      }
+      return (
+        <FormGroup>
+          <label>{currentLabel}</label>
+          <Input
+            className="text-right"
+            type={currentAttr.type}
+            name={key}
+            placeholder={`${placeHolderPrefix} ${currentLabel}`}
+            onChange={this.onInputChange}
+            required={currentAttr.required}
+          />
+        </FormGroup>
+      );
+    });
+  };
+  onSubmit = async event => {
+    event.preventDefault();
+    const options = {
+      headers: {
+        "Content-type": "multipart/form-data"
+      }
+    };
+
+    try {
+      const formData = new FormData();
+      formData.append
+      formData.append("image", this.state.userData.picture);
+      const res = await Axios.post("/api/user", formData, options);
+      this.setState({ updateSucceeded: true });
+    } catch (err) {
+      console.error(err);
+      this.setState({ updateSucceeded: false });
+    }
+    // this.setState({ triedUpdate: true })
+    // this.setState({
+    //   redirectToReferrer: false,
+    //   failedLogin: !false
+    // });
+  };
+
+  render() {
+    const { redirectToReferrer } = this.state;
+    if (redirectToReferrer) {
+      return <Redirect to="/home" />;
+    }
+
+    return (
+      <Jumbotron className="vertical-center">
+        <Container>
+          <Row className="justify-content-md-center">
+            <Col className="text-right" md="6">
+              {" "}
+              <Card className="card-user">
+                <CardHeader>
+                  <CardTitle className="text-right" tag="h5">
+                    תמלא פרטים גבר
+                  </CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <Form className="text-right" onSubmit={this.onSubmit}>
+                    <Row className="justify-content-center text-right">
+                      <Col md="7">
+                        <this.createInputs/>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="text-center pr-1" md="12">
+                        <Button
+                          type="submit"
+                          className="btn-round"
+                          color="primary"
+                        >
+                          הירשם
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </Jumbotron>
+    );
+  }
+}
+
+export default SignUpPage;
