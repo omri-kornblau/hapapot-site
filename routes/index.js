@@ -8,16 +8,17 @@ const DayRoutes = require('./day');
 
 const router = Express.Router();
 
+router.post('/api/user', UserRoutes.upsertUser)
+router.post('/auth/authenticate', AuthRoutes.register)
+
 router.get('/api/user', withAuth, UserRoutes.getUser);
-router.post('/api/user', withAuth, UserRoutes.upsertUser)
 router.get('/api/aboutus', withAuth, UserRoutes.getUsers)
 
-router.get('/api/calendar/:chunk', CalendarRoutes.getCalendarChunk)
-router.get('/api/day/:date', DayRoutes.getDay)
+router.get('/api/calendar/:chunk', withAuth, CalendarRoutes.getCalendarChunk)
+router.get('/api/day/:date', withAuth, DayRoutes.getDay)
 router.get('/api/attend/day/:date', withAuth, DayRoutes.attendDay)
 router.get('/api/absent/day/:date', withAuth, DayRoutes.absentDay)
 
-router.post('/auth/authenticate', AuthRoutes.register)
 router.get('/auth/checktoken', withAuth, AuthRoutes.checkToken)
 
 module.exports = router;
