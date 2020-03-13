@@ -133,6 +133,7 @@ class SignUpPage extends React.Component {
     try {
       await Axios.post("/api/user", this.state.userData);
       this.setState({ updateSucceeded: true });
+      this.props.history.push("/");
     } catch (err) {
       console.error(err);
       this.setState({ updateSucceeded: false });
