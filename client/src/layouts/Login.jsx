@@ -16,7 +16,7 @@ import {
   Jumbotron
 } from "reactstrap";
 
-import Auther from "../authentication";
+import Auther from "../requests/authentication";
 
 const LoginMessage = props => {
   if (props.failedLogin) {
