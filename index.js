@@ -20,14 +20,18 @@ require("./models/day");
 AsyncErrorsHandler.patchRouter(ErrorsRouter.route);
 
 // Connect to mongo db
-Mongoose.connect(DbConfig.url, { useNewUrlParser: true });
+Mongoose.connect(DbConfig.url, {
+  useNewUrlParser: true
+});
 const db = Mongoose.connection;
 db.once("open", () => console.log("Connected to MongoDB"));
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // Setup the server
 const app = Express();
-app.use(BodyParser.urlencoded({ extended: false }));
+app.use(BodyParser.urlencoded({
+  extended: false
+}));
 app.use(BodyParser.json());
 app.use(Logger("dev"));
 app.use(CookieParser());

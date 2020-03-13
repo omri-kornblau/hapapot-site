@@ -7,8 +7,13 @@ const Utils = require("../utils");
 const DayModel = Mongoose.model("Day");
 
 exports.getEvent = async (req, res) => {
-  const { name, date } = req.params;
-  const day = await DayModel.findOne({ date });
+  const {
+    name,
+    date
+  } = req.params;
+  const day = await DayModel.findOne({
+    date
+  });
   if (!day) {
     throw Boom.badRequest("Day not found");
   }
@@ -51,11 +56,17 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
   eventFromDb.items[item].users[username] =
     _.get(eventFromDb.items[item].users, username, 0) + amount;
 
-  return DayModel.updateOne({ date: eventDate }, day);
+  return DayModel.updateOne({
+    date: eventDate
+  }, day);
 };
 
 exports.addOne = async (req, res) => {
-  const { item, eventDate, eventName } = req.query;
+  const {
+    item,
+    eventDate,
+    eventName
+  } = req.query;
   const updateEvent = await addAmount(
     item,
     eventDate,
@@ -67,7 +78,11 @@ exports.addOne = async (req, res) => {
 };
 
 exports.subOne = async (req, res) => {
-  const { item, eventDate, eventName } = req.query;
+  const {
+    item,
+    eventDate,
+    eventName
+  } = req.query;
   const updateEvent = await addAmount(
     item,
     eventDate,

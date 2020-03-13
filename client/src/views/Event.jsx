@@ -19,16 +19,16 @@ class Event extends React.Component {
   constructor(props) {
     super(props);
     const path = this.props.location.pathname.split("/").slice(2);
-    this.name = path[1];
-    this.date = path[3];
-    this.queryPath = path.join("/");
+    console.log(path);
+    this.name = path[2];
+    this.date = path[1];
     this.state = {
       eventData: Defaults.event
     };
   }
   async componentDidMount() {
     try {
-      const res = await Axios.get(`/api/${this.queryPath}`);
+      const res = await Axios.get(`/api/event/${this.date}/${this.name}`);
       this.setState({
         eventData: res.data
       });

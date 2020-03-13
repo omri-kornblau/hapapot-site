@@ -5,8 +5,7 @@ import Day from "views/Day";
 import Event from "views/Event";
 //import Statistics from "views/Statistics.jsx";
 
-var routes = [
-  {
+var routes = [{
     path: "/main",
     name: "בית",
     icon: "tim-icons icon-calendar-60",

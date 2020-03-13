@@ -1,5 +1,4 @@
-const errorRoutes = [
-  {
+const errorRoutes = [{
     condition: err => err.isBoom,
     handler: (res, err) => res.status(err.output.statusCode)
       .send(err.output.payload)

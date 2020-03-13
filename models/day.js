@@ -47,17 +47,28 @@ const dayJoiFormat = Joi.object()
   .unknown(true);
 
 const mongoFormat = {
-  date: { type: String, unique: true },
-  events: { type: Array },
-  users: { type: Array },
-  rating: { type: Number }
+  date: {
+    type: String,
+    unique: true
+  },
+  events: {
+    type: Array
+  },
+  users: {
+    type: Array
+  },
+  rating: {
+    type: Number
+  }
 };
 
 const daySchema = new Mongoose.Schema(mongoFormat);
 
-daySchema.pre("save", async function() {
+daySchema.pre("save", async function () {
   await Joi.validate(this, dayJoiFormat);
-  const { date } = this;
+  const {
+    date
+  } = this;
   await Promise.all(
     this.events.map(async event => {
       if (!event.eventkey) {
