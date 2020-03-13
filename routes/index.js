@@ -20,9 +20,9 @@ router.get("/api/day/:date", withAuth, DayRoutes.getDay)
 router.get("/api/attend/day/:date", withAuth, DayRoutes.attendDay)
 router.get("/api/absent/day/:date", withAuth, DayRoutes.absentDay)
 
-router.get("/api/event/:name/day/:date", EventRoutes.getEvent);
-router.get("/api/event/item/add-one", EventRoutes.addOne, withAuth);
-router.get("/api/event/item/sub-one", EventRoutes.subOne, withAuth);
+router.get("/api/event/:name/day/:date", withAuth, EventRoutes.getEvent);
+router.get("/api/event/item/add-one", withAuth, EventRoutes.addOne);
+router.get("/api/event/item/sub-one", withAuth, EventRoutes.subOne);
 
 router.post("/auth/authenticate", AuthRoutes.register);
 router.get("/auth/checktoken", withAuth, AuthRoutes.checkToken);
