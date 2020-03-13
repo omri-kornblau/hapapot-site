@@ -123,6 +123,7 @@ class LoginPage extends React.Component {
                     </Row>
                   </Form>
                 </CardBody>
+                <a className="text-center" href="/signup">אין לך חשבון? הירשם!</a>
               </Card>
             </Col>
           </Row>
