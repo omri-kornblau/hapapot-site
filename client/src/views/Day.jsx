@@ -19,6 +19,7 @@ class Day extends React.Component {
     this.state = {
       day: Defaults.Day
     };
+    // TODO: understand why this variable is needed
     this.state.date = this.props.location.pathname
       .split("/")
       .slice(2)
@@ -52,7 +53,9 @@ class Day extends React.Component {
   };
   renderEventsTable = () => {
     return this.state.day.events.map(event => (
-      <tr>
+      <tr onClick={
+          () => this.props.history.push(`/home/event/${this.state.day.date}/${event.name}`)
+          }>
         <td>
           {event.name} <i className={event.icon} />
         </td>
