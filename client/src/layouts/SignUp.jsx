@@ -130,17 +130,8 @@ class SignUpPage extends React.Component {
   };
   onSubmit = async event => {
     event.preventDefault();
-    const options = {
-      headers: {
-        "Content-type": "multipart/form-data"
-      }
-    };
-
     try {
-      const formData = new FormData();
-      formData.append
-      formData.append("image", this.state.userData.picture);
-      const res = await Axios.post("/api/user", formData, options);
+      await Axios.post("/api/user", this.state.userData);
       this.setState({ updateSucceeded: true });
     } catch (err) {
       console.error(err);

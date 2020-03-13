@@ -63,11 +63,6 @@ Defaults.UserDataAttributes = {
     label: "קצת עלייך",
     type: "",
     require: false
-  },
-  picture: {
-    label: "תמונה",
-    type: "file",
-    require: true
   }
 };
 

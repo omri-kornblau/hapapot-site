@@ -1,7 +1,6 @@
 const Mongoose = require('mongoose');
 const Bcrypt = require('bcrypt');
 const Joi = require('joi');
-const Boom = require('boom');
 const promisify = require('util').promisify;
 
 const hashCompare = promisify(Bcrypt.compare);
@@ -16,7 +15,6 @@ const joiFormat = Joi.object().keys({
   single: Joi.boolean().required(),
   carsize: Joi.number().integer(),
   nicknames: Joi.array().items(Joi.string()),
-  picture: Joi.string(),
   firstname: Joi.string(),
   lastname: Joi.string(),
   aboutme: Joi.string()
@@ -29,7 +27,6 @@ const mongoFormat = {
   single: { type: Boolean },
   carsize: { type: Number },
   nicknames: { type: Array },
-  picture: { type: String },
   firstname: { type: String },
   lastname: { type: String },
   aboutme: { type: String }
