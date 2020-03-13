@@ -1,5 +1,5 @@
-const Layer = require('express/lib/router/layer');
-const Router = require('express/lib/router')
+const Layer = require("express/lib/router/layer");
+const Router = require("express/lib/router")
 
 const getLast = (arr = []) => arr[arr.length - 1];
 const noop = Function.prototype;
@@ -18,7 +18,7 @@ const wrap = (fn, routeError) => {
     if (ret && ret.catch) ret.catch(routeError(args[0], args[1], next));
     return ret;
   };
-  Object.defineProperty(newFn, 'length', {
+  Object.defineProperty(newFn, "length", {
     value: fn.length,
     writable: false,
   });
@@ -32,7 +32,7 @@ exports.patchRouter = (routeError) => {
     return originalParam.call(this, name, fn);
   };
 
-  Object.defineProperty(Layer.prototype, 'handle', {
+  Object.defineProperty(Layer.prototype, "handle", {
     enumerable: true,
     get() {
       return this.__handle;

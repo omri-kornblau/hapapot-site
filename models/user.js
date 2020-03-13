@@ -1,7 +1,7 @@
-const Mongoose = require('mongoose');
-const Bcrypt = require('bcrypt');
-const Joi = require('joi');
-const promisify = require('util').promisify;
+const Mongoose = require("mongoose");
+const Bcrypt = require("bcrypt");
+const Joi = require("joi");
+const promisify = require("util").promisify;
 
 const hashCompare = promisify(Bcrypt.compare);
 const hash = promisify(Bcrypt.hash);
@@ -21,28 +21,47 @@ const joiFormat = Joi.object().keys({
 }).unknown(true);
 
 const mongoFormat = {
-  username: { type: String, unique: true },
-  password: { type: String },
-  birthday: { type: String },
-  single: { type: Boolean },
-  carsize: { type: Number },
-  nicknames: { type: Array },
-  firstname: { type: String },
-  lastname: { type: String },
-  aboutme: { type: String }
+  username: {
+    type: String,
+    unique: true
+  },
+  password: {
+    type: String
+  },
+  birthday: {
+    type: String
+  },
+  single: {
+    type: Boolean
+  },
+  carsize: {
+    type: Number
+  },
+  nicknames: {
+    type: Array
+  },
+  firstname: {
+    type: String
+  },
+  lastname: {
+    type: String
+  },
+  aboutme: {
+    type: String
+  }
 }
 
 const userSchema = new Mongoose.Schema(mongoFormat);
 
-userSchema.pre('save', async function() {
+userSchema.pre("save", async function () {
   await Joi.validate(this, joiFormat);
   this.password = await hash(this.password, saltRounds);
 });
 
-userSchema.methods.isCorrectPassword = async function(password) {
+userSchema.methods.isCorrectPassword = async function (password) {
   return await hashCompare(password, this.password);
 }
 
-const User = Mongoose.model('User', userSchema);
+const User = Mongoose.model("User", userSchema);
 
 module.exports = User;

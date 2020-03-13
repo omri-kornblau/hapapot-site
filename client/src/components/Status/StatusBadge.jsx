@@ -1,5 +1,5 @@
-import React from 'react';
-import { Badge } from 'reactstrap';
+import React from "react";
+import { Badge } from "reactstrap";
 
 class StatusBadge extends React.Component {
   constructor(props) {
@@ -12,10 +12,10 @@ class StatusBadge extends React.Component {
 
   render() {
     return (
-      <Badge color={this.state.success ? "success" : "danger" }>
-        { this.state.success ? "" : "נכשלת" }
+      <Badge color={this.state.success ? "success" : "danger"}>
+        {this.state.success ? "" : "נכשלת"}
       </Badge>
-    )
+    );
   }
 }
 

@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import { Route, Redirect } from "react-router";
 
-import Auther from '../../authentication';
+import Auther from "../../authentication";
 
 class PrivateRoute extends React.Component {
   state = {
     haveAccess: false,
     loadedData: false
-  }
+  };
 
   componentDidMount() {
     this.checkToken();
@@ -19,17 +19,22 @@ class PrivateRoute extends React.Component {
       haveAccess: isAuth,
       loadedData: true
     });
-  }
+  };
 
   render() {
     const { loadedData, haveAccess } = this.state;
-    const { component: Component } = this.props
-    if (!loadedData) { return null }
-    return <Route render={props => (
-      haveAccess ? <Component {...props}/>
-        : <Redirect to='/login' />
-    )}/>
+    const { component: Component } = this.props;
+    if (!loadedData) {
+      return null;
+    }
+    return (
+      <Route
+        render={props =>
+          haveAccess ? <Component {...props} /> : <Redirect to="/login" />
+        }
+      />
+    );
   }
 }
 
-export default PrivateRoute
+export default PrivateRoute;

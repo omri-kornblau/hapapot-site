@@ -9,16 +9,16 @@ const EventRoutes = require("./event");
 
 const router = Express.Router();
 
-router.post('/api/user', UserRoutes.upsertUser)
-router.post('/auth/authenticate', AuthRoutes.register)
+router.post("/api/user", UserRoutes.upsertUser)
+router.post("/auth/authenticate", AuthRoutes.register)
 
-router.get('/api/user', withAuth, UserRoutes.getUser);
-router.get('/api/aboutus', withAuth, UserRoutes.getUsers)
+router.get("/api/user", withAuth, UserRoutes.getUser);
+router.get("/api/aboutus", withAuth, UserRoutes.getUsers)
 
-router.get('/api/calendar/:chunk', withAuth, CalendarRoutes.getCalendarChunk)
-router.get('/api/day/:date', withAuth, DayRoutes.getDay)
-router.get('/api/attend/day/:date', withAuth, DayRoutes.attendDay)
-router.get('/api/absent/day/:date', withAuth, DayRoutes.absentDay)
+router.get("/api/calendar/:chunk", withAuth, CalendarRoutes.getCalendarChunk)
+router.get("/api/day/:date", withAuth, DayRoutes.getDay)
+router.get("/api/attend/day/:date", withAuth, DayRoutes.attendDay)
+router.get("/api/absent/day/:date", withAuth, DayRoutes.absentDay)
 
 router.get("/api/event/:name/day/:date", EventRoutes.getEvent);
 router.get("/api/event/item/add-one", EventRoutes.addOne, withAuth);

@@ -1,5 +1,5 @@
-import React from 'react'
-import moment from 'moment'
+import React from "react";
+import moment from "moment";
 
 class DayBlob extends React.Component {
   constructor(props) {
@@ -9,30 +9,31 @@ class DayBlob extends React.Component {
       events: props.events,
       selected: false,
       date: props.date
-    }
+    };
   }
   componentWillReceiveProps(props) {
     this.setState({ selected: props.selected });
-    this.setState({...props});
+    this.setState({ ...props });
   }
   getFillerHeight() {
-    return `${100 - this.state.attendance}%`
+    return `${100 - this.state.attendance}%`;
   }
 
   render() {
     return (
       <div
-        onClick = {this.props.onClick}
-        className={`day-blob ${this.state.selected ? 'active' : ''}`}>
+        onClick={this.props.onClick}
+        className={`day-blob ${this.state.selected ? "active" : ""}`}
+      >
         <div
           className="day-blob-filler"
-          style={{top: this.getFillerHeight()}}>
-        </div>
+          style={{ top: this.getFillerHeight() }}
+        ></div>
         <div className="day-blob-mask">
           {moment(this.state.date).format("DD")}
         </div>
       </div>
-    )
+    );
   }
 }
 

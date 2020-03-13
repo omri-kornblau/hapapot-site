@@ -1,12 +1,12 @@
-const _ = require('lodash');
-const Mongoose = require('mongoose');
-const Boom = require('boom');
-const moment = require('moment');
+const _ = require("lodash");
+const Mongoose = require("mongoose");
+const Boom = require("boom");
+const moment = require("moment");
 
-const Utils = require('../utils');
+const Utils = require("../utils");
 
-const DayModel = Mongoose.model('Day');
-const UserModel = Mongoose.model('User');
+const DayModel = Mongoose.model("Day");
+const UserModel = Mongoose.model("User");
 
 const weeksToShow = 2;
 const daysInWeek = 7;
@@ -19,26 +19,33 @@ const emptyDay = {
 
 const getCalendarDayFromDbDay = (dbDay, usersAmount) => {
   const attendance = 100 * (dbDay.users.length / usersAmount);
-  const { date, events } = dbDay;
-  return { attendance, date, events };
+  const {
+    date,
+    events
+  } = dbDay;
+  return {
+    attendance,
+    date,
+    events
+  };
 }
 
 exports.getCalendarChunk = async (req, res) => {
   const chunk = Number(req.params.chunk);
   if (!Number.isInteger(chunk)) {
-    Boom.badRequest('Given chunk is not an integer');
+    Boom.badRequest("Given chunk is not an integer");
   }
-  const startOfWeek = moment().startOf('week');
+  const startOfWeek = moment().startOf("week");
   const dateRangeStart = startOfWeek.clone()
-    .subtract(chunk, 'weeks');
+    .subtract(chunk, "weeks");
   const dateRangeEnd = startOfWeek.clone()
-    .add(daysInWeek*(weeksToShow - chunk) - 1, 'days');
+    .add(daysInWeek * (weeksToShow - chunk) - 1, "days");
   const relevantDaysFromDb = await DayModel.find({
     date: {
       $gte: Utils.dateToDayQuery(dateRangeStart),
       $lte: Utils.dateToDayQuery(dateRangeEnd)
     }
-  }).sort('date');
+  }).sort("date");
   const usersAmount = await UserModel.count();
 
   let dbDatesIndex = 0;
@@ -48,10 +55,10 @@ exports.getCalendarChunk = async (req, res) => {
         const currentDbDay = relevantDaysFromDb[dbDatesIndex];
         const currentDay = _.clone(emptyDay);
         const currentCalDate = dateRangeStart.clone()
-          .add(weekIdx*daysInWeek + dayIdx, 'day');
+          .add(weekIdx * daysInWeek + dayIdx, "day");
         currentDay.date = Utils.dateToDayQuery(currentCalDate);
         if (!!currentDbDay) {
-          if (currentCalDate.isSame(currentDbDay.date, 'day')) {
+          if (currentCalDate.isSame(currentDbDay.date, "day")) {
             dbDatesIndex += 1;
             return getCalendarDayFromDbDay(currentDbDay, usersAmount);
           }
