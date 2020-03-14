@@ -18,9 +18,10 @@ import {
   Jumbotron,
   Label
 } from "reactstrap";
-import DatePicker from "react-datepicker";
-import { defaults } from "chart.js";
 
+import DatePicker from "components/Calendar/CustomDatePicker";
+
+import Utils from "../utils";
 import Defaults from "../defaults/defaults";
 
 class SignUpPage extends React.Component {
@@ -86,10 +87,9 @@ class SignUpPage extends React.Component {
       if (currentAttr.type === "datepicker") {
         return (
           <FormGroup>
-            <label>{currentLabel}</label>
             <DatePicker
-              name="birthday"
-              value={Defaults.UserData[key]}
+              name={currentLabel}
+              value={Utils.formatDate(Defaults.UserData[key])}
               selected={new Date(Defaults.UserData[key])}
               onChange={this.onDateChange}
             />

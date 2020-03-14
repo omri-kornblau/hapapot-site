@@ -14,8 +14,8 @@ import {
   Col,
   Label
 } from "reactstrap";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+
+import DatePicker from "../components/Calendar/CustomDatePicker";
 
 import Utils from "../utils";
 import UserCard from "components/Cards/UserCard";
@@ -156,12 +156,9 @@ class UserProfile extends React.Component {
                     <Row>
                       <Col className="pr-md-1" md="6">
                         <FormGroup>
-                          <label>יום הולדת</label>
                           <DatePicker
-                            name="birthday"
-                            value={Utils.formatDate(
-                              this.state.userData.birthday
-                            )}
+                            name="יום הולדת"
+                            value={Utils.formatDate(this.state.userData.birthday)}
                             selected={new Date(this.state.userData.birthday)}
                             onChange={this.handleDateChange}
                           />
