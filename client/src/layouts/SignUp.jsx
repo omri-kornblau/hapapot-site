@@ -131,7 +131,7 @@ class SignUpPage extends React.Component {
   onSubmit = async event => {
     event.preventDefault();
     try {
-      await Axios.post("/api/user", this.state.userData);
+      await Axios.post("/api/newuser", this.state.userData);
       this.setState({ updateSucceeded: true });
       this.props.history.push("/");
     } catch (err) {
@@ -148,7 +148,7 @@ class SignUpPage extends React.Component {
   render() {
     const { redirectToReferrer } = this.state;
     if (redirectToReferrer) {
-      return <Redirect to="/home" />;
+      return <Redirect to="/" />;
     }
 
     return (

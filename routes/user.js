@@ -19,6 +19,11 @@ exports.getUser = async (req, res) => {
   return res.send(user);
 }
 
+exports.insertUser = async (req, res) => {
+  const createdUser = await UserModel.create(req.body);
+  return sendUser(res, 201, createdUser);
+}
+
 exports.upsertUser = async (req, res) => {
   const user = req.body;
   const existingUsers = await UserModel.find({

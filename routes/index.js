@@ -9,7 +9,8 @@ const EventRoutes = require("./event");
 
 const router = Express.Router();
 
-router.post("/api/user", UserRoutes.upsertUser)
+router.post("/api/user", withAuth, UserRoutes.upsertUser)
+router.post("/api/newuser", UserRoutes.insertUser)
 router.post("/auth/authenticate", AuthRoutes.register)
 
 router.get("/api/user", withAuth, UserRoutes.getUser);
