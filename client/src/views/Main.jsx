@@ -27,14 +27,18 @@ class Main extends React.Component {
   async componentDidMount() {
     try {
       await this.fetchCalendar();
-      this.setState({ selectedDay: this.state.days[0] });
+      this.setState({ selectedDay: this.state.days[0][0] });
     } catch (err) {
       console.log(err);
     }
   }
   async fetchCalendar() {
     const res = await Axios.get(`/api/calendar/${this.state.chunk}`);
-    this.setState({ days: res.data });
+    this.setState({ days: res.data, selectedDay: Utils.deepFind(
+        res.data,
+        this.state.selectedDay,
+        (dayA, dayB) => dayA.date === dayB.date
+    )});
   }
   getSelectedLinkPath() {
     return this.state.selectedDay.date
@@ -74,6 +78,13 @@ class Main extends React.Component {
                 <h4 className="text-center title">
                   {Utils.formatDate(this.state.selectedDay.date)}
                 </h4>
+                <h5 className="text-center">
+                  {
+                    this.state.selectedDay.attendance > 0 ?
+                      Utils.formatUsersNicknames(this.state.selectedDay.nickNames)
+                    : "אף אחד לא נמצא"
+                  }
+                </h5>
                 <Row className="justify-content-between">
                   <Button
                     className="btn-sm btn-success"

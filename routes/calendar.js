@@ -17,14 +17,22 @@ const emptyDay = {
   date: ""
 }
 
-const getCalendarDayFromDbDay = (dbDay, usersAmount) => {
-  const attendance = 100 * (dbDay.users.length / usersAmount);
+const getCalendarDayFromDbDay = async (dbDay, usersAmount) => {
   const {
     date,
-    events
+    events,
+    users
   } = dbDay;
+  const attendance = 100 * (users.length / usersAmount);
+  const nickNames = (await UserModel.find({
+    username: {
+      $in: users
+    }
+  })).map(user => user.nicknames);
+
   return {
     attendance,
+    nickNames,
     date,
     events
   };
@@ -50,8 +58,8 @@ exports.getCalendarChunk = async (req, res) => {
 
   let dbDatesIndex = 0;
   const calendar =
-    _.range(weeksToShow).map(weekIdx =>
-      _.range(daysInWeek).map(dayIdx => {
+    Promise.all(_.range(weeksToShow).map(weekIdx =>
+      Promise.all(_.range(daysInWeek).map(async dayIdx => {
         const currentDbDay = relevantDaysFromDb[dbDatesIndex];
         const currentDay = _.clone(emptyDay);
         const currentCalDate = dateRangeStart.clone()
@@ -64,8 +72,7 @@ exports.getCalendarChunk = async (req, res) => {
           }
         }
         return currentDay;
-      })
-    );
+      }))));
 
-  res.send(calendar);
+  res.send(await calendar);
 }

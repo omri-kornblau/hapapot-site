@@ -159,7 +159,7 @@ class SignUpPage extends React.Component {
               {" "}
               <Card className="card-user">
                 <CardHeader>
-                  <CardTitle className="text-right" tag="h5">
+                  <CardTitle className="text-center" tag="h4">
                     תמלא פרטים גבר
                   </CardTitle>
                 </CardHeader>
