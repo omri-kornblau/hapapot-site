@@ -48,11 +48,11 @@ class Main extends React.Component {
   }
   getDayBlobsRows() {
     return this.state.days.map((week, weekIdx) => (
-      <Row key={`week-${weekIdx}`} className="justify-content-between">
+      <Row key={`week-${weekIdx}`} className="justify-content-around">
         {week.map(day => {
           const isSelected = this.state.selectedDay.date === day.date;
           return (
-            <Col key={`day-${day.date}`} sm="7th">
+            <Col key={`day-${day.date}`} sm="7th" className="center">
               <DayBlob
                 onClick={() => {
                   this.setState({ selectedDay: day });
@@ -106,7 +106,7 @@ class Main extends React.Component {
                       );
                     }}
                   >
-                    <i className="tim-icons icon-components"></i>
+                    <i className="tim-icons icon-bullet-list-67"></i>
                   </Button>
                   <Button
                     className="btn-sm btn-danger"

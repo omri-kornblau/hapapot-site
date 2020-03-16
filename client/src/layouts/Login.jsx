@@ -20,7 +20,7 @@ import Auther from "../requests/authentication";
 
 const LoginMessage = props => {
   if (props.failedLogin) {
-    return <h4>שמע נראה לי שאתה טועה</h4>;
+    return <h5 className="text-danger">שמע נראה לי שאתה טועה</h5>;
   } else {
     return <div />;
   }
@@ -73,7 +73,7 @@ class LoginPage extends React.Component {
               {" "}
               <Card className="card-user">
                 <CardHeader>
-                  <CardTitle className="text-right" tag="h5">
+                  <CardTitle className="text-center" tag="h4">
                     תמלא פרטים גבר
                   </CardTitle>
                 </CardHeader>
@@ -123,7 +123,7 @@ class LoginPage extends React.Component {
                     </Row>
                   </Form>
                 </CardBody>
-                <a className="text-center" href="/signup">אין לך חשבון? הירשם!</a>
+                <a className="text-default text-center" href="/signup"><u>אין לך חשבון? הירשם!</u></a>
               </Card>
             </Col>
           </Row>

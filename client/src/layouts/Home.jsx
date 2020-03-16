@@ -8,7 +8,7 @@ import Sidebar from "components/Sidebar/Sidebar.jsx";
 
 import routes from "routes.js";
 
-import logo from "assets/img/react-logo.png";
+import instagramLogo from "assets/img/instagram-logo.png";
 
 class Home extends React.Component {
   constructor(props) {
@@ -60,7 +60,7 @@ class Home extends React.Component {
         return routes[i].name;
       }
     }
-    return "Brand";
+    return "";
   };
   render() {
     return (
@@ -72,9 +72,9 @@ class Home extends React.Component {
             bgColor="primary"
             rtlActive
             logo={{
-              outterLink: "https://www.creative-tim.com/",
+              outterLink: "https://www.instagram.com/habolbolim/",
               text: "הפאפות",
-              imgSrc: logo
+              imgSrc: instagramLogo
             }}
             toggleSidebar={this.toggleSidebar}
           />
@@ -86,10 +86,6 @@ class Home extends React.Component {
               sidebarOpened={this.state.sidebarOpened}
             />
             <Switch>{this.getRoutes(routes)}</Switch>
-            {// we don"t want the Footer to be rendered on map page
-            this.props.location.pathname.indexOf("maps") !== -1 ? null : (
-              <Footer fluid />
-            )}
           </div>
         </div>
       </>
