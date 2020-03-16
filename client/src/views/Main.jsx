@@ -31,6 +31,7 @@ class Main extends React.Component {
     } catch (err) {
       console.log(err);
     }
+    setInterval(this.fetchCalendar.bind(this), 2000);
   }
   async fetchCalendar() {
     const res = await Axios.get(`/api/calendar/${this.state.chunk}`);
