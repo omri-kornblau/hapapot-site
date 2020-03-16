@@ -18,15 +18,6 @@ class UserCard extends React.Component {
   getCardBackgroundColor() {
     return this.state.userData.single ? "bg-success" : "bg-danger";
   }
-  getRandomNickname() {
-    if (!this.state.userData.nicknames) {
-      return "";
-    } else {
-      return this.state.userData.nicknames[
-        Math.floor(Math.random() * this.state.userData.nicknames.length)
-      ];
-    }
-  }
 
   render() {
     return (
@@ -44,7 +35,7 @@ class UserCard extends React.Component {
                 className="avatar"
                 src={require("assets/img/emilyz.jpg")}
               />
-              <h5 className="title">{this.getRandomNickname()}</h5>
+              <h5 className="title">{Utils.pickNickName(this.state.userData.nicknames)}</h5>
             </a>
             <p className="birthday">
               {Utils.formatDate(this.state.userData.birthday)}

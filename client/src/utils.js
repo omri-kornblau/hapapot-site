@@ -13,9 +13,15 @@ Utils.formatTime = isoDate => {
   return dateTime.format("HH:mm");
 };
 
+Utils.pickNickName = nickNames => {
+  if (!!nickNames) {
+    return _.first(nickNames);
+  }
+}
+
 Utils.formatUsersNicknames = nickNames => {
   if (!!nickNames) {
-    return nickNames.map(_.sample).join(", ");
+    return nickNames.map(Utils.pickNickName).join(", ");
   }
 }
 
