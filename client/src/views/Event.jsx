@@ -36,18 +36,16 @@ class Event extends React.Component {
       console.log(err);
     }
   }
-  peopleFromCars = cars => {
-    return Object.values(cars).reduce((sum, car) => sum + 1 + car.length, 0);
-  };
   renderCarTable = () => {
-    return Object.keys(this.state.eventData.cars).map(driver => {
+    console.log(this.state.eventData.cars);
+    return this.state.eventData.cars.map(car => {
       return (
         <tr>
           <Button className="btn-icon btn-round" color="success" size="sm">
             <i className="tim-icons icon-simple-add" />
           </Button>
-          <td>{driver}</td>
-          <td>{this.state.eventData.cars[driver]}</td>
+          <td>{car["driver"]}</td>
+          <td>{car["passengers"]}</td>
           <Button className="btn-icon btn-round" color="warning" size="sm">
             <i className="tim-icons icon-simple-delete" />
           </Button>
