@@ -60,16 +60,15 @@ class Event extends React.Component {
     try {
       const eventDate = this.date;
       const eventName = this.name;
-      const res = await Axios.get("/api/event/item/add-one", {
-        params: {
-          item,
-          eventDate,
-          eventName
-        }
+      const res = await Axios.post("/api/event/item/add-one", {
+        "item": item,
+        "eventDate": eventDate,
+        "eventName": eventName
       });
 
+      console.log(res.data.event)
       this.setState({
-        eventData: res.data
+        eventData: res.data.event
       });
     } catch (err) {
       console.log(err);
@@ -80,12 +79,10 @@ class Event extends React.Component {
     try {
       const eventDate = this.date;
       const eventName = this.name;
-      const res = await Axios.get("/api/event/item/sub-one", {
-        params: {
-          item,
-          eventDate,
-          eventName
-        }
+      const res = await Axios.post("/api/event/item/sub`-one", {
+        "item": item,
+        "eventDate": eventDate,
+        "eventName": eventName
       });
 
       this.setState({
