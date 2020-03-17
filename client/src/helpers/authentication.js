@@ -3,12 +3,7 @@ import Axios from "axios"
 const Auther = {};
 
 Auther.authenticate = async userData => {
-  try {
-    await Axios.post("/auth/authenticate", userData);
-    return true;
-  } catch (err) {
-    return false;
-  }
+  await Axios.post("/auth/authenticate", userData);
 }
 
 Auther.checkToken = async () => {

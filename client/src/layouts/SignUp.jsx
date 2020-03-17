@@ -20,17 +20,20 @@ import {
 } from "reactstrap";
 
 import DatePicker from "components/Calendar/CustomDatePicker";
+import StatusMessage from "components/Status/StatusBadge"
 
 import Utils from "../utils";
 import UserModel from "../defaults/models/user";
+import mapError from "../defaults/errorsMapping";
 
 class SignUpPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       userData: UserModel.data,
-      failedLogin: false,
-      redirectToReferrer: false
+      triedSignUp: false,
+      signUpSucceeded: false,
+      signUpMessage: ""
     };
     this.state.userData.passwordConfirmation = "";
   }
@@ -56,7 +59,6 @@ class SignUpPage extends React.Component {
     this.setState({ userData });
   };
   onFileChange = event => {
-    console.log(event);
     const userData = this.state.userData;
     userData.picture = event.target.files[0];
     console.log(userData.picture);
@@ -132,25 +134,18 @@ class SignUpPage extends React.Component {
     event.preventDefault();
     try {
       await Axios.post("/api/newuser", this.state.userData);
-      this.setState({ updateSucceeded: true });
+      this.setState({ signUpSucceeded: true });
       this.props.history.push("/");
     } catch (err) {
-      console.error(err);
-      this.setState({ updateSucceeded: false });
+      this.setState({
+        signUpSucceeded: false,
+        signUpMessage: mapError(err)
+      });
     }
-    // this.setState({ triedUpdate: true })
-    // this.setState({
-    //   redirectToReferrer: false,
-    //   failedLogin: !false
-    // });
+    this.setState({ triedSignUp: true })
   };
 
   render() {
-    const { redirectToReferrer } = this.state;
-    if (redirectToReferrer) {
-      return <Redirect to="/" />;
-    }
-
     return (
       <Jumbotron className="vertical-center">
         <Container>
@@ -180,6 +175,13 @@ class SignUpPage extends React.Component {
                           הירשם
                         </Button>
                       </Col>
+                    </Row>
+                    <Row className="justify-content-center mt-3">
+                      <StatusMessage
+                        show={this.state.triedSignUp}
+                        success={this.state.signUpSucceeded}
+                        message={this.state.signUpMessage}
+                      />
                     </Row>
                   </Form>
                 </CardBody>

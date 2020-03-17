@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router";
 
 import {
   Button,
@@ -17,14 +16,10 @@ import {
 } from "reactstrap";
 
 import Auther from "../helpers/authentication";
+import mapError from "../defaults/errorsMapping";
 
-const LoginMessage = props => {
-  if (props.failedLogin) {
-    return <h5 className="text-danger">שמע נראה לי שאתה טועה</h5>;
-  } else {
-    return <div />;
-  }
-};
+import StatusMessage from "../components/Status/StatusBadge";
+
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -34,8 +29,9 @@ class LoginPage extends React.Component {
         username: "",
         password: ""
       },
-      failedLogin: false,
-      redirectToReferrer: false
+      triedLogin: false,
+      loginSucceeded: false,
+      loginMessage: ""
     };
   }
   componentDidMount() {
@@ -52,19 +48,21 @@ class LoginPage extends React.Component {
   };
   onSubmit = async event => {
     event.preventDefault();
-    const isAuth = await Auther.authenticate(this.state.userData);
-    this.setState({
-      redirectToReferrer: isAuth,
-      failedLogin: !isAuth
-    });
+    try {
+      await Auther.authenticate(this.state.userData);
+      this.setState({
+        loginSucceeded: true
+      });
+      this.props.history.push("/home/main");
+    } catch(err) {
+      this.setState({
+        loginMessage: mapError(err)
+      });
+    }
+    this.setState({ triedLogin: true });
   };
 
   render() {
-    const { redirectToReferrer } = this.state;
-    if (redirectToReferrer) {
-      return <Redirect to="/home/main" />;
-    }
-
     return (
       <Jumbotron className="vertical-center">
         <Container>
@@ -90,6 +88,7 @@ class LoginPage extends React.Component {
                             placeholder="הכנס שם משתמש"
                             value={this.state.userData.username}
                             onChange={this.onInputChange}
+                            invalid={!this.state.loginSucceeded}
                             required
                           />
                         </FormGroup>
@@ -104,13 +103,14 @@ class LoginPage extends React.Component {
                             placeholder="הכנס סיסמה"
                             value={this.state.userData.password}
                             onChange={this.onInputChange}
+                            invalid
                             required
                           />
                         </FormGroup>
                       </Col>
                     </Row>
                     <Row>
-                      <Col className="text-center pr-1" md="12">
+                      <Col className="text-center" md="12">
                         <Button
                           type="submit"
                           className="btn-round"
@@ -118,8 +118,14 @@ class LoginPage extends React.Component {
                         >
                           התחבר
                         </Button>
-                        <LoginMessage failedLogin={this.state.failedLogin} />
                       </Col>
+                    </Row>
+                    <Row className="justify-content-center mt-3">
+                      <StatusMessage
+                        show={this.state.triedLogin}
+                        success={this.state.loginSucceeded}
+                        message={this.state.loginMessage}
+                      />
                     </Row>
                   </Form>
                 </CardBody>

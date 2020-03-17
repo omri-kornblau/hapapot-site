@@ -15,11 +15,15 @@ exports.register = async (req, res) => {
     username
   });
   if (!user) {
-    throw Boom.badRequest("Incorrect username or password");
+    throw Boom.badRequest("Incorrect username or password", {
+      appCode: 2100
+    });
   }
   const isCorrect = await user.isCorrectPassword(password);
   if (!isCorrect) {
-    throw Boom.badRequest("Incorrect username or password");
+    throw Boom.badRequest("Incorrect username or password", {
+      appCode: 2200
+    });
   }
   // Issue token
   const payload = {
