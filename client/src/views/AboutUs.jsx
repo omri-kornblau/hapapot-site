@@ -1,16 +1,13 @@
 import React from "react";
 import { Row, Col } from "reactstrap";
-import Axios from "axios";
 
 import UserCard from "components/Cards/UserCard";
-import AbutUsHelper from "../helpers/abutUs";
+import AboutUsHelper from "../helpers/aboutUs";
 
-const renderUsersCards = (users, size) => {
+const renderUsersCards = (users) => {
   return users.map(user => {
     return (
-      <Col key={user.username} xs={size}>
         <UserCard userdata={user} />
-      </Col>
     );
   });
 };
@@ -24,7 +21,7 @@ class UserProfile extends React.Component {
   }
   async componentDidMount() {
     try {
-      const res = await AbutUsHelper.getPage();
+      const res = await AboutUsHelper.getPage();
       this.setState({
         usersData: res.data
       });
@@ -37,7 +34,7 @@ class UserProfile extends React.Component {
     return (
       <>
         <div className="content text-right">
-          <Row>{renderUsersCards(this.state.usersData, 6)}</Row>
+          <Row>{renderUsersCards(this.state.usersData)}</Row>
         </div>
       </>
     );
