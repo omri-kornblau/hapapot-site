@@ -4,7 +4,7 @@ Event.data = {
   name: "",
   eventkey: "",
   icon: "icon-bag-16",
-  cars: {},
+  cars: [],
   items: {},
   time: new Date(),
   moneylink: ""
