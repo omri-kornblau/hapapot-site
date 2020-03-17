@@ -41,9 +41,6 @@ class Day extends React.Component {
       isLoading: false
     });
   }
-  peopleFromCars = cars => {
-    return Object.values(cars).reduce((sum, car) => sum + 1 + car.length, 0);
-  };
   renderUsersTable = () => {
     return this.state.day.users.map(user => (
       <tr>
@@ -60,7 +57,7 @@ class Day extends React.Component {
         <td>
           {event.name} <i className={event.icon} />
         </td>
-        <td>{this.peopleFromCars(event.cars)}</td>
+        <td>{event.users.length}</td>
         <td>{Object.values(event.cars).length}</td>
         <td>{Utils.formatTime(event.time)}</td>
       </tr>
