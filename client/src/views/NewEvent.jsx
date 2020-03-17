@@ -10,23 +10,26 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import Moment from "moment";
-
 
 import Utils from "../utils";
 import EventModel from "../defaults/models/event";
+import mapError from "../defaults/errorsMapping";
 
 import DatePicker from "../components/Calendar/CustomDatePicker";
 import StatusMessage from "components/Status/StatusBadge"
 
 import EventHelper from "../helpers/event";
 
+
 class NewEvent extends React.Component {
   constructor(props) {
     super(props);
     const wantedDate = props.location.search.split("=")[1];
     this.state = {
-      newEventData: EventModel.data
+      newEventData: EventModel.data,
+      triedAdd: true,
+      addSucceeded: false,
+      addMessage: "",
     };
     this.state.newEventData.time = wantedDate;
   }
@@ -46,18 +49,21 @@ class NewEvent extends React.Component {
     newEventData.time = Utils.mergeDateAndTime(newEventData.time, time);
     this.setState({ newEventData });
   }
-  postChanges = async e => {
+  onSubmit = async e => {
     e.preventDefault();
     try {
       const eventDate = Utils.formatDateLikeDb(this.state.newEventData.time);
       const eventName = this.state.newEventData.name;
       await EventHelper.postNewEvent(eventDate, eventName, this.state.newEventData);
-      this.setState({ updateSucceeded: true });
+      this.setState({ addSucceeded: true });
       this.props.history.push(`event/${eventDate}/${eventName}`);
     } catch (err) {
-      this.setState({ updateSucceeded: false });
+      this.setState({
+        addSucceeded: false,
+        addMessage: mapError(err)
+      });
     }
-    this.setState({ triedUpdate: true })
+    this.setState({ triedAdd: true })
   }
 
   render() {
@@ -70,7 +76,7 @@ class NewEvent extends React.Component {
                 <h5 className="title">מלא פרטים על האירוע החדש </h5>
               </CardHeader>
               <CardBody>
-                <Form onSubmit={this.postChanges}>
+                <Form onSubmit={this.onSubmit}>
                   <label>מה עושים?</label>
                   <Input
                     onChange={this.onInputChange}
@@ -126,6 +132,13 @@ class NewEvent extends React.Component {
                     >
                       הוסף
                     </Button>
+                  </Row>
+                  <Row className="justify-content-center mt-3">
+                    <StatusMessage
+                      show={this.state.triedAdd}
+                      success={this.state.addSucceeded}
+                      message={this.state.addMessage}
+                    />
                   </Row>
                 </Form>
               </CardBody>

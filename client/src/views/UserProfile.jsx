@@ -15,12 +15,14 @@ import {
   Label
 } from "reactstrap";
 
-import DatePicker from "../components/Calendar/CustomDatePicker";
-
 import Utils from "../utils";
+import UserModel from "../defaults/models/user";
+import mapError from "../defaults/errorsMapping";
+
+import DatePicker from "../components/Calendar/CustomDatePicker";
 import UserCard from "components/Cards/UserCard";
 import StatusMessage from "components/Status/StatusBadge"
-import UserModel from "../defaults/models/user";
+
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -28,7 +30,7 @@ class UserProfile extends React.Component {
     this.state = {
       userData: UserModel.data,
       triedUpdate: false,
-      updateSucceeded: false
+      updateSucceeded: false,
     };
   }
   async componentDidMount() {
@@ -37,7 +39,9 @@ class UserProfile extends React.Component {
       this.setState({
         userData: res.data
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   }
   onNicknamesChange = event => {
     const userData = this.state.userData;
@@ -64,12 +68,12 @@ class UserProfile extends React.Component {
     userData.birthday = new Date(date);
     this.setState({ userData });
   };
-  postChanges = async () => {
+  onSubmit = async () => {
     try {
-      const res = await Axios.post("/api/user", this.state.userData);
-      this.setState({ updateSucceeded: true });
+      await Axios.post("/api/user", this.state.userData);
+      this.setState({ updateMessage: "הפרטים עודכנו בהצלחה", updateSucceeded: true });
     } catch (err) {
-      this.setState({ updateSucceeded: false });
+      this.setState({ updateMessage: mapError(err), updateSucceeded: false });
     }
     this.setState({ triedUpdate: true })
   };
@@ -205,16 +209,18 @@ class UserProfile extends React.Component {
                       <Button
                         className="btn-fill"
                         color="primary"
-                        onClick={this.postChanges}
+                        onClick={this.onSubmit}
                       >
                         שמור
                       </Button>
                     </Col>
-                    <Col className="text-center" sm="12">
-                      { this.state.triedUpdate ?
-                          <StatusMessage success={this.state.updateSucceeded}/>
-                          : ""}
-                    </Col>
+                  </Row>
+                  <Row className="justify-content-center mt-3">
+                    <StatusMessage
+                      show={this.state.triedUpdate}
+                      success={this.state.updateSucceeded}
+                      message={this.state.updateMessage}
+                    />
                   </Row>
                 </CardFooter>
               </Card>

@@ -46,7 +46,7 @@ exports.getCalendarChunk = async (req, res) => {
     username
   } = req;
   if (!Number.isInteger(chunk)) {
-    Boom.badRequest("Given chunk is not an integer");
+    throw Boom.badRequest("Given chunk is not an integer");
   }
   const startOfWeek = moment().startOf("week");
   const dateRangeStart = startOfWeek.clone()

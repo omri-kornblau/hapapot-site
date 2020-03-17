@@ -1,4 +1,5 @@
 const Mongoose = require("mongoose");
+const Boom = require("boom");
 
 const UserModel = Mongoose.model("User");
 
@@ -11,7 +12,7 @@ const sendUser = (res, status, userFromDb) => {
 
 const handleErrors = err => {
   if (err.code === 11000) {
-    throw Boom.badRequest("Username already exists", {
+    throw Boom.badRequest("username already exists", {
       appCode: 1100
     });
   }
@@ -29,8 +30,12 @@ exports.getUser = async (req, res) => {
 }
 
 exports.insertUser = async (req, res) => {
-  const createdUser = await UserModel.create(req.body);
-  return sendUser(res, 201, createdUser);
+  try {
+    const createdUser = await UserModel.create(req.body);
+    return sendUser(res, 201, createdUser);
+  } catch (err) {
+    handleErrors(err);
+  }
 }
 
 exports.upsertUser = async (req, res) => {
@@ -40,14 +45,22 @@ exports.upsertUser = async (req, res) => {
   });
 
   if (existingUsers.length > 0) {
-    const updatedUser =
-      await UserModel.updateOne({
-        username: user.username
-      }, user);
-    return sendUser(res, 204, updatedUser);
+    try {
+      const updatedUser =
+        await UserModel.updateOne({
+          username: user.username
+        }, user);
+      return sendUser(res, 204, updatedUser);
+    } catch (err) {
+      handleErrors(err);
+    }
   }
-  const createdUser = await UserModel.create(req.body);
-  return sendUser(res, 201, createdUser);
+  try {
+    const createdUser = await UserModel.create(req.body);
+    return sendUser(res, 201, createdUser);
+  } catch (err) {
+    handleErrors(err);
+  }
 }
 
 exports.getUsers = async (req, res) => {

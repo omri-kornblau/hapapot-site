@@ -4,17 +4,27 @@ import { Badge } from "reactstrap";
 class StatusBadge extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { success: props.success };
+    this.state = {
+      success: props.success,
+      show: props.show,
+      message: props.message
+    };
   }
   componentWillReceiveProps(props) {
-    this.setState({ success: props.success });
+    this.setState({
+      show: props.show,
+      success: props.success,
+      message: props.message
+    });
   }
 
   render() {
     return (
+      this.state.show ?
       <Badge color={this.state.success ? "success" : "danger"}>
-        {this.state.success ? "" : "נכשלת"}
+        {this.state.message}
       </Badge>
+      : ""
     );
   }
 }
