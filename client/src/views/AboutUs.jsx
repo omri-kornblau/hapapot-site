@@ -3,6 +3,7 @@ import { Row, Col } from "reactstrap";
 import Axios from "axios";
 
 import UserCard from "components/Cards/UserCard";
+import AbutUsHelper from "../helpers/abutUs";
 
 const renderUsersCards = (users, size) => {
   return users.map(user => {
@@ -23,7 +24,7 @@ class UserProfile extends React.Component {
   }
   async componentDidMount() {
     try {
-      const res = await Axios.get("/api/aboutus");
+      const res = await AbutUsHelper.getPage();
       this.setState({
         usersData: res.data
       });
