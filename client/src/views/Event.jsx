@@ -37,7 +37,6 @@ class Event extends React.Component {
     }
   }
   renderCarTable = () => {
-    console.log(this.state.eventData.cars);
     return this.state.eventData.cars.map(car => {
       return (
         <tr>
@@ -92,22 +91,17 @@ class Event extends React.Component {
   };
 
   renderItemsTable = () => {
-    return Object.keys(this.state.eventData.items).map(itemName => (
+    console.log(this.state.eventData.items);
+    return this.state.eventData.items.map(item => (
       <tr>
-        <td>{itemName}</td>
+        <td>{item["name"]}</td>
         <td>
-          {_.sumBy(
-            Object.keys(this.state.eventData.items[itemName].users),
-            username => {
-              return this.state.eventData.items[itemName].users[username];
-            }
-          )}
-          /{this.state.eventData.items[itemName].neededamount}
+          /{item.neededamount}
         </td>
         <td>
           <DropdownItemsUsers
             color="green"
-            users={this.state.eventData.items[itemName].users}
+            users={item.users}
           />
         </td>
         <td>
@@ -115,7 +109,7 @@ class Event extends React.Component {
             className="m-1 btn-icon btn-round"
             color="success"
             size="sm"
-            onClick={this.addOne(itemName)}
+            onClick={this.addOne(item["name"])}
           >
             <i className="tim-icons icon-simple-add"> </i>
           </Button>
@@ -123,7 +117,7 @@ class Event extends React.Component {
             className="m-1 btn-icon btn-round"
             color="warning"
             size="sm"
-            onClick={this.subOne(itemName)}
+            onClick={this.subOne(item["name"])}
           >
             <i className="tim-icons icon-simple-delete" />
           </Button>
