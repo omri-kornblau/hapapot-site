@@ -47,7 +47,7 @@ class Day extends React.Component {
   renderUsersTable = () => {
     return this.state.day.users.map(user => (
       <tr>
-        <td>{Utils.pickNickName(user)}</td>
+        <td>{Utils.pickNickName(user.nicknames)}</td>
         <td>בעתיד תמונה</td>
       </tr>
     ));
