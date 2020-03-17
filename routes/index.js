@@ -21,8 +21,8 @@ router.get("/api/day/:date", withAuth, DayRoutes.getDay)
 router.post("/api/attend/day/:date", withAuth, DayRoutes.updateDayAttendancy)
 
 router.get("/api/event/:date/:name", withAuth, EventRoutes.getEvent);
-router.get("/api/event/item/add-one", withAuth, EventRoutes.addOne);
-router.get("/api/event/item/sub-one", withAuth, EventRoutes.subOne);
+router.post("/api/event/item/add-one", withAuth, EventRoutes.addOne);
+router.post("/api/event/item/sub-one", withAuth, EventRoutes.subOne);
 
 router.post("/auth/authenticate", AuthRoutes.register);
 router.get("/auth/checktoken", withAuth, AuthRoutes.checkToken);
