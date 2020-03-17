@@ -9,6 +9,15 @@ const sendUser = (res, status, userFromDb) => {
   });
 }
 
+const handleErrors = err => {
+  if (err.code === 11000) {
+    throw Boom.badRequest("Username already exists", {
+      appCode: 1100
+    });
+  }
+  throw err;
+}
+
 exports.getUser = async (req, res) => {
   const {
     username

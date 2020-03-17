@@ -124,3 +124,19 @@ exports.subOne = async (req, res) => {
   );
   return sendEvent(res, 200, updateEvent);
 };
+
+exports.addEvent = async (req, res) => {
+  const newEvent = req.body;
+
+  try {
+    const newEventFromDb = await EventModel.create(newEvent);
+    return sendEvent(res, 201, newEventFromDb);
+  } catch (err) {
+    if (err.code === 11000) {
+      throw Boom.badRequest("Event with this name already exists in this day", {
+        appCode: 1010
+      });
+    }
+    throw err;
+  }
+}
