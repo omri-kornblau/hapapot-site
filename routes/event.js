@@ -5,6 +5,7 @@ const Boom = require("boom");
 const Utils = require("../utils");
 
 const DayModel = Mongoose.model("Day");
+const UserModel = Mongoose.model("User");
 
 exports.getEvent = async (req, res) => {
   const {
@@ -28,6 +29,12 @@ exports.getEvent = async (req, res) => {
   if (!current_event) {
     throw Boom.badRequest(`Event does not exist: ${date}, ${name}`);
   }
+
+  current_event.users = await UserModel.find({
+    username: {
+      $in: current_event.users
+    }
+  });
 
   return res.send(current_event);
 };

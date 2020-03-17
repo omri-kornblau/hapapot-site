@@ -91,7 +91,6 @@ class Event extends React.Component {
   };
 
   renderItemsTable = () => {
-    console.log(this.state.eventData.items);
     return this.state.eventData.items.map(item => (
       <tr>
         <td>{item["name"]}</td>
@@ -102,7 +101,13 @@ class Event extends React.Component {
         <td>
           <DropdownItemsUsers
             color="green"
-            users={item.users}
+            users={
+              item.users.map(user => {
+              var c_user = this.state.eventData.users.reduce((result, current) => ( user.name === current.username ? current : result));
+              c_user.amount = user.amount
+              return c_user
+            })
+          }
           />
         </td>
         <td>
