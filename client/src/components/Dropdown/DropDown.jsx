@@ -17,9 +17,9 @@ const DropdownItemsUsers = props => (
         className="dropdown-toggle btn-icon btn-link btn btn-success btn-sm"
       ></DropdownToggle>
       <DropdownMenu>
-        {Object.keys(props.users).map(username => (
+        {props.users.map(user => (
           <DropdownItem>
-            {username} - {props.users[username]}
+            {user.name} - {user.amount}
           </DropdownItem>
         ))}
       </DropdownMenu>

@@ -96,6 +96,7 @@ class Event extends React.Component {
       <tr>
         <td>{item["name"]}</td>
         <td>
+          {item.users.reduce((sum, user) => (sum + user.amount), 0)}
           /{item.neededamount}
         </td>
         <td>
