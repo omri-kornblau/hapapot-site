@@ -7,6 +7,8 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 
+const Utils = require("../../utils");
+
 const DropdownItemsUsers = props => (
   <div>
     <UncontrolledDropdown group>
@@ -19,7 +21,7 @@ const DropdownItemsUsers = props => (
       <DropdownMenu>
         {props.users.map(user => (
           <DropdownItem>
-            {user.name} - {user.amount}
+            {Utils.pickNickName(user.nicknames)} - {user.amount}
           </DropdownItem>
         ))}
       </DropdownMenu>
