@@ -18,6 +18,13 @@ Utils.formatTime = isoDate => {
   return dateTime.format("HH:mm");
 };
 
+Utils.mergeDateAndTime = (dateSource, timeSource) => {
+  const dateString = Utils.formatDateLikeDb(dateSource);
+  const timeString = Utils.formatTime(timeSource);
+  const dateTimeString = `${dateString} ${timeString}`;
+  return moment(dateTimeString);
+};
+
 Utils.pickNickName = nickNames => {
   if (!!nickNames) {
     return _.first(nickNames);
