@@ -15,7 +15,7 @@ exports.getEvent = async (req, res) => {
     date
   });
   if (!day) {
-    throw Boom.badRequest("Day not found");
+    throw Boom.badRequest(`Day not found: ${date}`);
   }
 
   let current_event = false;
@@ -26,7 +26,7 @@ exports.getEvent = async (req, res) => {
   });
 
   if (!current_event) {
-    throw Boom.badRequest("Event does not exist");
+    throw Boom.badRequest(`Event does not exist: ${date}, ${name}`);
   }
 
   return res.send(current_event);
@@ -43,14 +43,13 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
   const day = await DayModel.findOne({
     date: eventDate
   });
-
   if (!day) {
-    throw Boom.badRequest("Day not found");
+    throw Boom.badRequest(`Day not found: ${eventDate}`);
   }
 
   const eventFromDb = _.find(day.events, "name", eventName);
   if (!eventFromDb) {
-    throw Boom.badRequest("Event not found");
+    throw Boom.badRequest(`Event not found: ${eventDate} , ${eventName}`);
   }
 
   eventFromDb.items[item].users[username] =
@@ -62,11 +61,9 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
 };
 
 exports.addOne = async (req, res) => {
-  const {
-    item,
-    eventDate,
-    eventName
-  } = req.query;
+  const item = req.body.item
+  const eventDate = req.body.eventDate
+  const eventName = req.body.eventName
   const updateEvent = await addAmount(
     item,
     eventDate,
@@ -78,11 +75,9 @@ exports.addOne = async (req, res) => {
 };
 
 exports.subOne = async (req, res) => {
-  const {
-    item,
-    eventDate,
-    eventName
-  } = req.query;
+  const item = req.body.item
+  const eventDate = req.body.eventDate
+  const eventName = req.body.eventName
   const updateEvent = await addAmount(
     item,
     eventDate,
