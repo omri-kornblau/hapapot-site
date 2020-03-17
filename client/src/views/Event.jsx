@@ -66,8 +66,9 @@ class Event extends React.Component {
         "eventName": eventName
       });
 
+      console.log(res.data.event)
       this.setState({
-        eventData: res.data
+        eventData: res.data.event
       });
     } catch (err) {
       console.log(err);
