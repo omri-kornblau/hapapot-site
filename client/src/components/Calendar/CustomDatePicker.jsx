@@ -28,7 +28,6 @@ const CustomDatePicker = props => (
     <DatePicker
       {...props}
       locale="he"
-      onFocus={e => e.target.readOnly = true}
       shouldCloseOnSelect={false}
       customInput={<CustomDatePickerElement labelName={props.name}/>}
     />

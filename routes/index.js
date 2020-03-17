@@ -18,8 +18,7 @@ router.get("/api/aboutus", withAuth, UserRoutes.getUsers)
 
 router.get("/api/calendar/:chunk", withAuth, CalendarRoutes.getCalendarChunk)
 router.get("/api/day/:date", withAuth, DayRoutes.getDay)
-router.get("/api/attend/day/:date", withAuth, DayRoutes.attendDay)
-router.get("/api/absent/day/:date", withAuth, DayRoutes.absentDay)
+router.post("/api/attend/day/:date", withAuth, DayRoutes.updateDayAttendancy)
 
 router.get("/api/event/:date/:name", withAuth, EventRoutes.getEvent);
 router.get("/api/event/item/add-one", withAuth, EventRoutes.addOne);

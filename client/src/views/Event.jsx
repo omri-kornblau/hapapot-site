@@ -13,7 +13,7 @@ import DropdownItemsUsers from "../components/Dropdown/DropDown";
 import Axios from "axios";
 
 import Utils from "../utils";
-import Defaults from "../defaults/defaults";
+import EventModel from "../defaults/models/event";
 
 class Event extends React.Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class Event extends React.Component {
     this.name = path[2];
     this.date = path[1];
     this.state = {
-      eventData: Defaults.event
+      eventData: EventModel.data
     };
   }
   async componentDidMount() {

@@ -17,13 +17,14 @@ const emptyDay = {
   date: ""
 }
 
-const getCalendarDayFromDbDay = async (dbDay, usersAmount) => {
+const getCalendarDayFromDbDay = async (currentUser, dbDay, usersAmount) => {
   const {
     date,
     events,
     users
   } = dbDay;
   const attendance = 100 * (users.length / usersAmount);
+  const attending = _.includes(users, currentUser);
   const nickNames = (await UserModel.find({
     username: {
       $in: users
@@ -34,12 +35,16 @@ const getCalendarDayFromDbDay = async (dbDay, usersAmount) => {
     attendance,
     nickNames,
     date,
-    events
+    events,
+    attending
   };
 }
 
 exports.getCalendarChunk = async (req, res) => {
   const chunk = Number(req.params.chunk);
+  const {
+    username
+  } = req;
   if (!Number.isInteger(chunk)) {
     Boom.badRequest("Given chunk is not an integer");
   }
@@ -68,7 +73,7 @@ exports.getCalendarChunk = async (req, res) => {
         if (!!currentDbDay) {
           if (currentCalDate.isSame(currentDbDay.date, "day")) {
             dbDatesIndex += 1;
-            return getCalendarDayFromDbDay(currentDbDay, usersAmount);
+            return getCalendarDayFromDbDay(username, currentDbDay, usersAmount);
           }
         }
         return currentDay;

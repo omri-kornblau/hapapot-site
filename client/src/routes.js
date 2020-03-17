@@ -3,7 +3,7 @@ import AboutUs from "views/AboutUs.jsx";
 import UserProfile from "views/UserProfile.jsx";
 import Day from "views/Day";
 import Event from "views/Event";
-//import Statistics from "views/Statistics.jsx";
+import NewEvent from "views/NewEvent.jsx";
 
 var routes = [{
     path: "/main",
@@ -44,15 +44,14 @@ var routes = [{
     component: Event,
     layout: "/home",
     showOnMenu: false
-  }
-  /*
+  },
   {
-    path: "/statistics",
-    name: "האזור האישי",
-    icon: "tim-icons icon-chart-bar-32",
-    component: Statistics,
+    path: "/newevent",
+    name: "אירוע חדש",
+    icon: "tim-icons icon-simple-add",
+    component: NewEvent,
     layout: "/home",
     showOnMenu: true
-  }*/
+  }
 ];
 export default routes;

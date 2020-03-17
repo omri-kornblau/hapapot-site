@@ -1,6 +1,6 @@
-const Defaults = {};
+const User = {};
 
-Defaults.UserData = {
+User.data = {
   nicknames: [],
   username: "",
   password: "",
@@ -13,7 +13,7 @@ Defaults.UserData = {
   aboutme: ""
 };
 
-Defaults.UserDataAttributes = {
+User.inputAttributes = {
   username: {
     label: "שם משתמש",
     type: "username",
@@ -62,25 +62,8 @@ Defaults.UserDataAttributes = {
   aboutme: {
     label: "קצת עלייך",
     type: "",
-    require: false
+    required: true
   }
 };
 
-Defaults.Day = {
-  date: "",
-  events: [],
-  users: [],
-  rating: 0
-};
-
-Defaults.event = {
-  name: "",
-  eventkey: "",
-  icon: "icon-bag-16",
-  cars: {},
-  items: {},
-  time: new Date(),
-  moneylink: ""
-};
-
-module.exports = Defaults;
+export default User;

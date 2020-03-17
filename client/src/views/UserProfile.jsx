@@ -20,13 +20,13 @@ import DatePicker from "../components/Calendar/CustomDatePicker";
 import Utils from "../utils";
 import UserCard from "components/Cards/UserCard";
 import StatusMessage from "components/Status/StatusBadge"
-import Defaults from "../defaults/defaults";
+import UserModel from "../defaults/models/user";
 
 class UserProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: Defaults.UserData,
+      userData: UserModel.data,
       triedUpdate: false,
       updateSucceeded: false
     };

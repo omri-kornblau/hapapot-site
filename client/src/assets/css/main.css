@@ -5,29 +5,28 @@
   width: 100%;
   position: relative;
   overflow: hidden;
-  border-radius: 20%;
+  border-radius: 10%;
   background-color: #bababb;
   margin-top: 5px;
-  margin-bottom: 5px;
-  /* transition: ease-in-out 0.3s; */
+  margin-bottom: 2px;
+  transition: ease-in-out 0.15s;
   box-shadow: 0 4px 0px #888888;
-  /* border: solid white 1px; */
   position: relative;
 }
 
 .day-blob-filler {
   position: absolute;
   background-color: hsl(220, 70%, 50%);
-  width: 101%;
+  right: -20%;
+  width: 150%;
   height: 101%;
-  transition: top ease-in-out 0.3s;
+  transition: all ease-in-out 0.3s;
 }
 
 .day-blob-mask {
   position: absolute;
   top: 0;
   left: 0;
-  /* box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.3); */
   width: 101%;
   height: 101%;
   border-radius: 20%;
@@ -38,13 +37,15 @@
 }
 
 .day-blob.active {
-  right: -3.5px;
-  top: -3px;
-  width: 120%;
-  padding-top: 120%;
+  top: -10px;
+  z-index: 42;
+  box-shadow: 0 4px 0px #868585, 0 7px 14px rgba(50, 50, 50, 0.6);
 }
 
 .day-blob.active>.day-blob-mask {
   line-height: 190%;
-  font-size: 6vw;
+}
+
+.jumbotron {
+  transition: all ease-in-out 0.3s;
 }

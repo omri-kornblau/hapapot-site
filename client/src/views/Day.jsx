@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Button,
   Table,
   CardHeader,
   Row,
@@ -8,48 +7,50 @@ import {
   Card,
   CardBody
 } from "reactstrap";
-import Axios from "axios";
 
 import Utils from "../utils";
-import Defaults from "../defaults/defaults";
+import DayModel from "../defaults/models/day";
+
+import PageLoader from "components/Status/PageLoader";
+import AttendingCheckbox from "components/Calendar/AttendingCheckbox";
+
+import DayHelper from "../helpers/day";
 
 class Day extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      day: Defaults.Day
+      day: DayModel.data,
+      isLoading: true
     };
     // TODO: understand why this variable is needed
-    this.state.date = this.props.location.pathname
-      .split("/")
-      .slice(2)
-      .join("/");
+    this.state.date = this.props.location.pathname.split("/")[3]
   }
-  async componentDidMount() {
-    try {
-      await this.fetchDay();
-    } catch (err) {
-      console.log(err);
-    }
+  componentDidMount = async () => {
+    await this.fetchDay();
+    this.fetchInterval = setInterval(this.fetchDay, 2000);
   }
-  async fetchDay() {
-    const res = await Axios.get(`/api/${this.state.date}`);
+  componentWillUnmount() {
+    clearInterval(this.fetchInterval);
+  }
+  fetchDay = async () => {
+    const res = await DayHelper.getDay(this.state.date);
     this.setState({
-      day: res.data
+      day: res.data.day,
+      attending: res.data.attending,
+      isLoading: false
     });
   }
   peopleFromCars = cars => {
     return Object.values(cars).reduce((sum, car) => sum + 1 + car.length, 0);
   };
-  renderUserTable = () => {
-    return this.state.day.users.map(user => {
-      return (
-        <tr>
-          <td>{user}</td>
-          <td>בעתיד תמונה</td>
-        </tr>
-      );
-    });
+  renderUsersTable = () => {
+    return this.state.day.users.map(user => (
+      <tr>
+        <td>{Utils.pickNickName(user)}</td>
+        <td>בעתיד תמונה</td>
+      </tr>
+    ));
   };
   renderEventsTable = () => {
     return this.state.day.events.map(event => (
@@ -65,13 +66,25 @@ class Day extends React.Component {
       </tr>
     ));
   };
+  onAttendingChange = async attending => {
+    this.setState({ attending });
+    await DayHelper.postAttendance(this.state.day.date, attending);
+    await this.fetchDay();
+  }
 
   render() {
     return (
       <div className="content text-right">
-        <h4 className="text-center title">
-          {Utils.formatDate(this.state.day.date)}
-        </h4>
+      <PageLoader isLoading={this.state.isLoading}>
+        <Row className="justify-content-around">
+            <AttendingCheckbox
+              onChange={this.onAttendingChange}
+              attending={this.state.attending}
+            />
+            <h4 className="text-center title">
+              {Utils.formatDate(this.state.day.date)}
+            </h4>
+        </Row>
         <Row>
           <Col md="6">
             <Card>
@@ -86,7 +99,7 @@ class Day extends React.Component {
                       <th>תמונה</th>
                     </tr>
                   </thead>
-                  <tbody>{this.renderUserTable()}</tbody>
+                  <tbody>{this.renderUsersTable()}</tbody>
                 </Table>
               </CardBody>
             </Card>
@@ -112,30 +125,7 @@ class Day extends React.Component {
             </Card>
           </Col>
         </Row>
-        <Row>
-          <Col className="text-center" xs="6">
-            <Button
-              className="btn-sm btn-success"
-              onClick={async () => {
-                await Axios.get(`/api/attend/day/${this.state.day.date}`);
-                await this.fetchDay();
-              }}
-            >
-              <i className="tim-icons icon-check-2"></i>
-            </Button>
-          </Col>
-          <Col className="text-center" xs="6">
-            <Button
-              className="btn-sm btn-danger"
-              onClick={async () => {
-                await Axios.get(`/api/absent/day/${this.state.day.date}`);
-                await this.fetchDay();
-              }}
-            >
-              <i className="tim-icons icon-simple-remove"></i>
-            </Button>
-          </Col>
-        </Row>
+      </PageLoader>
       </div>
     );
   }

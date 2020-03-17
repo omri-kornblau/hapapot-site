@@ -29,59 +29,48 @@ exports.getDay = async (req, res) => {
   const {
     date
   } = req.params;
-  const day = await getAndCreateIfEmpty(date);
-  const usersData = await Promise.all(
-    day.users.map(async user => {
-      const userFromDb = await UserModel.findOne({
-        username: user
-      });
-      if (!userFromDb) {
-        throw new Error(`No such username in DB [${user}]`);
-      }
-      return userFromDb.nicknames[0];
-    })
-  );
-  day.users = usersData;
-
-  res.send(day);
-}
-
-exports.attendDay = async (req, res) => {
-  const {
-    date
-  } = req.params;
   const {
     username
   } = req;
   const day = await getAndCreateIfEmpty(date);
-  await DayModel.update({
-    date: Utils.dateToDayQuery(day.date)
-  }, {
+  const attending = _.includes(day.users, username);
+  day.users = await UserModel.find({
+    username: {
+      $in: day.users
+    }
+  });
+
+  res.send({
+    day,
+    attending
+  });
+}
+
+exports.updateDayAttendancy = async (req, res) => {
+  const {
+    date
+  } = req.params;
+  const {
+    attending
+  } = req.body;
+  const {
+    username
+  } = req;
+
+  const day = await getAndCreateIfEmpty(date);
+  const dbOperation = attending ? {
     $addToSet: {
       users: username
     }
-  });
-
-  res.send();
-}
-
-exports.absentDay = async (req, res) => {
-  const {
-    date
-  } = req.params;
-  const {
-    username
-  } = req;
-  const day = await getAndCreateIfEmpty(date);
-  await DayModel.updateOne({
-    date: Utils.dateToDayQuery(day.date)
-  }, {
+  } : {
     $pull: {
       users: username
     }
-  }, {
-    multi: true
-  });
+  };
+
+  await DayModel.update({
+    date: Utils.dateToDayQuery(day.date)
+  }, dbOperation);
 
   res.send();
 }

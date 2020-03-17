@@ -22,13 +22,13 @@ import {
 import DatePicker from "components/Calendar/CustomDatePicker";
 
 import Utils from "../utils";
-import Defaults from "../defaults/defaults";
+import UserModel from "../defaults/models/user";
 
 class SignUpPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: Defaults.UserData,
+      userData: UserModel.data,
       failedLogin: false,
       redirectToReferrer: false
     };
@@ -64,8 +64,8 @@ class SignUpPage extends React.Component {
   }
   createInputs = () => {
     const placeHolderPrefix = "";
-    return _.keys(Defaults.UserDataAttributes).map(key => {
-      const currentAttr = Defaults.UserDataAttributes[key];
+    return _.keys(UserModel.inputAttributes).map(key => {
+      const currentAttr = UserModel.inputAttributes[key];
       const currentLabel = currentAttr.label;
 
       if (currentAttr.type === "file")
@@ -89,8 +89,8 @@ class SignUpPage extends React.Component {
           <FormGroup>
             <DatePicker
               name={currentLabel}
-              value={Utils.formatDate(Defaults.UserData[key])}
-              selected={new Date(Defaults.UserData[key])}
+              value={Utils.formatDate(UserModel.data[key])}
+              selected={new Date(UserModel.data[key])}
               onChange={this.onDateChange}
             />
           </FormGroup>

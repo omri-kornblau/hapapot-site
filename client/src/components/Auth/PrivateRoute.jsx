@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router";
 
-import Auther from "../../requests/authentication";
+import Auther from "../../helpers/authentication";
 
 class PrivateRoute extends React.Component {
   state = {

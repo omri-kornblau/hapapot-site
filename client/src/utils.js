@@ -8,6 +8,11 @@ Utils.formatDate = isoDate => {
   return dateTime.format("DD/MM/YYYY");
 };
 
+Utils.formatDateLikeDb = isoDate => {
+  const dateTime = moment(isoDate);
+  return dateTime.format("YYYY-MM-DD");
+};
+
 Utils.formatTime = isoDate => {
   const dateTime = moment(isoDate);
   return dateTime.format("HH:mm");
@@ -45,6 +50,12 @@ Utils.deepFind = (array, object, testFn) => {
 
   findHelper(array, object);
   return foundObject;
+}
+
+Utils.expectToExist = (fieldValue, fieldName) => {
+  if (typeof fieldValue === "undefined" || fieldValue === null) {
+    throw new Error(`Given ${!!fieldName ? "value" : fieldName} doesn't exist`);
+  }
 }
 
 module.exports = Utils;

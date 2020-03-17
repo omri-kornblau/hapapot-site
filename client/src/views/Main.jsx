@@ -8,49 +8,52 @@ import {
   Container,
   Jumbotron,
   Button,
-  Pagination
 } from "reactstrap";
-import Axios from "axios";
+import _ from "lodash";
 
-import DayBlob from "components/Calendar/DayBlob";
 import Utils from "../utils";
+
+import PageLoader from "components/Status/PageLoader";
+import DayBlob from "components/Calendar/DayBlob";
+import AttendingCheckbox from "components/Calendar/AttendingCheckbox";
+
+import CalendarHelper from "../helpers/calendar";
+import DayHelper from "../helpers/day";
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
+    const today = Utils.formatDateLikeDb(new Date());
     this.state = {
       days: [],
-      selectedDay: {},
-      chunk: 0
+      selectedDay: { date: today },
+      chunk: 0,
+      isLoading: true
     };
   }
-  async componentDidMount() {
-    try {
-      await this.fetchCalendar();
-      this.setState({ selectedDay: this.state.days[0][0] });
-    } catch (err) {
-      console.log(err);
-    }
-    setInterval(this.fetchCalendar.bind(this), 2000);
+  componentDidMount = async () => {
+    await this.fetchCalendar();
+    this.fetchInterval = setInterval(this.fetchCalendar, 2000);
   }
-  async fetchCalendar() {
-    const res = await Axios.get(`/api/calendar/${this.state.chunk}`);
-    this.setState({ days: res.data, selectedDay: Utils.deepFind(
-        res.data,
-        this.state.selectedDay,
-        (dayA, dayB) => dayA.date === dayB.date
-    )});
+  componentWillUnmount() {
+    clearInterval(this.fetchInterval);
   }
-  getSelectedLinkPath() {
-    return this.state.selectedDay.date
-      ? this.state.selectedDay.date.split("T")[0]
-      : "";
+  fetchCalendar = async () => {
+    const res = await CalendarHelper.getCalendarChunk(this.state.chunk);
+    this.setState({
+      days: res.data,
+      isLoading: false
+    });
+    this.forceUpdate();
   }
   getDayBlobsRows() {
     return this.state.days.map((week, weekIdx) => (
       <Row key={`week-${weekIdx}`} className="justify-content-around">
         {week.map(day => {
           const isSelected = this.state.selectedDay.date === day.date;
+          if (isSelected) {
+            this.state.selectedDay = day;
+          }
           return (
             <Col key={`day-${day.date}`} sm="7th" className="center">
               <DayBlob
@@ -67,6 +70,13 @@ class Main extends React.Component {
         })}
       </Row>
     ));
+  }
+  onAttendingChange = async attending => {
+    const { selectedDay } = this.state;
+    selectedDay.attending = attending;
+    this.setState({ selectedDay });
+    await DayHelper.postAttendance(this.state.selectedDay.date, attending);
+    await this.fetchCalendar();
   }
 
   render() {
@@ -86,46 +96,39 @@ class Main extends React.Component {
                     : "אף אחד לא נמצא"
                   }
                 </h5>
-                <Row className="justify-content-between">
-                  <Button
-                    className="btn-sm btn-success"
-                    onClick={async () => {
-                      await Axios.get(
-                        `/api/attend/day/${this.getSelectedLinkPath()}`
-                      );
-                      await this.fetchCalendar();
-                    }}
-                  >
-                    <i className="tim-icons icon-check-2"></i>
-                  </Button>
+                <Row className="justify-content-around">
                   <Button
                     className="btn-sm btn-primary"
                     onClick={() => {
                       this.props.history.push(
-                        `day/${this.getSelectedLinkPath()}`
+                        `day/${this.state.selectedDay.date}`
                       );
                     }}
                   >
                     <i className="tim-icons icon-bullet-list-67"></i>
                   </Button>
                   <Button
-                    className="btn-sm btn-danger"
-                    onClick={async () => {
-                      await Axios.get(
-                        `/api/absent/day/${this.getSelectedLinkPath()}`
+                    className="btn-sm btn-success"
+                    onClick={() => {
+                      this.props.history.push(
+                        `newevent?date=${this.state.selectedDay.date}`
                       );
-                      await this.fetchCalendar();
-                    }}
-                  >
-                    <i className="tim-icons icon-simple-remove"></i>
+                    }}>
+                    <i className="tim-icons icon-simple-add"></i>
                   </Button>
                 </Row>
               </Container>
             </Jumbotron>
+            <Row className="justify-content-center">
+              <AttendingCheckbox
+                onChange={this.onAttendingChange}
+                attending={this.state.selectedDay.attending}
+              />
+            </Row>
           </CardHeader>
           <CardBody>
-            <Card>
-              <Container>
+            <Container>
+              <PageLoader isLoading={this.state.isLoading}>
                 <CardHeader>
                   <Row>
                     <Col className="text-center" sm="7th">
@@ -151,9 +154,21 @@ class Main extends React.Component {
                     </Col>
                   </Row>
                 </CardHeader>
-                <CardBody>{this.getDayBlobsRows()}</CardBody>
-              </Container>
-            </Card>
+                <CardBody className="day-blobs-container">{this.getDayBlobsRows()}</CardBody>
+              </PageLoader>
+                <Row className="justify-content-center">
+                  <Button
+                    className="btn-sm btn-link"
+                    onClick={() => this.setState({ chunk: this.state.chunk + 1})}>
+                    {"▲"}
+                  </Button>
+                  <Button
+                    className="btn-sm btn-link"
+                    onClick={() => this.setState({ chunk: this.state.chunk - 1})}>
+                    {"▼"}
+                  </Button>
+                </Row>
+            </Container>
           </CardBody>
         </Card>
       </div>

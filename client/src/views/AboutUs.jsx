@@ -3,7 +3,6 @@ import { Row, Col } from "reactstrap";
 import Axios from "axios";
 
 import UserCard from "components/Cards/UserCard";
-import Defaults from "../defaults/defaults";
 
 const renderUsersCards = (users, size) => {
   return users.map(user => {
