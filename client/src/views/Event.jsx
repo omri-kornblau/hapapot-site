@@ -7,7 +7,9 @@ import {
   Row,
   Col,
   Card,
-  CardBody
+  CardBody,
+  Input,
+  Form
 } from "reactstrap";
 import DropdownItemsUsers from "../components/Dropdown/DropDown";
 
@@ -23,7 +25,11 @@ class Event extends React.Component {
     this.name = path[2];
     this.date = path[1];
     this.state = {
-      eventData: EventModel.data
+      eventData: EventModel.data,
+      newItem: {
+        name: "",
+        amount: 0
+      }
     };
   }
   async componentDidMount() {
@@ -77,7 +83,32 @@ class Event extends React.Component {
     }
   };
 
-  renderItemsTable = () => {
+  onInputChange = event => {
+    const newNewItem = this.state.newItem;
+    const { value, name } = event.target;
+    newNewItem[name] = value;
+    this.setState({newItem: newNewItem });
+  };
+
+  AddItem = async () => {
+    try {
+      const res = await Axios.post("/api/event/item/add", {
+        "item": this.state.newItem.name,
+        "amount": this.state.newItem.amount,
+        "eventDate": this.state.eventData.time,
+        "eventName": this.state.eventData.name
+      });
+
+      this.setState({
+        eventData: res.data.event
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  renderExistsItemsTable = () => {
     return this.state.eventData.items.map(item => (
       <tr>
         <td>{item.name}</td>
@@ -117,6 +148,26 @@ class Event extends React.Component {
         </td>
       </tr>
     ));
+  }
+
+  renderItemsTable = () => {
+    return <>
+      <this.renderExistsItemsTable/>
+        <tr>
+          <td>
+            <Input placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
+          </td>
+          <td>
+            <Input placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
+          </td>
+          <td></td>
+          <td>
+            <a className="text-success" onClick={this.AddItem}>
+              +
+            </a>
+          </td>
+        </tr>
+    </>
   };
 
   render() {
@@ -160,7 +211,9 @@ class Event extends React.Component {
                       <th>פעולות</th>
                     </tr>
                   </thead>
-                  <tbody>{this.renderItemsTable()}</tbody>
+                  <tbody>
+                    {this.renderItemsTable()}
+                  </tbody>
                 </Table>
               </CardBody>
             </Card>
