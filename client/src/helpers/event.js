@@ -42,10 +42,14 @@ EventHelper.subOneItemToUser = async (item, eventDate, eventName) => {
 }
 
 EventHelper.addItem = async (item, amount, eventDate, eventName) => {
-  Utils.expectToExist(item);
-  Utils.expectToExist(amount);
-  Utils.expectToExist(eventDate);
-  Utils.expectToExist(eventName);
+  console.log(item);
+  console.log(amount);
+  console.log(eventDate);
+  console.log(eventName);
+  Utils.expectToExist(item, "item");
+  Utils.expectToExist(amount, "amount");
+  Utils.expectToExist(eventDate, "eventDate");
+  Utils.expectToExist(eventName, "eventName");
   return Axios.post("/api/event/item/add", {
     item,
     amount,

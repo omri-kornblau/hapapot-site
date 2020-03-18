@@ -76,7 +76,7 @@ class Event extends React.Component {
   subOne = item => async () => {
     try {
       const { date, name } = this;
-      const res = await EventHelper.addOneItemToUser(item, date, name);
+      const res = await EventHelper.subOneItemToUser(item, date, name);
       this.setState({
         eventData: res.data.event
       });
@@ -94,6 +94,7 @@ class Event extends React.Component {
 
   AddItem = async () => {
     try {
+      console.log(this.state.eventData);
       const res = await EventHelper.addItem(
         this.state.newItem.name,
         this.state.newItem.amount,
