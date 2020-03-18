@@ -68,7 +68,7 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
     $push: {
       "items.$.users": {
         name: username,
-        "amount": 0
+        amount: 0
       }
     }
   })
@@ -92,10 +92,64 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
     throw Boom.badRequest(`failed to update item: ${item}, ${eventDate}, ${eventName}, ${username}, ${amount}, ${res}`)
   }
 
+  await EventModel.updateOne({
+    _id: _id
+  }, {
+    $max: {
+      "items.$[outer].users.$[inner].amount": 0
+    },
+
+  }, {
+    "arrayFilters": [{
+      "outer.name": item
+    }, {
+      "inner.name": username
+    }]
+  })
+
   var event = await getEventFromDb(eventDate, eventName);
 
   return event
 };
+
+exports.add = async (req, res) => {
+  const item = req.body.item
+  const amount = req.body.amount
+  const eventDate = Utils.dateToDayQuery(req.body.eventDate);
+  const eventName = req.body.eventName
+  const _id = generateId(eventDate, eventName);
+
+  if (amount < 1) {
+    throw Boom.badRequest("Amount mast be bigger then 0");
+  }
+
+  const mongo_res = await EventModel.updateOne({
+    _id: _id,
+    items: {
+      $not: {
+        $elemMatch: {
+          name: item
+        }
+      }
+    }
+  }, {
+    $push: {
+      items: {
+        name: item,
+        neededamount: amount,
+        users: []
+      }
+    }
+  });
+
+  if (mongo_res.ok !== 1 || mongo_res.nModified !== 1) {
+    throw Boom.badRequest(`failed to update item: ${item}, ${eventDate}, ${eventName}, ${mongo_res}`)
+  }
+
+  var event = await getEventFromDb(eventDate, eventName);
+
+  return sendEvent(res, 200, event);
+}
 
 exports.addOne = async (req, res) => {
   const item = req.body.item

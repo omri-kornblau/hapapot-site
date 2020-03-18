@@ -23,6 +23,7 @@ router.post("/api/attend/day/:date", withAuth, DayRoutes.updateDayAttendancy)
 router.get("/api/event/:date/:name", withAuth, EventRoutes.getEvent);
 router.post("/api/event/item/add-one", withAuth, EventRoutes.addOne);
 router.post("/api/event/item/sub-one", withAuth, EventRoutes.subOne);
+router.post("/api/event/item/add", withAuth, EventRoutes.add);
 
 router.post("/auth/authenticate", AuthRoutes.register);
 router.get("/auth/checktoken", withAuth, AuthRoutes.checkToken);
