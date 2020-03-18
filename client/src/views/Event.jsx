@@ -34,7 +34,9 @@ class Event extends React.Component {
   }
   async componentDidMount() {
     try {
-      const res = EventHelper.getEvent(this.date, this.name);
+      console.log("addsadsaeewewewq");
+      const res = await EventHelper.getEvent(this.date, this.name);
+      console.log("addsadsa");
       this.setState({
         eventData: res.data
       });
@@ -92,12 +94,12 @@ class Event extends React.Component {
 
   AddItem = async () => {
     try {
-      const res = await Axios.post("/api/event/item/add", {
-        "item": this.state.newItem.name,
-        "amount": this.state.newItem.amount,
-        "eventDate": this.state.eventData.time,
-        "eventName": this.state.eventData.name
-      });
+      const res = await EventHelper.addItem(
+        this.state.newItem.name,
+        this.state.newItem.amount,
+        this.state.eventData.time,
+        this.state.eventData.name
+      )
 
       this.setState({
         eventData: res.data.event
