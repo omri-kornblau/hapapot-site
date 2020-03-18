@@ -16,6 +16,7 @@ const ServerConfig = require("./config/server");
 // Import models
 require("./models/user");
 require("./models/day");
+require("./models/event");
 
 AsyncErrorsHandler.patchRouter(ErrorsRouter.route);
 

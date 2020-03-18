@@ -1,9 +1,5 @@
 const Mongoose = require("mongoose");
-const Bcrypt = require("bcrypt");
 const Joi = require("joi");
-const promisify = require("util").promisify;
-
-const hash = promisify(Bcrypt.hash);
 
 const dayJoiFormat = Joi.object()
   .keys({
