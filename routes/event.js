@@ -1,10 +1,9 @@
 const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Boom = require("boom");
+const Utils = require("../utils")
 
-const Utils = require("../utils");
-
-const DayModel = Mongoose.model("Day");
+const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
 
 exports.getEvent = async (req, res) => {
@@ -12,31 +11,10 @@ exports.getEvent = async (req, res) => {
     name,
     date
   } = req.params;
-  const day = await DayModel.findOne({
-    date
-  });
-  if (!day) {
-    throw Boom.badRequest(`Day not found: ${date}`);
-  }
 
-  let current_event = false;
-  day.events.forEach(element => {
-    if (element.name === name) {
-      current_event = element;
-    }
-  });
+  const event = await getEventFromDb(date, name);
 
-  if (!current_event) {
-    throw Boom.badRequest(`Event does not exist: ${date}, ${name}`);
-  }
-
-  current_event.users = await UserModel.find({
-    username: {
-      $in: current_event.users
-    }
-  });
-
-  return res.send(current_event);
+  return res.send(event);
 };
 
 const sendEvent = (res, status, event) => {
@@ -46,45 +24,73 @@ const sendEvent = (res, status, event) => {
   });
 };
 
-
-const getEventFromDb = async (eventDate, eventName) => {
-  const eventFromDb = await DayModel.findOne({
-    date: eventDate,
-    events: {
-      $elemMatch: {
-        name: eventName
-      }
-    }
-  });
-
-  if (!eventFromDb) {
-    throw Boom.badRequest(`Event not found: ${eventDate} , ${eventName}`);
-  }
-
-  return eventFromDb["events"][0];
+const generateId = (date, name) => {
+  date = Utils.dateToDayQuery(date);
+  return `${date}_${name}`;
 }
 
-const updateEventOnDb = async (eventDate, eventName, newEvent) => {
-  await DayModel.updateOne({
-    date: eventDate,
-    events: {
-      $elemMatch: {
-        name: eventName
-      }
-    }
-  }, {
-    $set: {
-      events: 1
+const getEventFromDb = async (eventDate, eventName) => {
+  const event = await EventModel.findOne({
+    _id: `${generateId(eventDate, eventName)}`
+  });
+
+  if (!event) {
+    throw Boom.badRequest(`Event does not exist: ${date}, ${name}`);
+  }
+
+  event.users = await UserModel.find({
+    username: {
+      $in: event.users
     }
   });
+
+  return event;
 }
 
 const addAmount = async (item, eventDate, eventName, username, amount) => {
-  var event = await getEventFromDb(eventDate, eventName);
+  const _id = generateId(eventDate, eventName);
 
-  event.items[item].users[username] += amount
+  await EventModel.updateOne({
+    _id: _id,
+    items: {
+      $elemMatch: {
+        name: item,
+        users: {
+          $not: {
+            $elemMatch: {
+              name: username
+            }
+          },
+        }
+      }
+    }
+  }, {
+    $push: {
+      "items.$.users": {
+        name: username,
+        "amount": 0
+      }
+    }
+  })
 
-  await updateEventOnDb(eventDate, eventName, event);
+  const res = await EventModel.updateOne({
+    _id: _id
+  }, {
+    $inc: {
+      "items.$[outer].users.$[inner].amount": amount
+    },
+
+  }, {
+    "arrayFilters": [{
+      "outer.name": item
+    }, {
+      "inner.name": username
+    }]
+  })
+
+  if (res.ok !== 1 || res.nModified !== 1) {
+    throw Boom.badRequest(`failed to update item: ${item}, ${eventDate}, ${eventName}, ${username}, ${amount}, ${res}`)
+  }
 
   var event = await getEventFromDb(eventDate, eventName);
 

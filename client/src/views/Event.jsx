@@ -63,7 +63,6 @@ class Event extends React.Component {
         "eventName": eventName
       });
 
-      console.log(res.data.event)
       this.setState({
         eventData: res.data.event
       });
@@ -76,14 +75,14 @@ class Event extends React.Component {
     try {
       const eventDate = this.date;
       const eventName = this.name;
-      const res = await Axios.post("/api/event/item/sub`-one", {
+      const res = await Axios.post("/api/event/item/sub-one", {
         "item": item,
         "eventDate": eventDate,
         "eventName": eventName
       });
 
       this.setState({
-        eventData: res.data
+        eventData: res.data.event
       });
     } catch (err) {
       console.log(err);
@@ -102,10 +101,10 @@ class Event extends React.Component {
           <DropdownItemsUsers
             color="green"
             users={
-              item.users.map(user => {
-              var c_user = this.state.eventData.users.reduce((result, current) => ( user.name === current.username ? current : result));
-              c_user.amount = user.amount
-              return c_user
+                item.users.map(user => {
+                var c_user = this.state.eventData.users.reduce((result, current) => (user.name === current.username ? current : result ));
+                c_user.amount = user.amount
+                return c_user
             })
           }
           />
