@@ -5,6 +5,7 @@ const Utils = require("../utils");
 
 const UserModel = Mongoose.model("User");
 const DayModel = Mongoose.model("Day");
+const EventModel = Mongoose.model("Event");
 
 const emptyDay = {
   users: [],
@@ -37,6 +38,12 @@ exports.getDay = async (req, res) => {
   day.users = await UserModel.find({
     username: {
       $in: day.users
+    }
+  });
+
+  day.events = await EventModel.find({
+    _id: {
+      $in: day.events
     }
   });
 

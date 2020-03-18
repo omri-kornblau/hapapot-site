@@ -3,6 +3,8 @@ const Bcrypt = require("bcrypt");
 const Joi = require("joi");
 const Utils = require("../utils")
 
+const promisify = require("util").promisify;
+
 const hash = promisify(Bcrypt.hash);
 
 const singleCarJoiFormat = Joi.object().keys({
@@ -14,7 +16,7 @@ const carsJoiFormat = Joi.array().items(singleCarJoiFormat);
 
 const singleUserItemJoiFormat = Joi.object().keys({
   name: Joi.string(),
-  amount: joi.number().integer()
+  amount: Joi.number().integer()
 })
 
 const singleItemJoiFormat = Joi.array().items({
@@ -92,6 +94,6 @@ eventSchema.pre("save", async function () {
   }
 });
 
-const Event = Mongoose.model("Event", daySchema);
+const Event = Mongoose.model("Event", eventSchema);
 
 module.exports = Event;
