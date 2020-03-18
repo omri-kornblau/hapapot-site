@@ -35,7 +35,7 @@ const getEventFromDb = async (eventDate, eventName) => {
   });
 
   if (!event) {
-    throw Boom.badRequest(`Event does not exist: ${date}, ${name}`);
+    throw Boom.badRequest(`Event does not exist: ${eventDate}, ${eventName}`);
   }
 
   event.users = await UserModel.find({
@@ -115,7 +115,7 @@ exports.addItem = async (req, res) => {
   const amount = req.body.amount
   const eventDate = Utils.dateToDayQuery(req.body.eventDate);
   const eventName = req.body.eventName
-  const _id = generateId(eventDate, eventName);
+  const eventId = generateId(eventDate, eventName);
 
   if (amount < 1) {
     throw Boom.badRequest("Amount mast be bigger then 0");
