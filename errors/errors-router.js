@@ -4,7 +4,7 @@ const errorRoutes = [{
   },
   {
     condition: err => err.isJoi,
-    handler: (res, err) => () => {
+    handler: (res, err) => {
       err.data = {
         appCode: 1001
       };

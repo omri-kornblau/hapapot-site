@@ -31,7 +31,7 @@ const generateId = (date, name) => {
 
 const getEventFromDb = async (eventDate, eventName) => {
   const event = await EventModel.findOne({
-    _id: `${generateId(eventDate, eventName)}`
+    eventId: `${generateId(eventDate, eventName)}`
   });
 
   if (!event) {
@@ -48,10 +48,10 @@ const getEventFromDb = async (eventDate, eventName) => {
 }
 
 const addAmount = async (item, eventDate, eventName, username, amount) => {
-  const _id = generateId(eventDate, eventName);
+  const eventId = generateId(eventDate, eventName);
 
   await EventModel.updateOne({
-    _id: _id,
+    eventId: eventId,
     items: {
       $elemMatch: {
         name: item,
@@ -74,7 +74,7 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
   })
 
   const res = await EventModel.updateOne({
-    _id: _id
+    eventId: eventId
   }, {
     $inc: {
       "items.$[outer].users.$[inner].amount": amount
@@ -92,9 +92,7 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
     throw Boom.badRequest(`failed to update item: ${item}, ${eventDate}, ${eventName}, ${username}, ${amount}, ${res}`)
   }
 
-  var event = await getEventFromDb(eventDate, eventName);
-
-  return event
+  return getEventFromDb(eventDate, eventName);
 };
 
 exports.addOne = async (req, res) => {
@@ -125,9 +123,8 @@ exports.subOne = async (req, res) => {
   return sendEvent(res, 200, updateEvent);
 };
 
-exports.addEvent = async (req, res) => {
+exports.insertEvent = async (req, res) => {
   const newEvent = req.body;
-
   try {
     const newEventFromDb = await EventModel.create(newEvent);
     return sendEvent(res, 201, newEventFromDb);
