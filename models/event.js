@@ -6,45 +6,39 @@ const Utils = require("../utils")
 const promisify = require("util").promisify;
 
 const hash = promisify(Bcrypt.hash);
+// Used for hashing
+const saltRounds = 10;
 
-const singleCarJoiFormat = Joi.object().keys({
+const carJoiFormat = Joi.object().keys({
   driver: Joi.string(),
   passengers: Joi.array().items(Joi.string())
 });
 
-const carsJoiFormat = Joi.array().items(singleCarJoiFormat);
-
-const singleUserItemJoiFormat = Joi.object().keys({
+const userInItemJoiFormat = Joi.object().keys({
   name: Joi.string(),
   amount: Joi.number().integer()
 })
 
-const singleItemJoiFormat = Joi.array().items({
+const itemJoiFormat = Joi.array().items({
   name: Joi.string(),
   neededamount: Joi.number().integer(),
-  users: Joi.array().items(singleUserItemJoiFormat)
+  users: Joi.array().items(userInItemJoiFormat)
 });
 
-const itemsJoiFormat = Joi.object().pattern(
-  Joi.any(),
-  Joi.array().items(singleItemJoiFormat)
-);
-
 const eventJoiFormat = Joi.object().keys({
-  _id: Joi.string().required(),
   name: Joi.string().required(),
   time: Joi.string().isoDate(),
   eventkey: Joi.string(),
   icon: Joi.string(),
-  cars: carsJoiFormat,
-  items: itemsJoiFormat,
+  cars: Joi.array().items(carJoiFormat),
+  items: Joi.array().items(itemJoiFormat),
   users: Joi.array().items(Joi.string()),
   description: Joi.string(),
   rating: Joi.number()
-});
+}).unknown(true);
 
 const mongoFormat = {
-  _id: {
+  eventId: {
     type: String,
     unique: true
   },
@@ -87,10 +81,10 @@ eventSchema.pre("save", async function () {
   } = this;
 
   const date = Utils.dateToDayQuery(time);
-  event._id = `${date}_${name}`;
+  this.eventId = `${date}_${name}`;
 
-  if (!event.eventkey) {
-    event.eventkey = await hash(event.name + time);
+  if (!this.eventkey) {
+    this.eventkey = await hash(this.eventId, saltRounds);
   }
 });
 

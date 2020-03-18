@@ -10,16 +10,16 @@ import {
   CardBody
 } from "reactstrap";
 import DropdownItemsUsers from "../components/Dropdown/DropDown";
-import Axios from "axios";
 
 import Utils from "../utils";
 import EventModel from "../defaults/models/event";
+
+import EventHelper from "../helpers/event";
 
 class Event extends React.Component {
   constructor(props) {
     super(props);
     const path = this.props.location.pathname.split("/").slice(2);
-    console.log(path);
     this.name = path[2];
     this.date = path[1];
     this.state = {
@@ -28,7 +28,7 @@ class Event extends React.Component {
   }
   async componentDidMount() {
     try {
-      const res = await Axios.get(`/api/event/${this.date}/${this.name}`);
+      const res = EventHelper.getEvent(this.date, this.name);
       this.setState({
         eventData: res.data
       });
@@ -55,14 +55,8 @@ class Event extends React.Component {
 
   addOne = item => async () => {
     try {
-      const eventDate = this.date;
-      const eventName = this.name;
-      const res = await Axios.post("/api/event/item/add-one", {
-        "item": item,
-        "eventDate": eventDate,
-        "eventName": eventName
-      });
-
+      const { date, name } = this;
+      const res = await EventHelper.addOneItemToUser(item, date, name);
       this.setState({
         eventData: res.data.event
       });
@@ -73,14 +67,8 @@ class Event extends React.Component {
 
   subOne = item => async () => {
     try {
-      const eventDate = this.date;
-      const eventName = this.name;
-      const res = await Axios.post("/api/event/item/sub-one", {
-        "item": item,
-        "eventDate": eventDate,
-        "eventName": eventName
-      });
-
+      const { date, name } = this;
+      const res = await EventHelper.addOneItemToUser(item, date, name);
       this.setState({
         eventData: res.data.event
       });
@@ -92,7 +80,7 @@ class Event extends React.Component {
   renderItemsTable = () => {
     return this.state.eventData.items.map(item => (
       <tr>
-        <td>{item["name"]}</td>
+        <td>{item.name}</td>
         <td>
           {item.users.reduce((sum, user) => (sum + user.amount), 0)}
           /{item.neededamount}
@@ -101,12 +89,12 @@ class Event extends React.Component {
           <DropdownItemsUsers
             color="green"
             users={
-                item.users.map(user => {
-                var c_user = this.state.eventData.users.reduce((result, current) => (user.name === current.username ? current : result ));
-                c_user.amount = user.amount
-                return c_user
-            })
-          }
+              item.users.map(user => {
+                const currentUser = _.find(this.state.eventData.users, "username", user.name);
+                currentUser.amount = user.amount;
+                return currentUser;
+              })
+            }
           />
         </td>
         <td>
@@ -114,7 +102,7 @@ class Event extends React.Component {
             className="m-1 btn-icon btn-round"
             color="success"
             size="sm"
-            onClick={this.addOne(item["name"])}
+            onClick={this.addOne(item.name)}
           >
             <i className="tim-icons icon-simple-add"> </i>
           </Button>
@@ -122,7 +110,7 @@ class Event extends React.Component {
             className="m-1 btn-icon btn-round"
             color="warning"
             size="sm"
-            onClick={this.subOne(item["name"])}
+            onClick={this.subOne(item.name)}
           >
             <i className="tim-icons icon-simple-delete" />
           </Button>

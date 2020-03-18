@@ -42,7 +42,7 @@ exports.getDay = async (req, res) => {
   });
 
   day.events = await EventModel.find({
-    _id: {
+    eventId: {
       $in: day.events
     }
   });
