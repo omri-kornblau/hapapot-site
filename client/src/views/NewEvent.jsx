@@ -31,7 +31,7 @@ class NewEvent extends React.Component {
       addSucceeded: false,
       addMessage: "",
     };
-    this.state.newEventData.time = wantedDate;
+    this.state.newEventData.time = wantedDate || new Date();
   }
   onInputChange = event => {
     const newEventData = this.state.newEventData;
@@ -56,7 +56,7 @@ class NewEvent extends React.Component {
       const eventName = this.state.newEventData.name;
       await EventHelper.postNewEvent(eventDate, eventName, this.state.newEventData);
       this.setState({ addSucceeded: true });
-      this.props.history.push(`event/${eventDate}/${eventName}`);
+      return this.props.history.push(`event/${eventDate}/${eventName}`);
     } catch (err) {
       this.setState({
         addSucceeded: false,

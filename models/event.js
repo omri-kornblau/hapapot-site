@@ -27,7 +27,7 @@ const itemJoiFormat = Joi.array().items({
 
 const eventJoiFormat = Joi.object().keys({
   name: Joi.string().required(),
-  time: Joi.string().isoDate(),
+  time: Joi.string().required(),
   eventkey: Joi.string(),
   icon: Joi.string(),
   cars: Joi.array().items(carJoiFormat),
@@ -68,6 +68,9 @@ const mongoFormat = {
   },
   rating: {
     type: Number
+  },
+  attending: {
+    type: Boolean
   }
 };
 
@@ -79,7 +82,6 @@ eventSchema.pre("save", async function () {
     time,
     name
   } = this;
-
   const date = Utils.dateToDayQuery(time);
   this.eventId = `${date}_${name}`;
 

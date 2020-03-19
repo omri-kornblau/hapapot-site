@@ -1,22 +1,25 @@
 import Axios from "axios";
 
 import Utils from "../utils";
-import {
-  Util
-} from "reactstrap";
 
 const EventHelper = {};
 
-EventHelper.postNewEvent = async (date, eventName, newEvent) => {
+EventHelper.postNewEvent = async (date, name, newEvent) => {
   Utils.expectToExist(date, "date");
-  Utils.expectToExist(eventName, "eventName");
-  await Axios.post(`/api/newevent/${date}/${eventName}`, newEvent);
+  Utils.expectToExist(name, "eventName");
+  await Axios.post(`/api/newevent/${date}/${name}`, newEvent);
 }
 
 EventHelper.getEvent = async (date, name) => {
   Utils.expectToExist(date, "date");
   Utils.expectToExist(name, "name");
   return Axios.get(`/api/event/${date}/${name}`);
+}
+
+EventHelper.postAttendance = async (date, name, attending) => {
+  return Axios.post(`/api/attend/event/${date}/${name}`, {
+    attending
+  });
 }
 
 EventHelper.addOneItemToUser = async (item, eventDate, eventName) => {
@@ -42,10 +45,6 @@ EventHelper.subOneItemToUser = async (item, eventDate, eventName) => {
 }
 
 EventHelper.addItem = async (item, amount, eventDate, eventName) => {
-  console.log(item);
-  console.log(amount);
-  console.log(eventDate);
-  console.log(eventName);
   Utils.expectToExist(item, "item");
   Utils.expectToExist(amount, "amount");
   Utils.expectToExist(eventDate, "eventDate");
