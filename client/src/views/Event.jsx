@@ -11,6 +11,8 @@ import {
   Input,
   Form
 } from "reactstrap";
+
+import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
 import DropdownItemsUsers from "../components/Dropdown/DropDown";
 
 import Utils from "../utils";
@@ -34,9 +36,7 @@ class Event extends React.Component {
   }
   async componentDidMount() {
     try {
-      console.log("addsadsaeewewewq");
       const res = await EventHelper.getEvent(this.date, this.name);
-      console.log("addsadsa");
       this.setState({
         eventData: res.data
       });
@@ -60,57 +60,60 @@ class Event extends React.Component {
       );
     });
   };
-
   addOne = item => async () => {
     try {
       const { date, name } = this;
       const res = await EventHelper.addOneItemToUser(item, date, name);
       this.setState({
-        eventData: res.data.event
+        eventData: res.data
       });
     } catch (err) {
       console.log(err);
     }
   };
-
   subOne = item => async () => {
     try {
       const { date, name } = this;
       const res = await EventHelper.subOneItemToUser(item, date, name);
       this.setState({
-        eventData: res.data.event
+        eventData: res.data
       });
     } catch (err) {
       console.log(err);
     }
   };
-
   onInputChange = event => {
     const newNewItem = this.state.newItem;
     const { value, name } = event.target;
     newNewItem[name] = value;
     this.setState({newItem: newNewItem });
   };
-
+  onAttendingChange = async attending => {
+    const { eventData } = this.state;
+    eventData.attending = attending;
+    this.setState({ eventData });
+    try {
+      const res = await EventHelper.postAttendance(this.date, this.name , attending);
+      this.setState({ eventData: res.data });
+    } catch(err) {
+      console.error(err);
+    }
+  }
   AddItem = async () => {
     try {
-      console.log(this.state.eventData);
       const res = await EventHelper.addItem(
         this.state.newItem.name,
         this.state.newItem.amount,
         this.state.eventData.time,
         this.state.eventData.name
       )
-
       this.setState({
-        eventData: res.data.event
+        eventData: res.data
       });
-
     } catch (err) {
       console.log(err);
     }
   }
-
   renderExistsItemsTable = () => {
     return this.state.eventData.items.map(item => (
       <tr>
@@ -124,9 +127,12 @@ class Event extends React.Component {
             color="green"
             users={
               item.users.map(user => {
-                const currentUser = _.find(this.state.eventData.users, "username", user.name);
-                currentUser.amount = user.amount;
-                return currentUser;
+                const currentUser = _.find(this.state.eventData.users, {username: user.name});
+                if (!!currentUser) {
+                  currentUser.amount = user.amount;
+                  return currentUser;
+                }
+                return {};
               })
             }
           />
@@ -152,24 +158,23 @@ class Event extends React.Component {
       </tr>
     ));
   }
-
   renderItemsTable = () => {
     return <>
       <this.renderExistsItemsTable/>
-        <tr>
-          <td>
-            <Input placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
-          </td>
-          <td>
-            <Input placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
-          </td>
-          <td></td>
-          <td>
-            <a className="text-success" onClick={this.AddItem}>
-              +
-            </a>
-          </td>
-        </tr>
+      <tr>
+        <td>
+          <Input placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
+        </td>
+        <td>
+          <Input placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
+        </td>
+        <td></td>
+        <td>
+          <a className="text-success" onClick={this.AddItem}>
+            +
+          </a>
+        </td>
+      </tr>
     </>
   };
 
@@ -180,6 +185,12 @@ class Event extends React.Component {
           {this.state.eventData.name + "   "}
           {Utils.formatTime(this.state.eventData.time)}
         </h4>
+        <Row className="justify-content-center mb-2">
+          <AttendingCheckbox
+            onChange={this.onAttendingChange}
+            attending={this.state.eventData.attending}
+          />
+        </Row>
         <Row>
           <Col md="6">
             <Card>

@@ -10,7 +10,7 @@ DayHelper.getDay = async date => {
 }
 
 DayHelper.postAttendance = async (date, attending) => {
-  return await Axios.post(`/api/attend/day/${date}`, {
+  return Axios.post(`/api/attend/day/${date}`, {
     attending
   });
 }
