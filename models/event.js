@@ -109,7 +109,7 @@ eventSchema.pre("save", async function () {
     name
   } = this;
   const date = Utils.dateToDayQuery(time);
-  this.eventId = `${date}_${name}`;
+  const eventId = `${date}_${name}`;
 
   await DayModel.updateOne({
     date: date
