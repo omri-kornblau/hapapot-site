@@ -103,6 +103,23 @@ eventSchema.pre("save", async function () {
   })
 });
 
+eventSchema.pre("save", async function () {
+  const {
+    time,
+    name
+  } = this;
+  const date = Utils.dateToDayQuery(time);
+  this.eventId = `${date}_${name}`;
+
+  await DayModel.updateOne({
+    date: date
+  }, {
+    $pull: {
+      events: eventId
+    }
+  })
+});
+
 const Event = Mongoose.model("Event", eventSchema);
 
 module.exports = Event;

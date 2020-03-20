@@ -26,6 +26,7 @@ router.post("/api/event/item/add-one", withAuth, EventRoutes.addOne);
 router.post("/api/event/item/sub-one", withAuth, EventRoutes.subOne);
 router.post("/api/event/item/add", withAuth, EventRoutes.addItem);
 router.post("/api/attend/event/:date/:name", withAuth, EventRoutes.updateEventAttendance);
+router.post("/api/event/delete", withAuth, EventRoutes.deleteEvent);
 
 router.post("/auth/authenticate", AuthRoutes.register);
 router.get("/auth/checktoken", withAuth, AuthRoutes.checkToken);

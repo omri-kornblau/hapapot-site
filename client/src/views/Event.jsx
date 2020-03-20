@@ -9,8 +9,10 @@ import {
   Card,
   CardBody,
   Input,
-  Form
+  Modal
 } from "reactstrap";
+
+import Popup from "reactjs-popup";
 
 import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
 import DropdownItemsUsers from "../components/Dropdown/DropDown";
@@ -31,7 +33,8 @@ class Event extends React.Component {
       newItem: {
         name: "",
         amount: 0
-      }
+      },
+      isDeleting: false
     };
   }
   async componentDidMount() {
@@ -178,8 +181,31 @@ class Event extends React.Component {
     </>
   };
 
+  openDeletePopup = () => {
+    this.setState({isDeleting: true})
+  };
+
+  closeDeletePopup = () => {
+    this.setState({isDeleting: false})
+  }
+
+  deleteEvent = async () => {
+    await EventHelper.deleteEvent(this.date, this.state.eventData.name);
+    this.props.history.push(`/home/day/${this.date}`);
+  }
+
   render() {
     return (
+      <>
+      <Popup open={this.state.isDeleting} closeOnDocumentClick onClose={this.closeDeletePopup}>
+        <p className="text-center">
+        גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
+        </p>
+        <Row className="justify-content-center">
+          <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
+          <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
+        </Row>
+      </Popup>
       <div className="content text-right">
         <h4 className="text-center title">
           {this.state.eventData.name + "   "}
@@ -233,19 +259,13 @@ class Event extends React.Component {
             </Card>
           </Col>
         </Row>
-        <Row>
-          <Col className="text-center" xs="6">
-            <Button className="btn-success">
-              <i className="tim-icons icon-check-2" />
+        <Row className="justify-content-center">
+            <Button className="btn-danger" onClick={this.openDeletePopup}>
+              מחק
             </Button>
-          </Col>
-          <Col className="text-center" xs="6">
-            <Button className="btn-warning">
-              <i className="tim-icons icon-simple-remove" />
-            </Button>
-          </Col>
         </Row>
       </div>
+      </>
     );
   }
 }

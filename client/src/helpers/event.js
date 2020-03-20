@@ -22,6 +22,13 @@ EventHelper.postAttendance = async (date, name, attending) => {
   });
 }
 
+EventHelper.deleteEvent = async (date, name) => {
+  return Axios.post(`/api/event/delete`, {
+    date,
+    name
+  });
+}
+
 EventHelper.addOneItemToUser = async (item, eventDate, eventName) => {
   Utils.expectToExist(item, "item");
   Utils.expectToExist(eventDate, "eventDate");
