@@ -2,29 +2,11 @@ const _ = require("lodash");
 const Mongoose = require("mongoose");
 
 const Utils = require("../utils");
+const MongoHelpers = require("../models/mongoHelpers");
 
 const UserModel = Mongoose.model("User");
 const DayModel = Mongoose.model("Day");
 const EventModel = Mongoose.model("Event");
-
-const emptyDay = {
-  users: [],
-  events: [],
-  date: "",
-  rating: 0
-}
-
-const getAndCreateIfEmpty = async date => {
-  const day = await DayModel.findOne({
-    date: Utils.dateToDayQuery(date)
-  });
-  if (!!day) {
-    return day;
-  }
-  const newDay = _.cloneDeep(emptyDay);
-  newDay.date = Utils.dateToDayQuery(date);
-  return await DayModel.create(newDay);
-}
 
 exports.getDay = async (req, res) => {
   const {
@@ -33,7 +15,7 @@ exports.getDay = async (req, res) => {
   const {
     username
   } = req;
-  const day = await getAndCreateIfEmpty(date);
+  const day = await MongoHelpers.getAndCreateIfEmpty(date);
   const attending = _.includes(day.users, username);
   day.users = await UserModel.find({
     username: {
@@ -64,7 +46,7 @@ exports.updateDayAttendancy = async (req, res) => {
     username
   } = req;
 
-  const day = await getAndCreateIfEmpty(date);
+  const day = await MongoHelpers.getAndCreateIfEmpty(date);
   const dbOperation = attending ? {
     $addToSet: {
       users: username
