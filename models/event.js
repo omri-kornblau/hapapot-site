@@ -2,6 +2,9 @@ const Mongoose = require("mongoose");
 const Bcrypt = require("bcrypt");
 const Joi = require("joi");
 const Utils = require("../utils")
+const MongoHelpers = require("./mongoHelpers")
+
+const DayModel = Mongoose.model("Day");
 
 const promisify = require("util").promisify;
 
@@ -88,6 +91,16 @@ eventSchema.pre("save", async function () {
   if (!this.eventkey) {
     this.eventkey = await hash(this.eventId, saltRounds);
   }
+
+  await MongoHelpers.getAndCreateIfEmpty(date);
+
+  await DayModel.updateOne({
+    date: date
+  }, {
+    $addToSet: {
+      events: this.eventId
+    }
+  })
 });
 
 const Event = Mongoose.model("Event", eventSchema);
