@@ -17,15 +17,28 @@ EventHelper.getEvent = async (date, name) => {
 }
 
 EventHelper.postAttendance = async (date, name, attending) => {
+  Utils.expectToExist(date, "date");
+  Utils.expectToExist(name, "name");
   return Axios.post(`/api/attend/event/${date}/${name}`, {
     attending
   });
 }
 
 EventHelper.deleteEvent = async (date, name) => {
+  Utils.expectToExist(date, "date");
+  Utils.expectToExist(name, "name");
   return Axios.post(`/api/event/delete`, {
     date,
     name
+  });
+}
+
+EventHelper.updateItems = async (date, name, items) => {
+  Utils.expectToExist(items, "items");
+  Utils.expectToExist(date, "event date");
+  Utils.expectToExist(name, "event name");
+  return Axios.post(`/api/event/${date}/${name}/items`, {
+    items
   });
 }
 

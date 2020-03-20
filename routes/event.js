@@ -201,6 +201,30 @@ exports.insertEvent = async (req, res) => {
   }
 }
 
+exports.updateItems = async (req, res) => {
+  const {
+    date,
+    name
+  } = req.params;
+  const {
+    items
+  } = req.body;
+  const {
+    username
+  } = req;
+  const updateRes = await EventModel.updateOne({
+    eventId: generateId(date, name)
+  }, {
+    $set: {
+      items
+    }
+  });
+
+  const event = await getEventFromDb(date, name, username);
+
+  return sendEvent(res, 200, event);
+}
+
 exports.updateEventAttendance = async (req, res) => {
   const {
     date,
