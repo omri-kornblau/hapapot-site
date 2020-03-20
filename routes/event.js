@@ -245,3 +245,18 @@ exports.updateEventAttendance = async (req, res) => {
 
   sendEvent(res, 200, event);
 }
+
+exports.deleteEvent = async (req, res) => {
+  const {
+    date,
+    name
+  } = req.body;
+
+  const eventId = generateId(date, name)
+
+  await EventModel.remove({
+    eventId: eventId
+  });
+
+  res.status(200).send();
+}
