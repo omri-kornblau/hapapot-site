@@ -223,9 +223,23 @@ exports.updateEventAttendance = async (req, res) => {
     }
   };
 
+  const eventId = generateId(date, name)
+
   await EventModel.update({
-    eventId: generateId(date, name)
+    eventId: eventId
   }, dbOperation);
+
+  if (!attending) {
+    await EventModel.update({
+      eventId: eventId
+    }, {
+      $pull: {
+        "items.$[].users": {
+          name: username
+        }
+      }
+    });
+  }
 
   const event = await getEventFromDb(date, name, username);
 
