@@ -282,6 +282,10 @@ class Event extends React.Component {
 
   deleteEvent = async () => {
     await EventHelper.deleteEvent(this.date, this.state.eventData.name);
+    this.moveToDay();
+  }
+
+  moveToDay = () => {
     this.props.history.push(`/home/day/${this.date}`);
   }
 
@@ -298,10 +302,17 @@ class Event extends React.Component {
         </Row>
       </Popup>
       <div className="content text-right">
-        <h4 className="text-center title">
-          {this.state.eventData.name + "   "}
-          {Utils.formatTime(this.state.eventData.time)}
-        </h4>
+        <div className="text-center title">
+          <h3>
+            {this.state.eventData.name}
+          </h3>
+          <h5 onClick={this.moveToDay}>
+            {Utils.formatTime(this.state.eventData.time) + " - " + Utils.formatDate(this.state.eventData.time)}
+          </h5>
+          <p>
+            {this.state.eventData.description}
+          </p>
+        </div>
         <Row className="justify-content-center mb-2">
           <AttendingCheckbox
             onChange={this.onAttendingChange}
