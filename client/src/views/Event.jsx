@@ -9,7 +9,6 @@ import {
   Card,
   CardBody,
   Input,
-  Modal
 } from "reactstrap";
 
 import Popup from "reactjs-popup";
