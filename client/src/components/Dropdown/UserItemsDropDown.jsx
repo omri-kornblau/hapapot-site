@@ -53,14 +53,14 @@ const UserItemsDropDown = props => {
       <h5 className="mb-2"> אתה מביא: </h5>
       <ItemsList {...props}/>
       <h5 className="mb-0 border-top"></h5>
-      <a onClick={onCopyListClick} id="copyBtn">
-        <i className="text-darker mt-2 mb-2 tim-icons icon-single-copy-04"/>
+      <a className="mt-2 mb-2" onClick={onCopyListClick} id="copyBtn">
+        <i className="text-darker tim-icons icon-single-copy-04"/>
       </a>
       {
         // Hide the tooltip on dropdown closing, otherwise
         // some crazy stuff is happening to the page
         dropdownOpen ?
-        <Tooltip innerClassName="text-white bg-default" placement="bottom" isOpen={tooltipOpen} target="copyBtn">
+        <Tooltip placement="bottom" isOpen={tooltipOpen} target="copyBtn">
           הרשימה הועתקה
         </Tooltip> : ""
       }
