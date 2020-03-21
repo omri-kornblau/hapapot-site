@@ -6,14 +6,15 @@ import {
 } from "reactstrap";
 import _ from "lodash";
 
-const Texts = {
-  attending: "אני מגיע",
-  absent: "אני לא מגיע",
+const defaultTexts = {
+  attending: "אני מגיע ",
+  absent: "אני מגיע ",
 }
 
 class AttendingCheckbox extends React.Component {
   constructor(props) {
     super(props);
+    this.texts = props.texts || defaultTexts;
     this.state = { attending: props.attending };
   }
   componentWillReceiveProps(props) {
@@ -28,7 +29,7 @@ class AttendingCheckbox extends React.Component {
     return (
       <FormGroup check>
         <Label check>
-          <p>{this.state.attending ? Texts.attending : Texts.absent}</p>
+          <p>{this.state.attending ? this.texts.attending : this.texts.absent}</p>
           <Input
             onChange={this.onAttendingChange}
             checked={this.state.attending}
