@@ -1,5 +1,4 @@
 import React from "react";
-import Axios from "axios";
 import {
   Button,
   Card,
@@ -23,6 +22,8 @@ import DatePicker from "../components/Calendar/CustomDatePicker";
 import UserCard from "components/Cards/UserCard";
 import StatusMessage from "components/Status/StatusBadge"
 
+import UserHelper from "../helpers/user";
+
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class UserProfile extends React.Component {
   }
   async componentDidMount() {
     try {
-      const res = await Axios.get("/api/user");
+      const res = await UserHelper.getUser();
       this.setState({
         userData: res.data
       });
@@ -70,7 +71,7 @@ class UserProfile extends React.Component {
   };
   onSubmit = async () => {
     try {
-      await Axios.post("/api/user", this.state.userData);
+      await UserHelper.updateUser(this.state.userData);
       this.setState({ updateMessage: "הפרטים עודכנו בהצלחה", updateSucceeded: true });
     } catch (err) {
       this.setState({ updateMessage: mapError(err), updateSucceeded: false });

@@ -30,7 +30,9 @@ class PrivateRoute extends React.Component {
     return (
       <Route
         render={props =>
-          haveAccess ? <Component {...props} /> : <Redirect to="/login" />
+          haveAccess ?
+          <Component {...props} /> :
+          <Redirect to={`/login?origin=${this.props.location.pathname}`} />
         }
       />
     );

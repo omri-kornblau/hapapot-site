@@ -33,6 +33,7 @@ class LoginPage extends React.Component {
       loginSucceeded: false,
       loginMessage: ""
     };
+    this.origin = props.location.search.split("=")[1] || "/home/main";
   }
   componentDidMount() {
     document.body.classList.add("rtl", "menu-on-right");
@@ -53,7 +54,7 @@ class LoginPage extends React.Component {
       this.setState({
         loginSucceeded: true
       });
-      this.props.history.push("/home/main");
+      this.props.history.push(this.origin);
     } catch(err) {
       this.setState({
         loginMessage: mapError(err)
