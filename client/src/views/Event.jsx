@@ -9,13 +9,16 @@ import {
   Card,
   CardBody,
   Input,
-  Modal
+  UncontrolledDropdown,
+  DropdownMenu,
+  DropdownToggle
 } from "reactstrap";
 
 import Popup from "reactjs-popup";
 
 import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
-import DropdownItemsUsers from "../components/Dropdown/DropDown";
+import EventItemDropDown from "../components/Dropdown/EventItemDropDown";
+import UserItemsDropDown from "../components/Dropdown/UserItemsDropDown";
 
 import Utils from "../utils";
 import EventModel from "../defaults/models/event";
@@ -36,14 +39,16 @@ class Event extends React.Component {
         amount: 0
       },
       isDeletingMode: false,
-      isEditMode: false
+      isEditMode: false,
+      currentUser: ""
     };
   }
   componentDidMount = async () => {
     try {
       const res = await EventHelper.getEvent(this.date, this.name);
       this.setState({
-        eventData: res.data
+        eventData: res.data.event,
+        currentUser: res.data.username
       });
     } catch (err) {
       console.log(err);
@@ -166,7 +171,7 @@ class Event extends React.Component {
           {item.neededamount} / {_.sumBy(item.users, user => user.amount)}
         </td>
         <td>
-          <DropdownItemsUsers
+          <EventItemDropDown
             color="green"
             users={
               item.users.map(user => {
@@ -180,7 +185,7 @@ class Event extends React.Component {
           <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={this.addOne(item.name)}>
             <i className="tim-icons icon-simple-add"> </i>
           </Button>
-          <Button className="m-1 btn-icon btn-round" color="warning" size="sm" onClick={this.subOne(item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={this.subOne(item.name)}>
             <i className="tim-icons icon-simple-delete"/>
           </Button>
         </td>
@@ -194,6 +199,7 @@ class Event extends React.Component {
           <Row className="justify-content-between mr-2 ml-2">
             <h5 className="title">ציוד</h5>
             <Row>
+              <UserItemsDropDown items={this.state.eventData.items} user={this.state.currentUser}/>
               <Button onClick={this.enterItemsEditMode} className="btn-icon btn-round" color="link">
                 <i className="tim-icons icon-pencil"/>
               </Button>

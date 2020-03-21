@@ -17,7 +17,10 @@ exports.getEvent = async (req, res) => {
 
   const event = await getEventFromDb(date, name, username);
 
-  return res.send(event);
+  return res.send({
+    event,
+    username
+  });
 };
 
 const sendEvent = (res, status, event) => {
