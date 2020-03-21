@@ -77,6 +77,16 @@ class Event extends React.Component {
     newNewItem[name] = value;
     this.setState({newItem: newNewItem });
   };
+  onEditedItemInput = e => {
+    const { eventDataOnEdit } = this.state;
+    const { name, value } = e.target;
+    eventDataOnEdit.items.forEach(item => {
+      if (item.name === name) {
+        item.neededamount = value;
+      }
+    });
+    this.setState({ eventDataOnEdit });
+  }
   onAttendingChange = async attending => {
     const { eventData } = this.state;
     eventData.attending = attending;
@@ -119,20 +129,20 @@ class Event extends React.Component {
       console.error(err);
     }
   }
-  onEditedItemInput = e => {
-    const { eventDataOnEdit } = this.state;
-    const { name, value } = e.target;
-    eventDataOnEdit.items.forEach(item => {
-      if (item.name === name) {
-        item.neededamount = value;
-      }
-    });
-    this.setState({ eventDataOnEdit });
-  }
   deleteEditedItem = itemName => () => {
     const { eventDataOnEdit } = this.state;
     _.remove(eventDataOnEdit.items, item => item.name === itemName);
     this.setState({ eventDataOnEdit });
+  }
+  openDeletePopup = () => {
+    this.setState({isDeletingMode: true})
+  };
+  closeDeletePopup = () => {
+    this.setState({isDeletingMode: false})
+  }
+  deleteEvent = async () => {
+    await EventHelper.deleteEvent(this.date, this.state.eventData.name);
+    this.props.history.push(`/home/day/${this.date}`);
   }
   renderEditModeItemsRows = () => {
     return this.state.eventDataOnEdit.items.map(item =>
@@ -273,27 +283,14 @@ class Event extends React.Component {
     });
   };
 
-  openDeletePopup = () => {
-    this.setState({isDeletingMode: true})
-  };
-
-  closeDeletePopup = () => {
-    this.setState({isDeletingMode: false})
-  }
-
-  deleteEvent = async () => {
-    await EventHelper.deleteEvent(this.date, this.state.eventData.name);
-    this.props.history.push(`/home/day/${this.date}`);
-  }
-
   render() {
     return (
       <>
       <Popup open={this.state.isDeletingMode} closeOnDocumentClick onClose={this.closeDeletePopup}>
         <p className="text-center">
-        גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
+        אתה בטוח שאתה רוצה למחוק את האירוע {this.state.eventData.name} ?
         </p>
-        <Row className="justify-content-center">
+        <Row className="justify-content-center mt-4 mb-2">
           <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
           <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
         </Row>
