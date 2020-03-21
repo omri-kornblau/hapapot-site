@@ -51,7 +51,7 @@ class Main extends React.Component {
   getDayBlobsRows() {
     return this.state.days.map((week, weekIdx) => (
       <Row key={`week-${weekIdx}`} className="justify-content-around">
-        {week.map(day => {
+        {week.map((day, dayIdx) => {
           const isSelected = this.state.selectedDay.date === day.date;
           if (isSelected) (this.state.selectedDay = day)
           return (
@@ -65,6 +65,7 @@ class Main extends React.Component {
                 events={day.events}
                 date={day.date}
                 selected={isSelected}
+                showMonth={dayIdx === 0 && weekIdx === 0}
               />
             </Col>
           );

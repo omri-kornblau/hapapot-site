@@ -13,15 +13,14 @@
   background-color: #bababb;
   margin-top: 5px;
   margin-bottom: 2px;
-  transition: ease-in-out 0.15s;
+  transition: all ease-in-out 0.15s;
   box-shadow: 0 4px 0px #888888;
   position: relative;
 }
 
 .day-blob-filler {
   position: absolute;
-  background-color: hsl(220, 70%, 50%);
-  right: -20%;
+  background-color: #304ffe;
   width: 150%;
   height: 101%;
   transition: all ease-in-out 0.3s;
@@ -29,15 +28,31 @@
 
 .day-blob-mask {
   position: absolute;
-  top: 0;
   left: 0;
+  bottom: 0;
   width: 101%;
   height: 101%;
   border-radius: 20%;
   text-align: center;
-  line-height: 200%;
   color: white;
   font-size: 5vw;
+}
+
+.day-blob-mask.month {
+  bottom: -50%;
+  color: white;
+  font-size: 3vw;
+}
+
+.day-blob-event {
+  bottom: 5px;
+  left: 5px;
+  width: 20%;
+  height: 20%;
+  float: left;
+  margin: 1px;
+  border-radius: 40%;
+  background-color: rgba(75, 0, 0, 0.2);
 }
 
 .day-blob.active {
@@ -46,8 +61,10 @@
   box-shadow: 0 4px 0px #868585, 0 7px 14px rgba(50, 50, 50, 0.6);
 }
 
-.day-blob.active>.day-blob-mask {
-  line-height: 190%;
+.day-blob.active:active {
+  top: -7px;
+  z-index: 42;
+  box-shadow: 0 4px 0px #868585, 0 5px 14px rgba(50, 50, 50, 0.6);
 }
 
 .jumbotron {
