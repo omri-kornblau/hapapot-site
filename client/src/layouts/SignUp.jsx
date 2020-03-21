@@ -25,6 +25,7 @@ import StatusMessage from "components/Status/StatusBadge"
 import Utils from "../utils";
 import UserModel from "../defaults/models/user";
 import mapError from "../defaults/errorsMapping";
+import SocialNetworkfinder from "components/SocialNetworkFinder/SocialNetworkfinder";
 
 class SignUpPage extends React.Component {
   constructor(props) {
@@ -113,6 +114,11 @@ class SignUpPage extends React.Component {
               </span>
             </Label>
           </FormGroup>
+        )
+      }
+      if (currentAttr.type === "instagram") {
+        return (
+          <SocialNetworkfinder/>
         )
       }
       return (

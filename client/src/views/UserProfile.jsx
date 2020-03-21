@@ -160,6 +160,20 @@ class UserProfile extends React.Component {
                     <Row>
                       <Col className="pr-md-1" md="6">
                         <FormGroup>
+                          <label>טלפון</label>
+                          <Input
+                            value={this.state.userData.phonenumber}
+                            onChange={this.onInputChange}
+                            name="phonenumber"
+                            placeholder="054...."
+                            type="text"
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="pr-md-1" md="6">
+                        <FormGroup>
                           <DatePicker
                             name="יום הולדת"
                             value={Utils.formatDate(this.state.userData.birthday)}

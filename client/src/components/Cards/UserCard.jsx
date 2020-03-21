@@ -4,7 +4,8 @@ import {
   CardFooter,
   CardBody, 
   CardText, 
-  Col
+  Col,
+  Button
    } from "reactstrap";
 
 import Utils from "../../utils";
@@ -82,14 +83,14 @@ class UserCard extends React.Component {
             <div className="card-description"></div>
         </CardBody>
         <CardFooter className={this.getCardBackgroundColor()}>
-          {/*<div className="button-container">
+          <div className="button-container">
             <Button className="btn-icon btn-round">
-              <i className="fab fa-facebook" />
+              <i className="fab fa-facebook"/>
             </Button>
             <Button className="btn-icon btn-round">
-              <i className="fab fa-Instegram" />
+              <i className="fab fa-Instegram"/>
             </Button>
-          </div>*/}
+          </div>
         </CardFooter>
       </Card>
       </Col>

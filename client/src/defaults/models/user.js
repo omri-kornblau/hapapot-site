@@ -17,42 +17,42 @@ User.inputAttributes = {
   username: {
     label: "שם משתמש",
     type: "username",
-    require: true
+    required: true
   },
   password: {
     label: "סיסמה",
     type: "password",
-    require: true
+    required: true
   },
   passwordConfirmation: {
     label: "אישור סיסמה",
     type: "password",
-    require: true
+    required: true
   },
   birthday: {
     label: "יום הולדת",
     type: "datepicker",
-    require: true
+    required: true
   },
   single: {
     label: "רווק?",
     type: "checkbox",
-    require: true
+    required: true
   },
   carsize: {
     label: "גודל מכונית",
     type: "number",
-    require: true
+    required: true
   },
   firstname: {
     label: "שם פרטי",
     type: "",
-    require: true
+    required: true
   },
   lastname: {
     label: "שם משפחה",
     type: "",
-    require: true
+    required: true
   },
   nicknames: {
     label: " שמות חיבה מופרדים בפסיק",
@@ -63,7 +63,18 @@ User.inputAttributes = {
     label: "קצת עלייך",
     type: "",
     required: true
-  }
+  },
+  phonenumber: {
+    label: "טלפון",
+    type: "",
+    required: true
+  },
+  instagram: {
+    label: "אינסטגרם",
+    type: "instagram",
+    required: true
+  },
+
 };
 
 export default User;
