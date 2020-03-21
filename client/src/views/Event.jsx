@@ -19,6 +19,7 @@ import Popup from "reactjs-popup";
 import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
 import EventItemDropDown from "../components/Dropdown/EventItemDropDown";
 import UserItemsDropDown from "../components/Dropdown/UserItemsDropDown";
+import PageLoader from "../components/Status/PageLoader";
 
 import Utils from "../utils";
 import EventModel from "../defaults/models/event";
@@ -40,7 +41,8 @@ class Event extends React.Component {
       },
       isDeletingMode: false,
       isEditMode: false,
-      currentUser: ""
+      currentUser: "",
+      isLoading: true
     };
   }
   componentDidMount = async () => {
@@ -48,7 +50,8 @@ class Event extends React.Component {
       const res = await EventHelper.getEvent(this.date, this.name);
       this.setState({
         eventData: res.data.event,
-        currentUser: res.data.username
+        currentUser: res.data.username,
+        isLoading: false
       });
     } catch (err) {
       console.log(err);
@@ -302,47 +305,49 @@ class Event extends React.Component {
         </Row>
       </Popup>
       <div className="content text-right">
-        <h4 className="text-center title">
-          {this.state.eventData.name + "   "}
-          {Utils.formatTime(this.state.eventData.time)}
-        </h4>
-        <Row className="justify-content-center mb-2">
-          <AttendingCheckbox
-            onChange={this.onAttendingChange}
-            attending={this.state.eventData.attending}
-          />
-        </Row>
-        <Row>
-          <Col md="6">
-            <Card>
-              <CardHeader>
-                <h5 className="title">רכבים</h5>
-              </CardHeader>
-              <CardBody>
-                <Table className="tablesorter table-sm table-striped" responsive>
-                  <thead className="text-primary">
-                    <tr>
-                      <th>שם</th>
-                      <th>תמונה</th>
-                    </tr>
-                  </thead>
-                  <tbody>{this.renderCarTable()}</tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md="6">
-            { this.state.isEditMode ?
-              <this.renderEditItemsCard/> :
-              <this.renderItemsCard/>
-            }
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
-            מחק
-          </Button>
-        </Row>
+        <PageLoader isLoading={this.state.isLoading}>
+          <h4 className="text-center title">
+            {this.state.eventData.name + "   "}
+            {Utils.formatTime(this.state.eventData.time)}
+          </h4>
+          <Row className="justify-content-center mb-2">
+            <AttendingCheckbox
+              onChange={this.onAttendingChange}
+              attending={this.state.eventData.attending}
+            />
+          </Row>
+          <Row>
+            <Col md="6">
+              <Card>
+                <CardHeader>
+                  <h5 className="title">רכבים</h5>
+                </CardHeader>
+                <CardBody>
+                  <Table className="tablesorter table-sm table-striped" responsive>
+                    <thead className="text-primary">
+                      <tr>
+                        <th>שם</th>
+                        <th>תמונה</th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.renderCarTable()}</tbody>
+                  </Table>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md="6">
+              { this.state.isEditMode ?
+                <this.renderEditItemsCard/> :
+                <this.renderItemsCard/>
+              }
+            </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
+              מחק
+            </Button>
+          </Row>
+        </PageLoader>
       </div>
       </>
     );
