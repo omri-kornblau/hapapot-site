@@ -103,7 +103,7 @@ eventSchema.pre("save", async function () {
   })
 });
 
-eventSchema.pre("save", async function () {
+eventSchema.pre("remove", async function () {
   const {
     time,
     name
