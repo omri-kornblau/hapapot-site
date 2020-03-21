@@ -5,7 +5,8 @@ import {
   Row,
   Col,
   Card,
-  CardBody
+  CardBody,
+  Button
 } from "reactstrap";
 
 import Utils from "../utils";
@@ -63,6 +64,9 @@ class Day extends React.Component {
       </tr>
     ));
   };
+  onAddEventClick = () => {
+    this.props.history.push(`/home/newevent?date=${this.state.date}`)
+  }
   onAttendingChange = async attending => {
     this.setState({ attending });
     await DayHelper.postAttendance(this.state.day.date, attending);
@@ -104,7 +108,12 @@ class Day extends React.Component {
           <Col md="6">
             <Card>
               <CardHeader>
-                <h5 className="title">ארועים</h5>
+                <Row className="justify-content-between ml-2 mr-2">
+                  <h5 className="title mt-2 mb-0">ארועים</h5>
+                  <Button onClick={this.onAddEventClick} className="btn-icon btn-round" color="link">
+                    <i className="text-success tim-icons icon-simple-add"/>
+                  </Button>
+                </Row>
               </CardHeader>
               <CardBody>
                 <Table className="tablesorter" responsive>
