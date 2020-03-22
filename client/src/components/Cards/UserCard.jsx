@@ -5,10 +5,10 @@ import {
   CardBody, 
   CardText, 
   Col,
-  Button
    } from "reactstrap";
 
 import Utils from "../../utils";
+import Userblob from "../UserBlob";
 
 class UserCard extends React.Component {
   constructor(props) {
@@ -64,33 +64,20 @@ class UserCard extends React.Component {
         tabIndex = {1}
         xs = {this.state.isOpen? 12 : 6} >
       <Card {...this.props}>
-        <CardBody>
+        <CardBody >
           <CardText />
             <div className="author">
               <div className="block block-one" />
               <div className="block block-two" />
               <div className="block block-three" />
               <div className="block block-four" />
-              <a href="#pablo" onClick={e => e.preventDefault()}>
-                <img
-                  alt="..."
-                  className="avatar"
-                  src={require("assets/img/emilyz.jpg")}
-                  />
-              </a>
+              
+                <Userblob user={this.state.userData}/>
             </div>
               {this.state.isOpen? this.renderOpenCard() : this.renderClosedCard()}
             <div className="card-description"></div>
         </CardBody>
         <CardFooter className={this.getCardBackgroundColor()}>
-          <div className="button-container">
-            <Button className="btn-icon btn-round">
-              <i className="fab fa-facebook"/>
-            </Button>
-            <Button className="btn-icon btn-round">
-              <i className="fab fa-Instegram"/>
-            </Button>
-          </div>
         </CardFooter>
       </Card>
       </Col>

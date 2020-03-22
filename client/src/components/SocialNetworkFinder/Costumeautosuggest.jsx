@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React from "react";
 import Autosuggest from 'react-autosuggest';
 import { Input, Row} from "reactstrap";
@@ -7,8 +8,9 @@ class Costumeautosuggest extends React.Component {
     constructor(props) {
     super(props);
       this.state = {
-      value: '',
-      suggestions: []
+      value :  props.value,
+      suggestions : []
+
     }; 
     }
   renderInputComponent = inputProps => (
@@ -20,16 +22,16 @@ class Costumeautosuggest extends React.Component {
     this.setState({
       value: newValue
     });
+    this.props.onChange(_.find(this.state.suggestions,{username : newValue}));
   }; 
   onSuggestionsFetchRequested = async({ value }) => {
     this.setState({
       suggestions: await this.props.getSuggestions(value)
     });
-    console.log(this.state.suggestions)
   };
   onSuggestionsClearRequested = () => {
     this.setState({
-      suggestions: []
+      suggestions: this.state.suggestions
     });
   };
   getSuggestionValue = suggestion => suggestion.username;
@@ -38,17 +40,17 @@ class Costumeautosuggest extends React.Component {
     const suggestionText = `${suggestion.username}`;
     return (
       <Row>
-          <img className = "rounded-circle" src={suggestion.profilePic} width = "30px" height="30px"/>
+          <img className = "rounded-circle" src={suggestion.profilePic} width = "30px" height="30px"  alt = ""/>
           <span>{suggestionText}</span>
       </Row>
     );
   };
   render() {
-    const {value } = this.state;
+    const {value} = this.state;
     const inputProps = {
       placeholder: "שם משתמש",
       onChange: this.onChange,
-      value
+      value ,
     };
 
     return ( 

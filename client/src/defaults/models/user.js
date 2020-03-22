@@ -1,7 +1,7 @@
 const User = {};
 
 User.data = {
-  nicknames: [],
+  nicknames: ["", ""],
   username: "",
   password: "",
   birthday: new Date("01/01/1999"),
@@ -10,7 +10,12 @@ User.data = {
   picture: "",
   firstname: "",
   lastname: "",
-  aboutme: ""
+  aboutme: "",
+  instagram: {
+    username: " ",
+    profilePic: null
+  },
+  phonenumber: 0
 };
 
 User.inputAttributes = {

@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router";
 import Axios from "axios";
 import _ from "lodash";
 
@@ -48,6 +47,11 @@ class SignUpPage extends React.Component {
     userData[name] = value;
     this.setState({ userData });
   };
+  onSocialNetworkfinderChange = user =>{
+    const userData = this.state.userData;
+    userData.instagram = user ;
+    this.setState({ userData });
+  }
   onCheckboxChange = event => {
     const userData = this.state.userData;
     const { checked, name } = event.target;
@@ -118,7 +122,10 @@ class SignUpPage extends React.Component {
       }
       if (currentAttr.type === "instagram") {
         return (
-          <SocialNetworkfinder/>
+          <SocialNetworkfinder
+          name = {"instagram"}
+          onChange = {this.onSocialNetworkfinderChange}
+          value = {""}/>
         )
       }
       return (

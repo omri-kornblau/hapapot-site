@@ -17,7 +17,9 @@ const joiFormat = Joi.object().keys({
   nicknames: Joi.array().items(Joi.string()),
   firstname: Joi.string(),
   lastname: Joi.string(),
-  aboutme: Joi.string()
+  aboutme: Joi.string(),
+  phonenumber: Joi.number().integer(),
+  instagram: Joi.object()
 }).unknown(true);
 
 const mongoFormat = {
@@ -48,6 +50,12 @@ const mongoFormat = {
   },
   aboutme: {
     type: String
+  },
+  phonenumber: {
+    type: Number
+  },
+  instagram: {
+    type: Object
   }
 }
 
