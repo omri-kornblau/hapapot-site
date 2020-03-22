@@ -29,17 +29,17 @@
 .day-blob-mask {
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: 5%;
   width: 101%;
   height: 101%;
   border-radius: 20%;
   text-align: center;
   color: white;
-  font-size: 5vw;
+  font-size: 6vw;
 }
 
 .day-blob-mask.month {
-  bottom: -50%;
+  bottom: -59%;
   color: white;
   font-size: 3vw;
 }
@@ -52,7 +52,7 @@
   float: left;
   margin: 1px;
   border-radius: 40%;
-  background-color: rgba(75, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .day-blob.active {

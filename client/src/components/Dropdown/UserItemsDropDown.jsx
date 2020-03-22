@@ -23,7 +23,7 @@ const ItemsList = props => {
     .filter(item => _.find(item.users, { name: props.user }))
     .map(item => {
       const userInItem = _.find(item.users, { name: props.user });
-      return <h5 className="mb-2 pt-2 border-top">{item.name} - {userInItem.amount}</h5>;
+      return <h5 className="mb-2 pt-2 text-black border-top">{item.name} - {userInItem.amount}</h5>;
     });
 }
 
@@ -50,11 +50,11 @@ const UserItemsDropDown = props => {
       <i className="tim-icons icon-basket-simple"/>
     </DropdownToggle>
     <DropdownMenu className="text-center">
-      <h5 className="mb-2"> אתה מביא: </h5>
+      <h5 className="mb-2 text-black"> אתה מביא: </h5>
       <ItemsList {...props}/>
       <h5 className="mb-0 border-top"></h5>
-      <a className="mt-2 mb-2" onClick={onCopyListClick} id="copyBtn">
-        <i className="text-darker tim-icons icon-single-copy-04"/>
+      <a onClick={onCopyListClick} id="copyBtn">
+        <i className="mt-2 mb-2 tim-icons icon-single-copy-04"/>
       </a>
       {
         // Hide the tooltip on dropdown closing, otherwise

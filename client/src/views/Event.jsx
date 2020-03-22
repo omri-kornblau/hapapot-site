@@ -11,7 +11,8 @@ import {
   Input,
   UncontrolledDropdown,
   DropdownMenu,
-  DropdownToggle
+  DropdownToggle,
+  Form
 } from "reactstrap";
 
 import Popup from "reactjs-popup";
@@ -57,28 +58,23 @@ class Event extends React.Component {
       console.log(err);
     }
   }
-  addOne = item => async () => {
+  changeItemUserAmount = async (amount, item) => {
+    if (!this.state.eventData.attending) {
+      return this.openAttendPopup();
+    }
+    const changeAmount = amount > 0 ?
+      EventHelper.addOneItemToUser : EventHelper.subOneItemToUser;
+
     try {
       const { date, name } = this;
-      const res = await EventHelper.addOneItemToUser(item, date, name);
+      const res = await changeAmount(item, date, name);
       this.setState({
         eventData: res.data
       });
-    } catch (err) {
-      console.log(err);
+    } catch(err) {
+      console.error(err);
     }
-  };
-  subOne = item => async () => {
-    try {
-      const { date, name } = this;
-      const res = await EventHelper.subOneItemToUser(item, date, name);
-      this.setState({
-        eventData: res.data
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  }
   onInputChange = event => {
     const newNewItem = this.state.newItem;
     const { value, name } = event.target;
@@ -106,14 +102,12 @@ class Event extends React.Component {
       console.error(err);
     }
   }
-  AddItem = async () => {
+  onAddItemSubmit = async e => {
+    e.preventDefault();
+    e.target.reset();
     try {
-      const res = await EventHelper.addItem(
-        this.state.newItem.name,
-        this.state.newItem.amount,
-        this.state.eventData.time,
-        this.state.eventData.name
-      )
+      const { name, amount } = this.state.newItem;
+      const res = await EventHelper.addItem(name, amount, this.date, this.name);
       this.setState({
         eventData: res.data
       });
@@ -152,6 +146,12 @@ class Event extends React.Component {
     await EventHelper.deleteEvent(this.date, this.state.eventData.name);
     this.props.history.push(`/home/day/${this.date}`);
   }
+  openAttendPopup = () => {
+    this.setState({isAttendMode: true});
+  }
+  closeAttendPopup = () => {
+    this.setState({isAttendMode: false})
+  }
   renderEditModeItemsRows = () => {
     return this.state.eventDataOnEdit.items.map(item =>
       <tr>
@@ -185,10 +185,10 @@ class Event extends React.Component {
           />
         </td>
         <td>
-          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={this.addOne(item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={() => this.changeItemUserAmount(1, item.name)}>
             <i className="tim-icons icon-simple-add"> </i>
           </Button>
-          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={this.subOne(item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={() => this.changeItemUserAmount(-1, item.name)}>
             <i className="tim-icons icon-simple-delete"/>
           </Button>
         </td>
@@ -210,6 +210,7 @@ class Event extends React.Component {
           </Row>
         </CardHeader>
         <CardBody>
+          <Form onSubmit={this.onAddItemSubmit}>
           <Table className="tablesorter text-center" responsive>
             <thead className="text-primary">
               <tr>
@@ -223,20 +224,20 @@ class Event extends React.Component {
               <this.renderExistsItemsRows/>
               <tr>
                 <td>
-                  <Input placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
+                  <Input required placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
+                </td>
+                <td colSpan="2">
+                  <Input required className="text-center" placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
                 </td>
                 <td>
-                  <Input placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
-                </td>
-                <td></td>
-                <td>
-                  <Button color="link" className="text-success btn-icon" onClick={this.AddItem}>
+                  <Button color="link" className="text-success btn-icon" type="submit">
                     <i className="tim-icons icon-simple-add" />
                   </Button>
                 </td>
               </tr>
             </tbody>
-            </Table>
+          </Table>
+          </Form>
         </CardBody>
       </Card>
     );
@@ -279,7 +280,7 @@ class Event extends React.Component {
     return this.state.eventData.cars.map(car => {
       return (
         <tr>
-          <Button className="btn-icon btn-round" color="success" size="sm">
+          <Button  className="btn-icon btn-round" color="success" size="sm">
             <i className="tim-icons icon-simple-add" />
           </Button>
           <td>{car["driver"]}</td>
@@ -302,6 +303,25 @@ class Event extends React.Component {
         <Row className="justify-content-center mt-4 mb-2">
           <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
           <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
+        </Row>
+      </Popup>
+      <Popup open={this.state.isAttendMode} closeOnDocumentClick onClose={this.closeAttendPopup}>
+        <p className="text-center">
+        בשביל להביא דברים צריך להגיע לאירוע, אתה מגיע?
+        </p>
+        <Row className="justify-content-center mt-4 mb-2">
+          <Button className="btn-primary btn-icon btn-round ml-3" onClick={() => {
+            this.onAttendingChange(true);
+            this.closeAttendPopup();
+          }}>
+            כן
+          </Button>
+          <Button className="btn-danger btn-icon btn-round mr-3" onClick={() => {
+            this.onAttendingChange(false);
+            this.closeAttendPopup();
+          }}>
+            לא
+          </Button>
         </Row>
       </Popup>
       <div className="content text-right">

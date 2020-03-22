@@ -69,7 +69,6 @@ EventHelper.subOneItemToUser = async (item, eventDate, eventName) => {
 
 EventHelper.addItem = async (item, amount, eventDate, eventName) => {
   Utils.expectToExist(item, "item");
-  Utils.expectToExist(amount, "amount");
   Utils.expectToExist(eventDate, "eventDate");
   Utils.expectToExist(eventName, "eventName");
   return post("/api/event/item/add", {
