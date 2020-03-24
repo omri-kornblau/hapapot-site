@@ -52,15 +52,14 @@ class UserCard extends React.Component {
     this.setState({isOpen : false})
   }
 
-  onFocus = e => {
-    this.setState({isOpen : true})
+  onClick = e => {
+    this.setState({isOpen : this.state.isOpen? false: true})
   }
-
   render() {
     return (
       <Col key={this.state.userData.username}
-        onFocus = {this.onFocus}  
         onBlur = {this.onBlur}
+        onClick = {this.onClick}
         tabIndex = {1}
         xs = {this.state.isOpen? 12 : 6} >
       <Card {...this.props}>

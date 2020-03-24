@@ -13,10 +13,6 @@ class SocialNetworkfinder extends React.Component {
       value: props.value
     }; 
   }
-    componentWillReceiveProps(props) {
-    this.setState({ selected: props.selected });
-    this.setState({ ...props });
-  }
     getProfiles = async name => {
       const profiles =  await Axios.get(`https://www.instagram.com/web/search/topsearch/?query=${name}`);
       return profiles.data.users.map(profile =>{  
@@ -35,7 +31,8 @@ class SocialNetworkfinder extends React.Component {
       <Costumeautosuggest
       getSuggestions = {this.getProfiles}
       onChange = {this.state.onChange}
-      value = {this.state.value} />
+      value = {this.state.value} 
+      curentIntagram = {this.props.curentIntagram}/>
       </>
     );
   }

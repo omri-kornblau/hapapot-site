@@ -125,7 +125,9 @@ class SignUpPage extends React.Component {
           <SocialNetworkfinder
           name = {"instagram"}
           onChange = {this.onSocialNetworkfinderChange}
-          value = {""}/>
+          value = {""}
+          curentIntagram = {this.state.userData.instagram}
+          />
         )
       }
       return (

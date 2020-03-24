@@ -36,7 +36,6 @@ class UserProfile extends React.Component {
   async componentDidMount() {
     try {
       const res = await Axios.get("/api/user");
-      console.log(res);
       this.setState({
         userData: res.data
       });
@@ -108,18 +107,6 @@ class UserProfile extends React.Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col className="px-md-1" md="6">
-                        <FormGroup>
-                          <label>ססימה</label>
-                          <Input
-                            name="password"
-                            value=""
-                            onChange={this.onInputChange}
-                            placeholder="זה סוד"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
                     </Row>
                     <Row>
                       <Col className="pr-md-1" md="6">
@@ -180,7 +167,8 @@ class UserProfile extends React.Component {
                         <SocialNetworkfinder
                           name = {"instagram"}
                           onChange = {this.onSocialNetworkfinderChange}
-                          value = {this.state.userData.instagram.username}/>
+                          value = {this.state.userData.instagram.username}
+                          curentIntagram = {this.state.userData.instagram}/>
                       </Col>
                     </Row>
                     <Row>

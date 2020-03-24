@@ -23,9 +23,12 @@ exports.getUser = async (req, res) => {
   const {
     username
   } = req;
+  console.log("username: ", username)
   const user = await UserModel.findOne({
     username
   })
+  console.log("user: ", user)
+
   return res.send(user);
 }
 

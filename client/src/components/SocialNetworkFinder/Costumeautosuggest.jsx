@@ -8,21 +8,24 @@ class Costumeautosuggest extends React.Component {
     constructor(props) {
     super(props);
       this.state = {
-      value :  props.value,
-      suggestions : []
+      value : props.value,
+      suggestions : [],
+      onChange: props.onChange
 
     }; 
     }
   renderInputComponent = inputProps => (
   <div>
-    <Input {...inputProps} />
+    <Input  {...inputProps} />
   </div>
 );
-  onChange = (event, { newValue }) => {
+onChange = (event, { newValue }) => {
+  const newInstagram = _.find(this.state.suggestions,{username : newValue})
+  const realValue = typeof(newInstagram)? this.props.curentIntagram : newInstagram
     this.setState({
       value: newValue
     });
-    this.props.onChange(_.find(this.state.suggestions,{username : newValue}));
+    this.state.onChange(realValue);
   }; 
   onSuggestionsFetchRequested = async({ value }) => {
     this.setState({
