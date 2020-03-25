@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  CardText,
   FormGroup,
   Form,
   Input,
@@ -21,7 +20,8 @@ import mapError from "../defaults/errorsMapping";
 
 import DatePicker from "../components/Calendar/CustomDatePicker";
 import UserCard from "components/Cards/UserCard";
-import StatusMessage from "components/Status/StatusBadge"
+import StatusMessage from "components/Status/StatusBadge";
+import SocialNetworkfinder from "components/SocialNetworkFinder/SocialNetworkfinder";
 
 
 class UserProfile extends React.Component {
@@ -43,6 +43,11 @@ class UserProfile extends React.Component {
       console.error(err);
     }
   }
+  onSocialNetworkfinderChange = user =>{
+    const userData = this.state.userData;
+    userData.instagram= user ;
+    this.setState({ userData });
+  };   
   onNicknamesChange = event => {
     const userData = this.state.userData;
     const { value, name } = event.target;
@@ -102,18 +107,6 @@ class UserProfile extends React.Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col className="px-md-1" md="6">
-                        <FormGroup>
-                          <label>ססימה</label>
-                          <Input
-                            name="password"
-                            value=""
-                            onChange={this.onInputChange}
-                            placeholder="זה סוד"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
                     </Row>
                     <Row>
                       <Col className="pr-md-1" md="6">
@@ -155,6 +148,27 @@ class UserProfile extends React.Component {
                             type="text"
                           />
                         </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="pr-md-1" md="6">
+                        <FormGroup>
+                          <label>טלפון</label>
+                          <Input
+                            value={this.state.userData.phonenumber}
+                            onChange={this.onInputChange}
+                            name="phonenumber"
+                            placeholder="054...."
+                            type="text"
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <SocialNetworkfinder
+                          name = {"instagram"}
+                          onChange = {this.onSocialNetworkfinderChange}
+                          value = {this.state.userData.instagram.username}
+                          curentIntagram = {this.state.userData.instagram}/>
                       </Col>
                     </Row>
                     <Row>

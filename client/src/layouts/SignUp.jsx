@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router";
 import Axios from "axios";
 import _ from "lodash";
 
@@ -25,6 +24,7 @@ import StatusMessage from "components/Status/StatusBadge"
 import Utils from "../utils";
 import UserModel from "../defaults/models/user";
 import mapError from "../defaults/errorsMapping";
+import SocialNetworkfinder from "components/SocialNetworkFinder/SocialNetworkfinder";
 
 class SignUpPage extends React.Component {
   constructor(props) {
@@ -47,6 +47,11 @@ class SignUpPage extends React.Component {
     userData[name] = value;
     this.setState({ userData });
   };
+  onSocialNetworkfinderChange = user =>{
+    const userData = this.state.userData;
+    userData.instagram = user ;
+    this.setState({ userData });
+  }
   onCheckboxChange = event => {
     const userData = this.state.userData;
     const { checked, name } = event.target;
@@ -113,6 +118,16 @@ class SignUpPage extends React.Component {
               </span>
             </Label>
           </FormGroup>
+        )
+      }
+      if (currentAttr.type === "instagram") {
+        return (
+          <SocialNetworkfinder
+          name = {"instagram"}
+          onChange = {this.onSocialNetworkfinderChange}
+          value = {""}
+          curentIntagram = {this.state.userData.instagram}
+          />
         )
       }
       return (

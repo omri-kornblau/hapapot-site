@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "reactstrap";
+import { Row} from "reactstrap";
 
 import UserCard from "components/Cards/UserCard";
 import AboutUsHelper from "../helpers/aboutUs";
