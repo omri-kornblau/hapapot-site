@@ -15,8 +15,8 @@ import Popup from "reactjs-popup";
 
 import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
 import DropdownItemsUsers from "../components/Dropdown/DropDown";
+import EventHeader from "../components/EventHeader/EventHeader";
 
-import Utils from "../utils";
 import EventModel from "../defaults/models/event";
 
 import EventHelper from "../helpers/event";
@@ -135,7 +135,7 @@ class Event extends React.Component {
   }
   renderEditModeItemsRows = () => {
     return this.state.eventDataOnEdit.items.map(item =>
-      <tr>
+      <tr key={item.name}>
         <td>{item.name}</td>
         <td><Input onInput={this.onEditedItemInput} name={item.name} type="number" min={1} value={item.neededamount}/></td>
         <td></td>
@@ -149,7 +149,7 @@ class Event extends React.Component {
   }
   renderExistsItemsRows = () => {
     return this.state.eventData.items.map(item => (
-      <tr>
+      <tr key={item.name}>
         <td>{item.name}</td>
         <td>
           {item.neededamount} / {_.sumBy(item.users, user => user.amount)}
@@ -258,15 +258,23 @@ class Event extends React.Component {
   renderCarTable = () => {
     return this.state.eventData.cars.map(car => {
       return (
-        <tr>
-          <Button className="btn-icon btn-round" color="success" size="sm">
-            <i className="tim-icons icon-simple-add" />
-          </Button>
-          <td>{car["driver"]}</td>
-          <td>{car["passengers"]}</td>
-          <Button className="btn-icon btn-round" color="warning" size="sm">
-            <i className="tim-icons icon-simple-delete" />
-          </Button>
+        <tr key={car["driver"]}>
+          <td>
+            <Button className="btn-icon btn-round" color="success" size="sm">
+              <i className="tim-icons icon-simple-add" />
+            </Button>
+          </td>
+          <td>
+            {car["driver"]}
+          </td>
+          <td>
+            {car["passengers"]}
+          </td>
+          <td>
+            <Button className="btn-icon btn-round" color="warning" size="sm">
+              <i className="tim-icons icon-simple-delete" />
+            </Button>
+          </td>
         </tr>
       );
     });
@@ -282,10 +290,6 @@ class Event extends React.Component {
 
   deleteEvent = async () => {
     await EventHelper.deleteEvent(this.date, this.state.eventData.name);
-    this.moveToDay();
-  }
-
-  moveToDay = () => {
     this.props.history.push(`/home/day/${this.date}`);
   }
 
@@ -293,26 +297,18 @@ class Event extends React.Component {
     return (
       <>
       <Popup open={this.state.isDeletingMode} closeOnDocumentClick onClose={this.closeDeletePopup}>
-        <p className="text-center">
-        גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
-        </p>
-        <Row className="justify-content-center">
-          <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
-          <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
-        </Row>
+        <>
+          <p className="text-center">
+          גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
+          </p>
+          <Row className="justify-content-center">
+            <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
+            <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
+          </Row>
+        </>
       </Popup>
       <div className="content text-right">
-        <div className="text-center title">
-          <h3>
-            {this.state.eventData.name}
-          </h3>
-          <h5 onClick={this.moveToDay}>
-            {Utils.formatTime(this.state.eventData.time) + " - " + Utils.formatDate(this.state.eventData.time)}
-          </h5>
-          <p>
-            {this.state.eventData.description}
-          </p>
-        </div>
+        <EventHeader name={this.state.eventData.name} time={this.state.eventData.time} description={this.state.eventData.description} date={this.date}/>
         <Row className="justify-content-center mb-2">
           <AttendingCheckbox
             onChange={this.onAttendingChange}
