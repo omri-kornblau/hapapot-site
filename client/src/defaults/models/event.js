@@ -2,7 +2,7 @@ const Event = {};
 
 Event.data = {
   name: "",
-  eventkey: "",
+  description: " ", // Space here is important otherwise joi will call this 'empty'
   icon: "icon-bag-16",
   cars: [],
   items: [],

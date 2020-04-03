@@ -33,7 +33,7 @@ const getCalendarDayFromDbDay = async (currentUser, dbDay, usersAmount) => {
     nicknames: 1
   })).map(user => user.nicknames);
   const events = await EventModel.find({
-    eventId: {
+    _id: {
       $in: dbDay.events
     }
   }, {

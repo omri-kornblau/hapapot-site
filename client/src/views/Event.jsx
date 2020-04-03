@@ -25,14 +25,14 @@ import PageLoader from "../components/Status/PageLoader";
 
 import EventModel from "../defaults/models/event";
 
+import Utils from "../utils";
 import EventHelper from "../helpers/event";
 
 class Event extends React.Component {
   constructor(props) {
     super(props);
     const path = this.props.location.pathname.split("/").slice(2);
-    this.name = path[2];
-    this.date = path[1];
+    this._id = path[1];
     this.state = {
       eventData: EventModel.data,
       eventDataOnEdit: {},
@@ -48,7 +48,7 @@ class Event extends React.Component {
   }
   componentDidMount = async () => {
     try {
-      const res = await EventHelper.getEvent(this.date, this.name);
+      const res = await EventHelper.getEvent(this._id);
       this.setState({
         eventData: res.data.event,
         currentUser: res.data.username,
@@ -67,7 +67,7 @@ class Event extends React.Component {
 
     try {
       const { date, name } = this;
-      const res = await changeAmount(item, date, name);
+      const res = await changeAmount(this._id, item);
       this.setState({
         eventData: res.data
       });
@@ -96,7 +96,7 @@ class Event extends React.Component {
     eventData.attending = attending;
     this.setState({ eventData });
     try {
-      const res = await EventHelper.postAttendance(this.date, this.name , attending);
+      const res = await EventHelper.postAttendance(this._id , attending);
       this.setState({ eventData: res.data });
     } catch(err) {
       console.error(err);
@@ -107,7 +107,7 @@ class Event extends React.Component {
     e.target.reset();
     try {
       const { name, amount } = this.state.newItem;
-      const res = await EventHelper.addItem(name, amount, this.date, this.name);
+      const res = await EventHelper.addItem(this._id, name, amount);
       this.setState({
         eventData: res.data
       });
@@ -125,7 +125,7 @@ class Event extends React.Component {
   leaveItemsEditModeSaveChanges = async () => {
     const eventData = this.state.eventDataOnEdit;
     try {
-      const res = await EventHelper.updateItems(this.date, this.name, eventData.items);
+      const res = await EventHelper.updateItems(this._id, eventData.items);
       this.setState({ isEditMode: false, eventData: res.data });
     } catch(err) {
       console.error(err);
@@ -143,8 +143,8 @@ class Event extends React.Component {
     this.setState({isDeletingMode: false})
   }
   deleteEvent = async () => {
-    await EventHelper.deleteEvent(this.date, this.state.eventData.name);
-    this.props.history.push(`/home/day/${this.date}`);
+    await EventHelper.deleteEvent(this._id);
+    this.props.history.push(`/home/day/${Utils.formatDateLikeDb(this.state.eventData.time)}`);
   }
   openAttendPopup = () => {
     this.setState({isAttendMode: true});
@@ -340,7 +340,7 @@ class Event extends React.Component {
             name={this.state.eventData.name}
             time={this.state.eventData.time}
             description={this.state.eventData.description}
-            date={this.date}
+            date={Utils.formatDateLikeDb(this.state.eventData.time)}
           />
           <Row className="justify-content-center mb-2">
             <AttendingCheckbox
@@ -373,6 +373,11 @@ class Event extends React.Component {
                 <this.renderItemsCard/>
               }
             </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
+              מחק
+            </Button>
           </Row>
         </PageLoader>
       </div>

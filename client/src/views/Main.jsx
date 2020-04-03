@@ -85,7 +85,7 @@ class Main extends React.Component {
     this.props.history.push(`day/${this.state.selectedDay.date}`);
   }
   openEvent = event => {
-    this.props.history.push(`event/${Utils.formatDateLikeDb(event.time)}/${event.name}`);
+    this.props.history.push(`event/${event._id}`);
   }
   openNewEvent = () => {
     this.props.history.push(`newevent?date=${this.state.selectedDay.date}`);

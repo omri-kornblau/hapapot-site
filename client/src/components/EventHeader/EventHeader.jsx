@@ -9,6 +9,11 @@ import {
 import Utils from "../../utils"
 import DatePicker from "../Calendar/CustomDatePicker";
 
+const readMoreTexts = {
+  more: "קרא עוד",
+  less: "קרא פחות"
+};
+
 class EventHeader extends React.Component {
   constructor(props) {
     super(props);
@@ -16,7 +21,7 @@ class EventHeader extends React.Component {
       data: {
         name : props.name,
         time: props.time,
-        description: props.description ? props.description : "",
+        description: props.description,
         date: props.date,
       },
       isReadMore: false,
@@ -26,7 +31,6 @@ class EventHeader extends React.Component {
 
     this.shortDescriptionLength = props.shortDescriptionLength ? props.shortDescriptionLength : 50;
   }
-
   componentWillReceiveProps(props) {
     this.setState({
       data: {
@@ -37,45 +41,53 @@ class EventHeader extends React.Component {
       }
     });
   }
-
-  moveToDay = () => {
-    const { history } = this.props;
-    history.push(`/home/day/${this.state.date}`);
+  goToDay = () => {
+    this.props.history.push(`/home/day/${this.state.date}`);
   }
-
   toggleReadMore = () => {
-    this.setState({
-      isReadMore: !this.state.isReadMore
-    });
+    this.setState({ isReadMore: !this.state.isReadMore });
   }
-
   renderDescription = () => {
     if (this.state.data.description.length < this.shortDescriptionLength) {
       return (
-      <p>{this.state.data.description}</p>
+        <p>{this.state.data.description}</p>
       );
     }
 
-    var currentDescription = this.state.isReadMore ? (
+    const currentDescription = this.state.isReadMore ? (
       this.state.data.description
     ) : (
       this.state.data.description.slice(0, this.shortDescriptionLength)
     );
-
-    var currentReadMore = this.state.isReadMore ? "Read less" : "Read more";
+    const readMoreText = this.state.isReadMore ? readMoreTexts.less : readMoreTexts.more;
 
     return (
       <>
-        <p className="m-0 eventDescription">
+        <p className="m-0 event-description">
           {currentDescription}
         </p>
         <p onClick={this.toggleReadMore} className="text-primary m-0">
-          {currentReadMore}
+          {readMoreText}
         </p>
       </>
     )
   }
-
+  onInputChange = event => {
+    const newData = this.state.edit;
+    const { value, name } = event.target;
+    newData[name] = value;
+    this.setState({edit: newData});
+  };
+  onTimeChange = time => {
+    const newData = this.state.edit;
+    newData.time = time;
+    this.setState({ edit: newData });
+  }
+  onDateChange = date => {
+    const newData = this.state.edit;
+    newData.date = date;
+    this.setState({ edit: newData });
+  }
   enterEditMode = () => {
     const edit = _.cloneDeep(this.state.data);
     this.setState({
@@ -83,37 +95,14 @@ class EventHeader extends React.Component {
       edit
     });
   }
-
-  onInputChange = event => {
-    const newData = this.state.edit;
-    const { value, name } = event.target;
-    newData[name] = value;
-    this.setState({edit: newData});
-  };
-
-  onTimeChange = time => {
-    const newData = this.state.edit;
-    newData.time = time;
-    this.setState({ edit: newData });
-  }
-
-  onDateChange = date => {
-    const newData = this.state.edit;
-    newData.date = date;
-    this.setState({ edit: newData });
-  }
-
   saveEdit = () => {
     this.setState({
       isEditMode: false,
       data: this.state.edit
     });
   }
-
   cancelEdit = () => {
-    this.setState({
-      isEditMode: false
-    });
+    this.setState({ isEditMode: false });
   }
 
   render() {
@@ -166,7 +155,7 @@ class EventHeader extends React.Component {
               {this.state.data.name}
             </h3>
           </Row>
-            <h5 onClick={this.moveToDay} className="m-1">
+            <h5 onClick={this.goToDay} className="m-1">
               {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
             </h5>
             {this.renderDescription()}

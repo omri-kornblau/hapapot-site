@@ -7,75 +7,64 @@ import Utils from "../utils";
 
 const EventHelper = {};
 
-EventHelper.postNewEvent = async (date, name, newEvent) => {
-  Utils.expectToExist(date, "date");
-  Utils.expectToExist(name, "eventName");
-  await post(`/api/newevent/${date}/${name}`, newEvent);
+EventHelper.postNewEvent = async (newEvent) => {
+  Utils.expectToExist(newEvent, "new event");
+  return post(`/api/newevent`, newEvent);
 }
 
-EventHelper.getEvent = async (date, name) => {
-  Utils.expectToExist(date, "date");
-  Utils.expectToExist(name, "name");
-  return get(`/api/event/${date}/${name}`);
+EventHelper.getEvent = async (_id) => {
+  Utils.expectToExist(_id, "event _id");
+  return get(`/api/event/${_id}`);
 }
 
-EventHelper.postAttendance = async (date, name, attending) => {
-  Utils.expectToExist(date, "date");
-  Utils.expectToExist(name, "name");
-  return post(`/api/attend/event/${date}/${name}`, {
+EventHelper.postAttendance = async (_id, attending) => {
+  Utils.expectToExist(_id, "event _id");
+  return post(`/api/attend/event/${_id}`, {
     attending
   });
 }
 
-EventHelper.deleteEvent = async (date, name) => {
-  Utils.expectToExist(date, "date");
-  Utils.expectToExist(name, "name");
+EventHelper.deleteEvent = async (_id) => {
+  Utils.expectToExist(_id, "event _id");
   return post(`/api/event/delete`, {
-    date,
-    name
+    _id
   });
 }
 
-EventHelper.updateItems = async (date, name, items) => {
+EventHelper.updateItems = async (_id, items) => {
+  Utils.expectToExist(_id, "event _id");
   Utils.expectToExist(items, "items");
-  Utils.expectToExist(date, "event date");
-  Utils.expectToExist(name, "event name");
-  return post(`/api/event/${date}/${name}/items`, {
+  return post(`/api/event/${_id}/items`, {
     items
   });
 }
 
-EventHelper.addOneItemToUser = async (item, eventDate, eventName) => {
+EventHelper.addOneItemToUser = async (_id, item) => {
+  Utils.expectToExist(_id, "event _id");
   Utils.expectToExist(item, "item");
-  Utils.expectToExist(eventDate, "eventDate");
-  Utils.expectToExist(eventName, "eventName");
   return post("/api/event/item/add-one", {
-    item,
-    eventDate,
-    eventName
+    _id,
+    item
   });
 }
 
-EventHelper.subOneItemToUser = async (item, eventDate, eventName) => {
+EventHelper.subOneItemToUser = async (_id, item) => {
+  Utils.expectToExist(_id, "event _id");
   Utils.expectToExist(item, "item");
-  Utils.expectToExist(eventDate, "eventDate");
-  Utils.expectToExist(eventName, "eventName");
   return post("/api/event/item/sub-one", {
-    item,
-    eventDate,
-    eventName
+    _id,
+    item
   });
 }
 
-EventHelper.addItem = async (item, amount, eventDate, eventName) => {
+EventHelper.addItem = async (_id, item, amount) => {
+  Utils.expectToExist(_id, "event _id");
   Utils.expectToExist(item, "item");
-  Utils.expectToExist(eventDate, "eventDate");
-  Utils.expectToExist(eventName, "eventName");
+  Utils.expectToExist(amount, "amount");
   return post("/api/event/item/add", {
+    _id,
     item,
-    amount,
-    eventDate,
-    eventName
+    amount
   });
 }
 

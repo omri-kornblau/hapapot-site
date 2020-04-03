@@ -52,11 +52,9 @@ class NewEvent extends React.Component {
   onSubmit = async e => {
     e.preventDefault();
     try {
-      const eventDate = Utils.formatDateLikeDb(this.state.newEventData.time);
-      const eventName = this.state.newEventData.name;
-      await EventHelper.postNewEvent(eventDate, eventName, this.state.newEventData);
+      const res = await EventHelper.postNewEvent(this.state.newEventData);
       this.setState({ addSucceeded: true });
-      return this.props.history.push(`event/${eventDate}/${eventName}`);
+      return this.props.history.push(`event/${res.data._id}`);
     } catch (err) {
       this.setState({
         addSucceeded: false,

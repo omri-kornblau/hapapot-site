@@ -53,7 +53,7 @@ class Day extends React.Component {
   renderEventsTable = () => {
     return this.state.day.events.map(event => (
       <tr onClick={
-          () => this.props.history.push(`/home/event/${this.state.day.date}/${event.name}`)
+          () => this.props.history.push(`/home/event/${event._id}`)
           }>
         <td>
           {event.name} <i className={event.icon} />
