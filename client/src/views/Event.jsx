@@ -183,7 +183,7 @@ class Event extends React.Component {
     );
   }
   renderExistsItemsRows = () => {
-    return this.state.eventData.items.map(item => (
+    return this.state.eventData.items.map((item, idx) => (
       <tr key={item.name}>
         <td>{item.name}</td>
         <td>
@@ -191,13 +191,12 @@ class Event extends React.Component {
         </td>
         <td>
           <EventItemDropDown
-            color="green"
-            users={
-              item.users.map(user => {
-                const currentUser = _.find(this.state.eventData.users, {username: user.name})
-                return _.assign(_.clone(currentUser), user);
-              })
-            }
+            item={item}
+            idx={idx}
+            users={item.users.map(user => {
+              const currentUser = _.find(this.state.eventData.users, {username: user.name})
+              return _.assign(_.clone(currentUser), user);
+            })}
           />
         </td>
         <td>
