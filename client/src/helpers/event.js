@@ -1,4 +1,7 @@
-import Axios from "axios";
+import {
+  get,
+  post
+} from "./wrappedRequests";
 
 import Utils from "../utils";
 
@@ -7,19 +10,19 @@ const EventHelper = {};
 EventHelper.postNewEvent = async (date, name, newEvent) => {
   Utils.expectToExist(date, "date");
   Utils.expectToExist(name, "eventName");
-  await Axios.post(`/api/newevent/${date}/${name}`, newEvent);
+  await post(`/api/newevent/${date}/${name}`, newEvent);
 }
 
 EventHelper.getEvent = async (date, name) => {
   Utils.expectToExist(date, "date");
   Utils.expectToExist(name, "name");
-  return Axios.get(`/api/event/${date}/${name}`);
+  return get(`/api/event/${date}/${name}`);
 }
 
 EventHelper.postAttendance = async (date, name, attending) => {
   Utils.expectToExist(date, "date");
   Utils.expectToExist(name, "name");
-  return Axios.post(`/api/attend/event/${date}/${name}`, {
+  return post(`/api/attend/event/${date}/${name}`, {
     attending
   });
 }
@@ -27,7 +30,7 @@ EventHelper.postAttendance = async (date, name, attending) => {
 EventHelper.deleteEvent = async (date, name) => {
   Utils.expectToExist(date, "date");
   Utils.expectToExist(name, "name");
-  return Axios.post(`/api/event/delete`, {
+  return post(`/api/event/delete`, {
     date,
     name
   });
@@ -37,7 +40,7 @@ EventHelper.updateItems = async (date, name, items) => {
   Utils.expectToExist(items, "items");
   Utils.expectToExist(date, "event date");
   Utils.expectToExist(name, "event name");
-  return Axios.post(`/api/event/${date}/${name}/items`, {
+  return post(`/api/event/${date}/${name}/items`, {
     items
   });
 }
@@ -46,7 +49,7 @@ EventHelper.addOneItemToUser = async (item, eventDate, eventName) => {
   Utils.expectToExist(item, "item");
   Utils.expectToExist(eventDate, "eventDate");
   Utils.expectToExist(eventName, "eventName");
-  return Axios.post("/api/event/item/add-one", {
+  return post("/api/event/item/add-one", {
     item,
     eventDate,
     eventName
@@ -57,7 +60,7 @@ EventHelper.subOneItemToUser = async (item, eventDate, eventName) => {
   Utils.expectToExist(item, "item");
   Utils.expectToExist(eventDate, "eventDate");
   Utils.expectToExist(eventName, "eventName");
-  return Axios.post("/api/event/item/sub-one", {
+  return post("/api/event/item/sub-one", {
     item,
     eventDate,
     eventName
@@ -66,10 +69,9 @@ EventHelper.subOneItemToUser = async (item, eventDate, eventName) => {
 
 EventHelper.addItem = async (item, amount, eventDate, eventName) => {
   Utils.expectToExist(item, "item");
-  Utils.expectToExist(amount, "amount");
   Utils.expectToExist(eventDate, "eventDate");
   Utils.expectToExist(eventName, "eventName");
-  return Axios.post("/api/event/item/add", {
+  return post("/api/event/item/add", {
     item,
     amount,
     eventDate,

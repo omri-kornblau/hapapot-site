@@ -8,6 +8,8 @@ import {
   Container,
   Jumbotron,
   Button,
+  Badge,
+  UncontrolledTooltip
 } from "reactstrap";
 import _ from "lodash";
 
@@ -49,21 +51,21 @@ class Main extends React.Component {
   getDayBlobsRows() {
     return this.state.days.map((week, weekIdx) => (
       <Row key={`week-${weekIdx}`} className="justify-content-around">
-        {week.map(day => {
+        {week.map((day, dayIdx) => {
           const isSelected = this.state.selectedDay.date === day.date;
-          if (isSelected) {
-            this.state.selectedDay = day;
-          }
+          if (isSelected) (this.state.selectedDay = day)
           return (
             <Col key={`day-${day.date}`} sm="7th" className="center">
               <DayBlob
                 onClick={() => {
-                  this.setState({ selectedDay: day });
+                  if (isSelected) { return this.openSelectedDay() }
+                  this.setState({ selectedDay: day});
                 }}
                 attendance={day.attendance}
                 events={day.events}
                 date={day.date}
                 selected={isSelected}
+                showMonth={dayIdx === 0 && weekIdx === 0}
               />
             </Col>
           );
@@ -78,6 +80,35 @@ class Main extends React.Component {
     await DayHelper.postAttendance(this.state.selectedDay.date, attending);
     await this.fetchCalendar();
   }
+  openSelectedDay = () => {
+    this.props.history.push(`day/${this.state.selectedDay.date}`);
+  }
+  openEvent = event => {
+    this.props.history.push(`event/${Utils.formatDateLikeDb(event.time)}/${event.name}`);
+  }
+  openNewEvent = () => {
+    this.props.history.push(`newevent?date=${this.state.selectedDay.date}`);
+  }
+  renderUsersInDay = () => {
+    return this.state.selectedDay.attendance > 0 ?
+      this.state.selectedDay.nicknames.map(nickName =>
+        <Badge className="m-1" color="primary">{Utils.pickNickName(nickName)}</Badge>
+      )
+      : "אף אחד לא נמצא"
+  }
+  renderEventsInDay = () => {
+    const { events } = this.state.selectedDay;
+    return !events ? "" : events.map((event, idx) =>
+      <>
+        <UncontrolledTooltip onClick={() => this.openEvent(event)} placement="bottom" target={`event_${idx}`}>
+         בשעה {Utils.formatTime(event.time)}
+         <h5 className="mb-0"/>
+         <i className="mb-1 tim-icons icon-zoom-split"></i>
+        </UncontrolledTooltip>
+        <Badge id={`event_${idx}`} className="m-1" color="danger">{event.name}</Badge>
+      </>
+    );
+  }
 
   render() {
     return (
@@ -89,33 +120,20 @@ class Main extends React.Component {
                 <h4 className="text-center title">
                   {Utils.formatDate(this.state.selectedDay.date)}
                 </h4>
-                <h5 className="text-center">
-                  {
-                    this.state.selectedDay.attendance > 0 ?
-                      Utils.formatUsersNicknames(this.state.selectedDay.nickNames)
-                    : "אף אחד לא נמצא"
-                  }
+                <h5 className="text-center mb-1">
+                  מי בבית:
                 </h5>
-                <Row className="justify-content-around">
-                  <Button
-                    className="btn-sm btn-primary"
-                    onClick={() => {
-                      this.props.history.push(
-                        `day/${this.state.selectedDay.date}`
-                      );
-                    }}
-                  >
-                    <i className="tim-icons icon-bullet-list-67"></i>
-                  </Button>
-                  <Button
-                    className="btn-sm btn-success"
-                    onClick={() => {
-                      this.props.history.push(
-                        `newevent?date=${this.state.selectedDay.date}`
-                      );
-                    }}>
-                    <i className="tim-icons icon-simple-add"></i>
-                  </Button>
+                <Row className="justify-content-center">
+                  <this.renderUsersInDay/>
+                </Row>
+                <h5 className="text-center mb-1">
+                  מה עושים:
+                </h5>
+                <Row className="justify-content-center">
+                  <this.renderEventsInDay/>
+                  <a className="text-success ml-3 mr-3" color="link" onClick={this.openNewEvent}>
+                    +
+                  </a>
                 </Row>
               </Container>
             </Jumbotron>

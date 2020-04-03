@@ -1,9 +1,11 @@
-import Axios from "axios";
+import {
+    get
+} from "./wrappedRequests";
 
 const AboutUsHelper = {};
 
 AboutUsHelper.getPage = async () => {
-    return await Axios.get("/api/aboutus");
+    return get("/api/aboutus");
 }
 
 export default AboutUsHelper;

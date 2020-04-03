@@ -1,6 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router";
-import Axios from "axios";
 import _ from "lodash";
 
 import {
@@ -25,6 +23,8 @@ import StatusMessage from "components/Status/StatusBadge"
 import Utils from "../utils";
 import UserModel from "../defaults/models/user";
 import mapError from "../defaults/errorsMapping";
+
+import UserHelper from "../helpers/user";
 
 class SignUpPage extends React.Component {
   constructor(props) {
@@ -133,7 +133,7 @@ class SignUpPage extends React.Component {
   onSubmit = async event => {
     event.preventDefault();
     try {
-      await Axios.post("/api/newuser", this.state.userData);
+      await UserHelper.addUser(this.state.userData);
       this.setState({ signUpSucceeded: true });
       this.props.history.push("/");
     } catch (err) {

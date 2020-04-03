@@ -24,9 +24,9 @@ const DropdownItemsUsers = props => (
           return;
         }
         return (
-          <div>
+          <h5 className="m-0 text-black">
             {Utils.pickNickName(user.nicknames)} - {user.amount}
-          </div>
+          </h5>
         );
       })}
     </DropdownMenu>

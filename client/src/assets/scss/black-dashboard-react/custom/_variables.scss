@@ -29,14 +29,14 @@ $dark-background: #555555 !default;
 
 $grays: () !default;
 $grays: map-merge(("100": $gray-100,
-        "200": $gray-200,
-        "300": $gray-300,
-        "400": $gray-400,
-        "500": $gray-500,
-        "600": $gray-600,
-        "700": $gray-700,
-        "800": $gray-800,
-        "900": $gray-900), $grays);
+                "200": $gray-200,
+                "300": $gray-300,
+                "400": $gray-400,
+                "500": $gray-500,
+                "600": $gray-600,
+                "700": $gray-700,
+                "800": $gray-800,
+                "900": $gray-900), $grays);
 
 $blue: #5e72e4 !default;
 $indigo: #5603ad !default;
@@ -73,20 +73,20 @@ $opacity-2: rgba(255, 255, 255, .2) !default;
 
 $colors: () !default;
 $colors: map-merge(("blue": $blue,
-        "indigo": $indigo,
-        "purple": $purple,
-        "pink": $pink,
-        "red": $red,
-        "orange": $orange,
-        "yellow": $yellow,
-        "green": $green,
-        "teal": $teal,
-        "cyan": $cyan,
-        "white": $white,
-        "gray": $gray-600,
-        "light": $gray-400,
-        "lighter": $gray-200,
-        "gray-dark": $gray-800), $colors);
+                "indigo": $indigo,
+                "purple": $purple,
+                "pink": $pink,
+                "red": $red,
+                "orange": $orange,
+                "yellow": $yellow,
+                "green": $green,
+                "teal": $teal,
+                "cyan": $cyan,
+                "white": $white,
+                "gray": $gray-600,
+                "light": $gray-400,
+                "lighter": $gray-200,
+                "gray-dark": $gray-800), $colors);
 
 $default-color-opacity: rgba(182, 182, 182, .6) !default;
 $orange-color: #f96332 !default;
@@ -98,7 +98,7 @@ $success: #00c853 !default;
 $info: #24b0bd !default;
 $warning: #e76b00 !default;
 $danger: #d50000 !default;
-$black: #222a42 !default;
+$black: #131313 !default;
 
 
 // gradient
@@ -106,9 +106,9 @@ $default-states: #4d4d4d !default;
 $primary-states: #0026ca !default;
 $success-states: #009624 !default;
 $info-states: #ba54f5 !default;
-$warning-states: #ff6491 !default;
+$warning-states: #a84f00 !default;
 $danger-states: #9b0000 !default;
-$black-states: #1d253b !default;
+$black-states: #202020 !default;
 
 $background-black: #1e1e2f !default;
 $background-states-black: #1e1e24 !default;
@@ -164,31 +164,31 @@ $behance-states: lighten($behance, 6%) !default;
 
 $theme-colors: () !default;
 $theme-colors: map-merge(("default": $default,
-        "primary": $primary,
-        "secondary": $secondary,
-        "success": $success,
-        "info": $info,
-        "warning": $warning,
-        "danger": $danger,
-        "white": $white,
-        "neutral": $white,
-        "dark": $dark,
-        "darker": $darker), $theme-colors);
+                "primary": $primary,
+                "secondary": $secondary,
+                "success": $success,
+                "info": $info,
+                "warning": $warning,
+                "danger": $danger,
+                "white": $white,
+                "neutral": $white,
+                "dark": $dark,
+                "darker": $darker), $theme-colors);
 
 $brand-colors: () !default;
 $brand-colors: map-merge(("facebook": $facebook,
-        "twitter": $twitter,
-        "google-plus": $google-plus,
-        "instagram": $instagram,
-        "pinterest": $pinterest,
-        "youtube": $youtube,
-        "dribbble": $dribbble,
-        "github": $github,
-        "reddit": $reddit,
-        "behance": $behance,
-        "tumblr": $tumblr,
-        "linkedin": $linkedin,
-    ), $brand-colors);
+                "twitter": $twitter,
+                "google-plus": $google-plus,
+                "instagram": $instagram,
+                "pinterest": $pinterest,
+                "youtube": $youtube,
+                "dribbble": $dribbble,
+                "github": $github,
+                "reddit": $reddit,
+                "behance": $behance,
+                "tumblr": $tumblr,
+                "linkedin": $linkedin,
+        ), $brand-colors);
 
 
 /*     brand Colors              */
@@ -234,10 +234,10 @@ $body-color: $gray-700 !default;
 
 $section-colors: () !default;
 $section-colors: map-merge(("primary": $body-bg,
-        "secondary": $secondary,
-        "light": $gray-400,
-        "dark": $dark,
-        "darker": $darker), $section-colors);
+                "secondary": $secondary,
+                "light": $gray-400,
+                "dark": $dark,
+                "darker": $darker), $section-colors);
 
 // Links
 
@@ -249,10 +249,10 @@ $link-hover-decoration: none !default;
 // Grid breakpoints
 
 $grid-breakpoints: (xs: 0,
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    xl: 1200px);
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1200px);
 
 @include _assert-ascending($grid-breakpoints, "$grid-breakpoints");
 @include _assert-starts-at-zero($grid-breakpoints);
@@ -268,15 +268,15 @@ $grid-breakpoints: (xs: 0,
 $spacer: 1rem !default;
 $spacers: () !default;
 $spacers: map-merge((0: 0,
-        1: ($spacer * .25),
-        2: ($spacer * .5),
-        3: $spacer,
-        4: ($spacer * 1.5),
-        5: ($spacer * 3),
-        'sm': ($spacer * 2),
-        'md': ($spacer * 4),
-        'lg': ($spacer * 6),
-        'xl': ($spacer * 8)), $spacers);
+                1: ($spacer * .25),
+                2: ($spacer * .5),
+                3: $spacer,
+                4: ($spacer * 1.5),
+                5: ($spacer * 3),
+                'sm': ($spacer * 2),
+                'md': ($spacer * 4),
+                'lg': ($spacer * 6),
+                'xl': ($spacer * 8)), $spacers);
 
 $padding-base-vertical: .5rem !default;
 $padding-base-horizontal: .7rem !default;
@@ -299,9 +299,9 @@ $margin-base-vertical: 15px !default;
 
 $sizes: () !default;
 $sizes: map-merge((25: 25%,
-        50: 50%,
-        75: 75%,
-        100: 100%), $sizes);
+                50: 50%,
+                75: 75%,
+                100: 100%), $sizes);
 
 // Components
 
@@ -903,8 +903,8 @@ $card-columns-margin: $card-spacer-y !default;
 
 $tooltip-font-size: $font-size-sm !default;
 $tooltip-max-width: 200px !default;
-$tooltip-color: $black !default;
-$tooltip-bg: $white !default;
+$tooltip-color: $white !default;
+$tooltip-bg: $black !default;
 $tooltip-border-radius: $border-radius !default;
 $tooltip-opacity: .9 !default;
 $tooltip-padding-y: .25rem !default;
