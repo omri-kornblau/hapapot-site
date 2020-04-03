@@ -61,6 +61,7 @@ class Main extends React.Component {
                   if (isSelected) { return this.openSelectedDay() }
                   this.setState({ selectedDay: day});
                 }}
+                key={`dayblob-${day.date}-${day.attendance}`}
                 attendance={day.attendance}
                 events={day.events}
                 date={day.date}
@@ -92,21 +93,21 @@ class Main extends React.Component {
   renderUsersInDay = () => {
     return this.state.selectedDay.attendance > 0 ?
       this.state.selectedDay.nicknames.map(nickName =>
-        <Badge className="m-1" color="primary">{Utils.pickNickName(nickName)}</Badge>
+        <Badge key={nickName} className="m-1" color="primary">{Utils.pickNickName(nickName)}</Badge>
       )
       : "אף אחד לא נמצא"
   }
   renderEventsInDay = () => {
     const { events } = this.state.selectedDay;
     return !events ? "" : events.map((event, idx) =>
-      <>
+      <div key={event.name}>
         <UncontrolledTooltip onClick={() => this.openEvent(event)} placement="bottom" target={`event_${idx}`}>
          בשעה {Utils.formatTime(event.time)}
          <h5 className="mb-0"/>
          <i className="mb-1 tim-icons icon-zoom-split"></i>
         </UncontrolledTooltip>
         <Badge id={`event_${idx}`} className="m-1" color="danger">{event.name}</Badge>
-      </>
+      </div>
     );
   }
 

@@ -36,7 +36,7 @@ class DayBlob extends React.Component {
         ></div>
         <div className="ml-1 mr-1 pt-1 day-blob-mask">
           { this.state.events.map(event =>
-              <div className="day-blob-event"/>
+              <div key={event.name} className="day-blob-event"/>
             )
           }
         </div>
