@@ -42,7 +42,8 @@ class Event extends React.Component {
       isDeletingMode: false,
       isEditMode: false,
       currentUser: "",
-      isLoading: true
+      isLoading: true,
+      error: ""
     };
   }
   componentDidMount = async () => {
@@ -51,10 +52,15 @@ class Event extends React.Component {
       this.setState({
         eventData: res.data.event,
         currentUser: res.data.username,
-        isLoading: false
+        isLoading: false,
+        error: ""
       });
     } catch (err) {
-      console.log(err);
+      if (err.response.status === 404) {
+        this.setState({isLoading: false, error: "האירוע לא קיים אחי"});
+      } else {
+        console.log(err);
+      }
     }
   }
   changeItemUserAmount = async (amount, item) => {
@@ -346,47 +352,55 @@ class Event extends React.Component {
       </Popup>
       <div className="content text-right">
         <PageLoader isLoading={this.state.isLoading}>
-          <EventHeader
-            name={this.state.eventData.name}
-            time={this.state.eventData.time}
-            description={this.state.eventData.description}
-            date={Utils.formatDateLikeDb(this.state.eventData.time)}
-            updateEvent={this.updateEventHeader}
-            history={this.props.history}
-            onAttendingChange={this.onAttendingChange}
-            attending={this.state.eventData.attending}
-          />
-          <Row>
-            <Col md="6">
-              <Card>
-                <CardHeader>
-                  <h5 className="title">רכבים</h5>
-                </CardHeader>
-                <CardBody>
-                  <Table className="tablesorter table-sm table-striped" responsive>
-                    <thead className="text-primary">
-                      <tr>
-                        <th>שם</th>
-                        <th>תמונה</th>
-                      </tr>
-                    </thead>
-                    <tbody>{this.renderCarTable()}</tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col md="6">
-              { this.state.isEditMode ?
-                <this.renderEditItemsCard/> :
-                <this.renderItemsCard/>
-              }
-            </Col>
-          </Row>
-          <Row className="justify-content-center">
-            <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
-              מחק
-            </Button>
-          </Row>
+          { this.state.error === "" ? 
+            <>
+              <EventHeader
+                name={this.state.eventData.name}
+                time={this.state.eventData.time}
+                description={this.state.eventData.description}
+                date={Utils.formatDateLikeDb(this.state.eventData.time)}
+                updateEvent={this.updateEventHeader}
+                history={this.props.history}
+                onAttendingChange={this.onAttendingChange}
+                attending={this.state.eventData.attending}
+              />
+              <Row>
+                <Col md="6">
+                  <Card>
+                    <CardHeader>
+                      <h5 className="title">רכבים</h5>
+                    </CardHeader>
+                    <CardBody>
+                      <Table className="tablesorter table-sm table-striped" responsive>
+                        <thead className="text-primary">
+                          <tr>
+                            <th>שם</th>
+                            <th>תמונה</th>
+                          </tr>
+                        </thead>
+                        <tbody>{this.renderCarTable()}</tbody>
+                      </Table>
+                    </CardBody>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  { this.state.isEditMode ?
+                    <this.renderEditItemsCard/> :
+                    <this.renderItemsCard/>
+                  }
+                </Col>
+              </Row>
+              <Row className="justify-content-center">
+                <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
+                  מחק
+                </Button>
+              </Row>
+            </>
+            :
+              <div className="text-center justify-content-center">
+                <h3 style={{color: "red"}}>{this.state.error}</h3>
+              </div>
+            }
         </PageLoader>
       </div>
     </>);

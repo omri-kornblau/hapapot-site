@@ -18,10 +18,14 @@ exports.getEvent = async (req, res) => {
 
   const event = await getEventFromDb(_id, username);
 
-  return res.send({
-    event,
-    username
-  });
+  if (event) {
+    return res.send({
+      event,
+      username
+    });
+  } else {
+    throw Boom.notFound(`Event does not exist: ${_id}`);
+  }
 };
 
 const sendEvent = (res, status, event) => {
