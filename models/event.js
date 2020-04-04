@@ -84,7 +84,7 @@ eventSchema.post("save", async function () {
     $addToSet: {
       events: this._id
     }
-  })
+  });
 });
 
 eventSchema.pre("remove", async function () {
@@ -99,7 +99,7 @@ eventSchema.pre("remove", async function () {
     $pull: {
       events: this._id
     }
-  })
+  });
 });
 
 const Event = Mongoose.model("Event", eventSchema);

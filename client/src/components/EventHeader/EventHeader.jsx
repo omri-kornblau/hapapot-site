@@ -26,8 +26,11 @@ class EventHeader extends React.Component {
       },
       isReadMore: false,
       isEditMode: false,
-      edit: {}
+      edit: {},
+      error: ""
     };
+
+    this.updateEvent = props.updateEvent;
 
     this.shortDescriptionLength = props.shortDescriptionLength ? props.shortDescriptionLength : 50;
   }
@@ -42,7 +45,7 @@ class EventHeader extends React.Component {
     });
   }
   goToDay = () => {
-    this.props.history.push(`/home/day/${this.state.date}`);
+    this.props.history.push(`/home/day/${this.state.data.date}`);
   }
   toggleReadMore = () => {
     this.setState({ isReadMore: !this.state.isReadMore });
@@ -50,7 +53,7 @@ class EventHeader extends React.Component {
   renderDescription = () => {
     if (this.state.data.description.length < this.shortDescriptionLength) {
       return (
-        <p>{this.state.data.description}</p>
+        <p className="m-0 event-description">{this.state.data.description}</p>
       );
     }
 
@@ -95,11 +98,13 @@ class EventHeader extends React.Component {
       edit
     });
   }
-  saveEdit = () => {
-    this.setState({
-      isEditMode: false,
-      data: this.state.edit
-    });
+  saveEdit = async () => {
+    const { name, date, time, description } = this.state.edit;
+    if (await this.updateEvent(name, date, time, description)) {
+      this.setState({ isEditMode: false, error: "" });
+    } else {
+      this.setState({ error: "Failed to update event"});
+    }
   }
   cancelEdit = () => {
     this.setState({ isEditMode: false });
@@ -117,6 +122,7 @@ class EventHeader extends React.Component {
               <i className="tim-icons icon-check-2"/>
             </Button>
           </Row>
+          {this.state.error !== "" ? <p style={{color: "red"}}>{this.state.error}</p> : <></>}
           <Row>
             <Col>
               <Input onChange={this.onInputChange} name="name" value={this.state.edit.name}/>
@@ -151,14 +157,14 @@ class EventHeader extends React.Component {
         <div className="text-center title">
           <Row className="justify-content-center">
             <i className="tim-icons icon-pencil m-2" onClick={this.enterEditMode}/>
-            <h3 className="m-1">
+            <h3 className="m-1 justify-content-center">
               {this.state.data.name}
             </h3>
           </Row>
-            <h5 onClick={this.goToDay} className="m-1">
-              {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
-            </h5>
-            {this.renderDescription()}
+          <h5 onClick={this.goToDay} className="m-1">
+            {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
+          </h5>
+          {this.renderDescription()}
         </div>
       );
     }

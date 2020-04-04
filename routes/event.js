@@ -1,9 +1,12 @@
 const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Boom = require("boom");
+const Utils = require("../utils")
+const MongoHelpers = require("../models/mongoHelpers")
 
 const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
+const DayModel = Mongoose.model("Day");
 
 exports.getEvent = async (req, res) => {
   const {
@@ -191,6 +194,56 @@ exports.insertEvent = async (req, res) => {
     }
     throw err;
   }
+}
+
+exports.updateEvent = async (req, res) => {
+  const {
+    _id
+  } = req.params;
+  const {
+    name,
+    time,
+    description
+  } = req.body;
+  const {
+    username
+  } = req;
+
+  // remove event from old day
+  const oldEvent = await getEventFromDb(_id, username);
+  const oldDate = Utils.dateToDayQuery(oldEvent.time);
+  await DayModel.updateOne({
+    date: oldDate
+  }, {
+    $pull: {
+      events: _id
+    }
+  });
+
+  // add event to new day
+  const date = Utils.dateToDayQuery(time);
+  await MongoHelpers.getAndCreateIfEmpty(date);
+  await DayModel.updateOne({
+    date
+  }, {
+    $addToSet: {
+      events: _id
+    }
+  });
+
+  // update event data
+  await EventModel.updateOne({
+    _id,
+  }, {
+    $set: {
+      name,
+      time,
+      description
+    }
+  });
+
+  const event = await getEventFromDb(_id, username);
+  return sendEvent(res, 200, event);
 }
 
 exports.updateItems = async (req, res) => {

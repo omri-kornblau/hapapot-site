@@ -102,6 +102,17 @@ class Event extends React.Component {
       console.error(err);
     }
   }
+  updateEventHeader = async (name, date, time, description) => {
+    const finalTime = Utils.mergeDateAndTime(date, time);
+    try {
+      const res = await EventHelper.updateEventHeader(this._id, name, finalTime, description);
+      this.setState({eventData: res.data});
+      return true;
+    } catch(err) {
+      console.error(err);
+      return false;
+    }
+  }
   onAddItemSubmit = async e => {
     e.preventDefault();
     e.target.reset();
@@ -341,6 +352,8 @@ class Event extends React.Component {
             time={this.state.eventData.time}
             description={this.state.eventData.description}
             date={Utils.formatDateLikeDb(this.state.eventData.time)}
+            updateEvent={this.updateEventHeader}
+            history={this.props.history}
           />
           <Row className="justify-content-center mb-2">
             <AttendingCheckbox
