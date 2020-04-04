@@ -6,6 +6,8 @@ import {
   Input,
   Col
 } from "reactstrap"
+import Linkify from 'react-linkify';
+
 import Utils from "../../utils"
 import DatePicker from "../Calendar/CustomDatePicker";
 import AttendingCheckbox from "../Calendar/AttendingCheckbox";
@@ -57,7 +59,11 @@ class EventHeader extends React.Component {
   renderDescription = () => {
     if (this.state.data.description.length < this.shortDescriptionLength) {
       return (
-        <p className="m-0 event-description">{this.state.data.description}</p>
+        <Linkify className="m-0 event-description">
+          <div className="m-0 event-description">
+            {this.state.data.description}
+          </div>
+        </Linkify>
       );
     }
 
@@ -70,13 +76,15 @@ class EventHeader extends React.Component {
 
     return (
       <>
-        <p className="m-0 event-description">
-          {currentDescription}
-          {this.state.isReadMore ? <br/> : "... "}
-          <a onClick={this.toggleReadMore} className="text-primary m-0">
-            {readMoreText}
-          </a>
-        </p>
+        <Linkify>
+          <div className="m-0 event-description">
+            {currentDescription}
+            {this.state.isReadMore ? <br/> : "... "}
+            <a onClick={this.toggleReadMore} className="text-primary m-0">
+              {readMoreText}
+            </a>
+          </div>
+        </Linkify>
       </>
     )
   }
@@ -125,7 +133,7 @@ class EventHeader extends React.Component {
   render() {
     if (this.state.isEditMode) {
       return (
-        <div className="text-center title">
+        <div className="text-center">
           <Row className="justify-content-center mb-2">
             <Button onClick={this.cancelEdit} className="btn-icon btn-round" color="link">
               <i className="text-danger tim-icons icon-simple-remove"/>
@@ -167,7 +175,7 @@ class EventHeader extends React.Component {
       );
     } else {
       return (
-        <div className="text-center title">
+        <div className="text-center">
           <h3 className="m-1">
             {this.state.data.name}
           </h3>

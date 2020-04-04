@@ -74,6 +74,7 @@
 .event-description {
   white-space: pre-line;
   word-break: break-word;
+  color: black;
 }
 
 .edit-event-header-btn {
