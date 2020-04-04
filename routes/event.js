@@ -207,6 +207,7 @@ exports.updateEvent = async (req, res) => {
   const {
     name,
     time,
+    location,
     description
   } = req.body;
   const {
@@ -242,6 +243,7 @@ exports.updateEvent = async (req, res) => {
     $set: {
       name,
       time,
+      location,
       description
     }
   });

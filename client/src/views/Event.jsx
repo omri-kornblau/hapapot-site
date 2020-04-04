@@ -107,10 +107,10 @@ class Event extends React.Component {
       console.error(err);
     }
   }
-  updateEventHeader = async (name, date, time, description) => {
+  updateEventHeader = async (name, date, time, location, description) => {
     const finalTime = Utils.mergeDateAndTime(date, time);
     try {
-      const res = await EventHelper.updateEventHeader(this._id, name, finalTime, description);
+      const res = await EventHelper.updateEventHeader(this._id, name, finalTime, location, description);
       this.setState({eventData: res.data});
       return true;
     } catch(err) {
@@ -358,6 +358,7 @@ class Event extends React.Component {
                 time={this.state.eventData.time}
                 description={this.state.eventData.description}
                 date={Utils.formatDateLikeDb(this.state.eventData.time)}
+                location={this.state.eventData.location}
                 updateEvent={this.updateEventHeader}
                 history={this.props.history}
                 onAttendingChange={this.onAttendingChange}

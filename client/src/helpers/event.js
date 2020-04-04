@@ -7,13 +7,15 @@ import Utils from "../utils";
 
 const EventHelper = {};
 
-EventHelper.updateEventHeader = async (_id, name, time, description) => {
+EventHelper.updateEventHeader = async (_id, name, time, location, description) => {
   Utils.expectToExist(name, "title")
   Utils.expectToExist(time, "time")
+  Utils.expectToExist(location, "time")
   Utils.expectToExist(description, "description")
   return post(`/api/updateevent/${_id}`, {
     name,
     time,
+    location,
     description
   });
 }

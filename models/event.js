@@ -27,6 +27,7 @@ const eventJoiFormat = Joi.object().keys({
   name: Joi.string().required(),
   time: Joi.string().required(),
   description: Joi.string().required(),
+  location: Joi.string().required(),
   icon: Joi.string(),
   cars: Joi.array().items(carJoiFormat),
   items: Joi.array().items(itemJoiFormat),
@@ -54,6 +55,9 @@ const mongoFormat = {
     type: Array
   },
   description: {
+    type: String
+  },
+  location: {
     type: String
   },
   rating: {

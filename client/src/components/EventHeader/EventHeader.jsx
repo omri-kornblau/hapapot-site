@@ -26,6 +26,7 @@ class EventHeader extends React.Component {
         time: props.time,
         description: props.description,
         date: props.date,
+        location: props.location
       },
       attending: props.attending,
       isReadMore: false,
@@ -45,7 +46,8 @@ class EventHeader extends React.Component {
         name : props.name,
         time: props.time,
         description: props.description,
-        date: props.date
+        date: props.date,
+        location: props.location,
       },
       attending: props.attending
     });
@@ -112,8 +114,8 @@ class EventHeader extends React.Component {
     });
   }
   saveEdit = async () => {
-    const { name, date, time, description } = this.state.edit;
-    if (await this.updateEvent(name, date, time, description)) {
+    const { name, date, time, description, location } = this.state.edit;
+    if (await this.updateEvent(name, date, time, location, description)) {
       this.setState({ isEditMode: false, error: "" });
     } else {
       this.setState({ error: "Failed to update event"});
@@ -173,6 +175,16 @@ class EventHeader extends React.Component {
           <Row>
             <Col>
               <Input
+                onChange={this.onInputChange}
+                name="location"
+                value={this.state.edit.location}
+                placeholder="הכנס מיקום"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Input
                 type="textarea"
                 placeholder="הכנס תיאור"
                 onChange={this.onInputChange}
@@ -191,6 +203,9 @@ class EventHeader extends React.Component {
           </h3>
           <h5 onClick={this.goToDay} className="m-1">
             {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
+          </h5>
+          <h5>
+            {this.state.data.location}
           </h5>
           {this.renderDescription()}
           <Row className="justify-content-center mt-1 mb-3">
