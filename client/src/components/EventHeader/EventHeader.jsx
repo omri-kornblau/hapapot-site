@@ -110,6 +110,20 @@ class EventHeader extends React.Component {
   cancelEdit = () => {
     this.setState({ isEditMode: false });
   }
+  shareEvent = async () => {
+    await navigator.share({
+      title: "Hapapot Site",
+      url: window.location.href,
+      text: `שותפת באירוע זה באמצעות האתר של הפאפות:\n${this.state.data.description}`
+    });
+  }
+  renderShare = () => {
+    if (navigator.share) {
+      return (<h1 onClick={this.shareEvent}>SHARE</h1>);
+    } else {
+      return;
+    }
+  }
 
   render() {
     if (this.state.isEditMode) {
@@ -164,6 +178,7 @@ class EventHeader extends React.Component {
             </h5>
             {this.renderDescription()}
             <i className="edit-event-header-btn tim-icons icon-pencil" onClick={this.enterEditMode}/>
+            {this.renderShare()}
         </div>
       );
     }
