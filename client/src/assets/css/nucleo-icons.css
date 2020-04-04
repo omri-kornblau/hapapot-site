@@ -103,6 +103,7 @@ Created using IcoMoon - icomoon.io
   0% {
     -webkit-transform: rotate(0deg);
   }
+
   100% {
     -webkit-transform: rotate(360deg);
   }
@@ -112,6 +113,7 @@ Created using IcoMoon - icomoon.io
   0% {
     -moz-transform: rotate(0deg);
   }
+
   100% {
     -moz-transform: rotate(360deg);
   }
@@ -125,6 +127,7 @@ Created using IcoMoon - icomoon.io
     -o-transform: rotate(0deg);
     transform: rotate(0deg);
   }
+
   100% {
     -webkit-transform: rotate(360deg);
     -moz-transform: rotate(360deg);
@@ -540,4 +543,76 @@ Created using IcoMoon - icomoon.io
 
 .icon-components::before {
   content: "\ea65";
+}
+
+.icon-forward-1:before {
+  content: '\e800';
+}
+
+.icon-export:before {
+  content: '\e801';
+}
+
+.icon-forward:before {
+  content: '\e802';
+}
+
+.icon-reply-all:before {
+  content: '\e803';
+}
+
+.icon-reply:before {
+  content: '\e804';
+}
+
+.icon-share-1:before {
+  content: '\e805';
+}
+
+.icon-globe:before {
+  content: '\e807';
+}
+
+.icon-thumbs-up-1:before {
+  content: '\e808';
+}
+
+.icon-thumbs-down-1:before {
+  content: '\e809';
+}
+
+.icon-reply-1:before {
+  content: '\f112';
+}
+
+.icon-reply-all-1:before {
+  content: '\f122';
+}
+
+.icon-thumbs-up-alt:before {
+  content: '\f164';
+}
+
+.icon-thumbs-down-alt:before {
+  content: '\f165';
+}
+
+.icon-share:before {
+  content: '\f1e0';
+}
+
+.icon-instagram-1:before {
+  content: '\f31e';
+}
+
+.icon-spotify:before {
+  content: '\f327';
+}
+
+.icon-spotify-circled:before {
+  content: '\f328';
+}
+
+.icon-instagram:before {
+  content: '\f32d';
 }
