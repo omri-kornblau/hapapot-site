@@ -8,6 +8,7 @@ import {
 } from "reactstrap"
 import Utils from "../../utils"
 import DatePicker from "../Calendar/CustomDatePicker";
+import AttendingCheckbox from "../Calendar/AttendingCheckbox";
 
 const readMoreTexts = {
   more: "קרא עוד",
@@ -24,6 +25,7 @@ class EventHeader extends React.Component {
         description: props.description,
         date: props.date,
       },
+      attending: props.attending,
       isReadMore: false,
       isEditMode: false,
       edit: {},
@@ -31,6 +33,7 @@ class EventHeader extends React.Component {
     };
 
     this.updateEvent = props.updateEvent;
+    this.onAttendingChange = props.onAttendingChange
 
     this.shortDescriptionLength = props.shortDescriptionLength ? props.shortDescriptionLength : 50;
   }
@@ -41,7 +44,8 @@ class EventHeader extends React.Component {
         time: props.time,
         description: props.description,
         date: props.date
-      }
+      },
+      attending: props.attending
     });
   }
   goToDay = () => {
@@ -117,13 +121,6 @@ class EventHeader extends React.Component {
       text: `שותפת באירוע זה באמצעות האתר של הפאפות:\n${this.state.data.description}`
     });
   }
-  renderShare = () => {
-    if (navigator.share) {
-      return (<h1 onClick={this.shareEvent}>SHARE</h1>);
-    } else {
-      return;
-    }
-  }
 
   render() {
     if (this.state.isEditMode) {
@@ -162,23 +159,29 @@ class EventHeader extends React.Component {
           </Row>
           <Row>
             <Col>
-            <Input type="textarea" onChange={this.onInputChange} name="description" value={this.state.edit.description}/>
+              <Input type="textarea" onChange={this.onInputChange} name="description" value={this.state.edit.description}/>
             </Col>
           </Row>
         </div>
       );
     } else {
       return (
-        <div className="event-header position-relative text-center">
-            <h3 className="m-1">
-              {this.state.data.name}
-            </h3>
-            <h5 onClick={this.goToDay} className="m-1">
-              {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
-            </h5>
-            {this.renderDescription()}
-            <i className="edit-event-header-btn tim-icons icon-pencil" onClick={this.enterEditMode}/>
-            {this.renderShare()}
+        <div className="text-center title">
+          <h3 className="m-1">
+            {this.state.data.name}
+          </h3>
+          <h5 onClick={this.goToDay} className="m-1">
+            {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
+          </h5>
+          {this.renderDescription()}
+          <Row className="justify-content-center">
+            <AttendingCheckbox
+              onChange={this.onAttendingChange}
+              attending={this.state.attending}
+            />
+            <i className="tim-icons icon-pencil" onClick={this.enterEditMode} style={{margin: "10px"}}/>
+            { navigator.share ? <i className="tim-icons icon-send" onClick={this.shareEvent} style={{margin: "10px"}}/> : <></> }
+          </Row>
         </div>
       );
     }

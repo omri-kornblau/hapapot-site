@@ -17,7 +17,6 @@ import {
 
 import Popup from "reactjs-popup";
 
-import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
 import EventHeader from "../components/EventHeader/EventHeader";
 import EventItemDropDown from "../components/Dropdown/EventItemDropDown";
 import UserItemsDropDown from "../components/Dropdown/UserItemsDropDown";
@@ -354,13 +353,9 @@ class Event extends React.Component {
             date={Utils.formatDateLikeDb(this.state.eventData.time)}
             updateEvent={this.updateEventHeader}
             history={this.props.history}
+            onAttendingChange={this.onAttendingChange}
+            attending={this.state.eventData.attending}
           />
-          <Row className="justify-content-center mb-2">
-            <AttendingCheckbox
-              onChange={this.onAttendingChange}
-              attending={this.state.eventData.attending}
-            />
-          </Row>
           <Row>
             <Col md="6">
               <Card>
