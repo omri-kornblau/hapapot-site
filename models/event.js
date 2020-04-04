@@ -82,7 +82,7 @@ eventSchema.post("save", async function () {
     date
   }, {
     $addToSet: {
-      events: this._id
+      events: this._id.toString()
     }
   });
 });
@@ -97,7 +97,7 @@ eventSchema.pre("remove", async function () {
     date
   }, {
     $pull: {
-      events: this._id
+      events: this._id.toString()
     }
   });
 });
