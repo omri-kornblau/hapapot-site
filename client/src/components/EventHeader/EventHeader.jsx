@@ -142,10 +142,15 @@ class EventHeader extends React.Component {
               <i className="tim-icons icon-check-2"/>
             </Button>
           </Row>
-          {this.state.error !== "" ? <p style={{color: "red"}}>{this.state.error}</p> : <></>}
+          {this.state.error !== "" ? <p className="text-danger">}>{this.state.error}</p> : <></>}
           <Row>
             <Col>
-              <Input onChange={this.onInputChange} name="name" value={this.state.edit.name}/>
+              <Input
+                onChange={this.onInputChange}
+                name="name"
+                value={this.state.edit.name}
+                placeholder="הכנס שם"
+              />
             </Col>
           </Row>
           <Row>
@@ -167,7 +172,12 @@ class EventHeader extends React.Component {
           </Row>
           <Row>
             <Col>
-              <Input type="textarea" onChange={this.onInputChange} name="description" value={this.state.edit.description}/>
+              <Input
+                type="textarea"
+                placeholder="הכנס תיאור"
+                onChange={this.onInputChange}
+                name="description"
+                value={this.state.edit.description}/>
             </Col>
           </Row>
           <br></br>
@@ -183,13 +193,28 @@ class EventHeader extends React.Component {
             {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
           </h5>
           {this.renderDescription()}
-          <Row className="justify-content-center">
+          <Row className="justify-content-center mt-1 mb-3">
             <AttendingCheckbox
               onChange={this.onAttendingChange}
               attending={this.state.attending}
             />
-            <i className="tim-icons icon-pencil" onClick={this.enterEditMode} style={{margin: "10px", marginLeft: "0", color: "#646464"}}/>
-            { navigator.share ? <i className="tim-icons icon-forward" onClick={this.shareEvent} style={{margin: "10px", color: "#646464"}}/> : <></> }
+            <Button
+              onClick={this.enterEditMode}
+              color="link"
+              className="btn-icon btn-sm mddt-0 mr-4"
+            >
+              <i className="tim-icons icon-pencil text-black"/>
+            </Button>
+            { navigator.share ?
+              <Button
+                onClick={this.shareEvent}
+                color="link"
+                className="btn-icon btn-sm mr-1 ml-1"
+              >
+                <i className="tim-icons icon-forward"/>
+              </Button>
+              : ""
+            }
           </Row>
         </div>
       );
