@@ -9,9 +9,9 @@ const errorsMapping = {
 }
 
 const mapError = err => {
-  if (!err.response.data.data) {
+  if (!err.response || !err.response.data || !err.response.data.data) {
     console.warn("This error doesn't contain app code ", err.message);
-    return defaultErrorMessage
+    return defaultErrorMessage;
   }
   const message = errorsMapping[err.response.data.data.appCode];
   if (!!message) {

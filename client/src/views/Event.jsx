@@ -9,25 +9,29 @@ import {
   Card,
   CardBody,
   Input,
-  Modal
+  UncontrolledDropdown,
+  DropdownMenu,
+  DropdownToggle,
+  Form
 } from "reactstrap";
 
 import Popup from "reactjs-popup";
 
-import AttendingCheckbox from "../components/Calendar/AttendingCheckbox";
-import DropdownItemsUsers from "../components/Dropdown/DropDown";
+import EventHeader from "../components/EventHeader/EventHeader";
+import EventItemDropDown from "../components/Dropdown/EventItemDropDown";
+import UserItemsDropDown from "../components/Dropdown/UserItemsDropDown";
+import PageLoader from "../components/Status/PageLoader";
 
-import Utils from "../utils";
 import EventModel from "../defaults/models/event";
 
+import Utils from "../utils";
 import EventHelper from "../helpers/event";
 
 class Event extends React.Component {
   constructor(props) {
     super(props);
     const path = this.props.location.pathname.split("/").slice(2);
-    this.name = path[2];
-    this.date = path[1];
+    this._id = path[1];
     this.state = {
       eventData: EventModel.data,
       eventDataOnEdit: {},
@@ -36,66 +40,90 @@ class Event extends React.Component {
         amount: 0
       },
       isDeletingMode: false,
-      isEditMode: false
+      isEditMode: false,
+      currentUser: "",
+      isLoading: true,
+      error: ""
     };
   }
   componentDidMount = async () => {
     try {
-      const res = await EventHelper.getEvent(this.date, this.name);
+      const res = await EventHelper.getEvent(this._id);
       this.setState({
-        eventData: res.data
+        eventData: res.data.event,
+        currentUser: res.data.username,
+        isLoading: false,
+        error: ""
       });
     } catch (err) {
-      console.log(err);
+      if (err.response.status === 404) {
+        this.setState({isLoading: false, error: "האירוע לא קיים אחי"});
+      } else {
+        console.log(err);
+      }
     }
   }
-  addOne = item => async () => {
+  changeItemUserAmount = async (amount, item) => {
+    if (!this.state.eventData.attending) {
+      return this.openAttendPopup();
+    }
+    const changeAmount = amount > 0 ?
+      EventHelper.addOneItemToUser : EventHelper.subOneItemToUser;
+
     try {
       const { date, name } = this;
-      const res = await EventHelper.addOneItemToUser(item, date, name);
+      const res = await changeAmount(this._id, item);
       this.setState({
         eventData: res.data
       });
-    } catch (err) {
-      console.log(err);
+    } catch(err) {
+      console.error(err);
     }
-  };
-  subOne = item => async () => {
-    try {
-      const { date, name } = this;
-      const res = await EventHelper.subOneItemToUser(item, date, name);
-      this.setState({
-        eventData: res.data
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  }
   onInputChange = event => {
     const newNewItem = this.state.newItem;
     const { value, name } = event.target;
     newNewItem[name] = value;
     this.setState({newItem: newNewItem });
   };
+  onEditedItemInput = e => {
+    const { eventDataOnEdit } = this.state;
+    const { name, value } = e.target;
+    eventDataOnEdit.items.forEach(item => {
+      if (item.name === name) {
+        item.neededamount = value;
+      }
+    });
+    this.setState({ eventDataOnEdit });
+  }
   onAttendingChange = async attending => {
     const { eventData } = this.state;
     eventData.attending = attending;
     this.setState({ eventData });
     try {
-      const res = await EventHelper.postAttendance(this.date, this.name , attending);
+      const res = await EventHelper.postAttendance(this._id , attending);
       this.setState({ eventData: res.data });
     } catch(err) {
       console.error(err);
     }
   }
-  AddItem = async () => {
+  updateEventHeader = async (name, date, time, location, description) => {
+    const finalTime = Utils.mergeDateAndTime(date, time);
     try {
-      const res = await EventHelper.addItem(
-        this.state.newItem.name,
-        this.state.newItem.amount,
-        this.state.eventData.time,
-        this.state.eventData.name
-      )
+      const res = await EventHelper.updateEventHeader(this._id, name, finalTime, location, description);
+      this.setState({eventData: res.data});
+      return true;
+    } catch(err) {
+      console.error(err);
+      return false;
+    }
+  }
+  onAddItemSubmit = async e => {
+    e.preventDefault();
+    e.target.reset();
+    try {
+      const { name, amount } = this.state.newItem;
+      const res = await EventHelper.addItem(this._id, name, amount);
       this.setState({
         eventData: res.data
       });
@@ -113,30 +141,36 @@ class Event extends React.Component {
   leaveItemsEditModeSaveChanges = async () => {
     const eventData = this.state.eventDataOnEdit;
     try {
-      const res = await EventHelper.updateItems(this.date, this.name, eventData.items);
+      const res = await EventHelper.updateItems(this._id, eventData.items);
       this.setState({ isEditMode: false, eventData: res.data });
     } catch(err) {
       console.error(err);
     }
-  }
-  onEditedItemInput = e => {
-    const { eventDataOnEdit } = this.state;
-    const { name, value } = e.target;
-    eventDataOnEdit.items.forEach(item => {
-      if (item.name === name) {
-        item.neededamount = value;
-      }
-    });
-    this.setState({ eventDataOnEdit });
   }
   deleteEditedItem = itemName => () => {
     const { eventDataOnEdit } = this.state;
     _.remove(eventDataOnEdit.items, item => item.name === itemName);
     this.setState({ eventDataOnEdit });
   }
+  openDeletePopup = () => {
+    this.setState({isDeletingMode: true})
+  };
+  closeDeletePopup = () => {
+    this.setState({isDeletingMode: false})
+  }
+  deleteEvent = async () => {
+    await EventHelper.deleteEvent(this._id);
+    this.props.history.push(`/home/day/${Utils.formatDateLikeDb(this.state.eventData.time)}`);
+  }
+  openAttendPopup = () => {
+    this.setState({isAttendMode: true});
+  }
+  closeAttendPopup = () => {
+    this.setState({isAttendMode: false})
+  }
   renderEditModeItemsRows = () => {
     return this.state.eventDataOnEdit.items.map(item =>
-      <tr>
+      <tr key={item.name}>
         <td>{item.name}</td>
         <td><Input onInput={this.onEditedItemInput} name={item.name} type="number" min={1} value={item.neededamount}/></td>
         <td></td>
@@ -149,28 +183,27 @@ class Event extends React.Component {
     );
   }
   renderExistsItemsRows = () => {
-    return this.state.eventData.items.map(item => (
-      <tr>
+    return this.state.eventData.items.map((item, idx) => (
+      <tr key={item.name}>
         <td>{item.name}</td>
         <td>
           {item.neededamount} / {_.sumBy(item.users, user => user.amount)}
         </td>
         <td>
-          <DropdownItemsUsers
-            color="green"
-            users={
-              item.users.map(user => {
-                const currentUser = _.find(this.state.eventData.users, {username: user.name})
-                return _.assign(_.clone(currentUser), user);
-              })
-            }
+          <EventItemDropDown
+            item={item}
+            idx={idx}
+            users={item.users.map(user => {
+              const currentUser = _.find(this.state.eventData.users, {username: user.name})
+              return _.assign(_.clone(currentUser), user);
+            })}
           />
         </td>
         <td>
-          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={this.addOne(item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={() => this.changeItemUserAmount(1, item.name)}>
             <i className="tim-icons icon-simple-add"> </i>
           </Button>
-          <Button className="m-1 btn-icon btn-round" color="warning" size="sm" onClick={this.subOne(item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={() => this.changeItemUserAmount(-1, item.name)}>
             <i className="tim-icons icon-simple-delete"/>
           </Button>
         </td>
@@ -184,6 +217,7 @@ class Event extends React.Component {
           <Row className="justify-content-between mr-2 ml-2">
             <h5 className="title">ציוד</h5>
             <Row>
+              <UserItemsDropDown items={this.state.eventData.items} user={this.state.currentUser}/>
               <Button onClick={this.enterItemsEditMode} className="btn-icon btn-round" color="link">
                 <i className="tim-icons icon-pencil"/>
               </Button>
@@ -191,6 +225,7 @@ class Event extends React.Component {
           </Row>
         </CardHeader>
         <CardBody>
+          <Form onSubmit={this.onAddItemSubmit}>
           <Table className="tablesorter text-center" responsive>
             <thead className="text-primary">
               <tr>
@@ -204,20 +239,20 @@ class Event extends React.Component {
               <this.renderExistsItemsRows/>
               <tr>
                 <td>
-                  <Input placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
+                  <Input required placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
+                </td>
+                <td colSpan="2">
+                  <Input required className="text-center" placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
                 </td>
                 <td>
-                  <Input placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
-                </td>
-                <td></td>
-                <td>
-                  <Button color="link" className="text-success btn-icon" onClick={this.AddItem}>
+                  <Button color="link" className="text-success btn-icon" type="submit">
                     <i className="tim-icons icon-simple-add" />
                   </Button>
                 </td>
               </tr>
             </tbody>
-            </Table>
+          </Table>
+          </Form>
         </CardBody>
       </Card>
     );
@@ -259,90 +294,116 @@ class Event extends React.Component {
   renderCarTable = () => {
     return this.state.eventData.cars.map(car => {
       return (
-        <tr>
-          <Button className="btn-icon btn-round" color="success" size="sm">
-            <i className="tim-icons icon-simple-add" />
-          </Button>
-          <td>{car["driver"]}</td>
-          <td>{car["passengers"]}</td>
-          <Button className="btn-icon btn-round" color="warning" size="sm">
-            <i className="tim-icons icon-simple-delete" />
-          </Button>
+        <tr key={car["driver"]}>
+          <td>
+            <Button className="btn-icon btn-round" color="success" size="sm">
+              <i className="tim-icons icon-simple-add" />
+            </Button>
+          </td>
+          <td>
+            {car["driver"]}
+          </td>
+          <td>
+            {car["passengers"]}
+          </td>
+          <td>
+            <Button className="btn-icon btn-round" color="warning" size="sm">
+              <i className="tim-icons icon-simple-delete" />
+            </Button>
+          </td>
         </tr>
       );
     });
   };
 
-  openDeletePopup = () => {
-    this.setState({isDeletingMode: true})
-  };
-
-  closeDeletePopup = () => {
-    this.setState({isDeletingMode: false})
-  }
-
-  deleteEvent = async () => {
-    await EventHelper.deleteEvent(this.date, this.state.eventData.name);
-    this.props.history.push(`/home/day/${this.date}`);
-  }
-
   render() {
     return (
-      <>
+    <>
       <Popup open={this.state.isDeletingMode} closeOnDocumentClick onClose={this.closeDeletePopup}>
+        <>
+          <p className="text-center">
+          גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
+          </p>
+          <Row className="justify-content-center mt-4 mb-2">
+            <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
+            <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
+          </Row>
+        </>
+      </Popup>
+      <Popup open={this.state.isAttendMode} closeOnDocumentClick onClose={this.closeAttendPopup}>
         <p className="text-center">
-        גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
+        בשביל להביא דברים צריך להגיע לאירוע, אתה מגיע?
         </p>
-        <Row className="justify-content-center">
-          <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
-          <Button className="btn-success btn-sm mr-3" onClick={this.closeDeletePopup}>לא</Button>
+        <Row className="justify-content-center mt-4 mb-2">
+          <Button className="btn-primary btn-icon btn-round ml-3" onClick={() => {
+            this.onAttendingChange(true);
+            this.closeAttendPopup();
+          }}>
+            כן
+          </Button>
+          <Button className="btn-danger btn-icon btn-round mr-3" onClick={() => {
+            this.onAttendingChange(false);
+            this.closeAttendPopup();
+          }}>
+            לא
+          </Button>
         </Row>
       </Popup>
       <div className="content text-right">
-        <h4 className="text-center title">
-          {this.state.eventData.name + "   "}
-          {Utils.formatTime(this.state.eventData.time)}
-        </h4>
-        <Row className="justify-content-center mb-2">
-          <AttendingCheckbox
-            onChange={this.onAttendingChange}
-            attending={this.state.eventData.attending}
-          />
-        </Row>
-        <Row>
-          <Col md="6">
-            <Card>
-              <CardHeader>
-                <h5 className="title">רכבים</h5>
-              </CardHeader>
-              <CardBody>
-                <Table className="tablesorter table-sm table-striped" responsive>
-                  <thead className="text-primary">
-                    <tr>
-                      <th>שם</th>
-                      <th>תמונה</th>
-                    </tr>
-                  </thead>
-                  <tbody>{this.renderCarTable()}</tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md="6">
-            { this.state.isEditMode ?
-              <this.renderEditItemsCard/> :
-              <this.renderItemsCard/>
+        <PageLoader isLoading={this.state.isLoading}>
+          { this.state.error === "" ? 
+            <>
+              <EventHeader
+                name={this.state.eventData.name}
+                time={this.state.eventData.time}
+                description={this.state.eventData.description}
+                date={Utils.formatDateLikeDb(this.state.eventData.time)}
+                location={this.state.eventData.location}
+                updateEvent={this.updateEventHeader}
+                history={this.props.history}
+                onAttendingChange={this.onAttendingChange}
+                attending={this.state.eventData.attending}
+              />
+              <Row>
+                <Col md="6">
+                  <Card>
+                    <CardHeader>
+                      <h5 className="title">רכבים</h5>
+                    </CardHeader>
+                    <CardBody>
+                      <Table className="tablesorter table-sm table-striped" responsive>
+                        <thead className="text-primary">
+                          <tr>
+                            <th>שם</th>
+                            <th>תמונה</th>
+                          </tr>
+                        </thead>
+                        <tbody>{this.renderCarTable()}</tbody>
+                      </Table>
+                    </CardBody>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  { this.state.isEditMode ?
+                    <this.renderEditItemsCard/> :
+                    <this.renderItemsCard/>
+                  }
+                </Col>
+              </Row>
+              <Row className="justify-content-center">
+                <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
+                  מחק
+                </Button>
+              </Row>
+            </>
+            :
+              <div className="text-center justify-content-center">
+                <h3 style={{color: "red"}}>{this.state.error}</h3>
+              </div>
             }
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Button className="btn-danger btn-rounded btn-sm" onClick={this.openDeletePopup}>
-            מחק
-          </Button>
-        </Row>
+        </PageLoader>
       </div>
-      </>
-    );
+    </>);
   }
 }
 

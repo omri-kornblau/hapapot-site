@@ -7,6 +7,7 @@ const Utils = require("../utils");
 
 const DayModel = Mongoose.model("Day");
 const UserModel = Mongoose.model("User");
+const EventModel = Mongoose.model("Event");
 
 const weeksToShow = 2;
 const daysInWeek = 7;
@@ -20,20 +21,29 @@ const emptyDay = {
 const getCalendarDayFromDbDay = async (currentUser, dbDay, usersAmount) => {
   const {
     date,
-    events,
     users
   } = dbDay;
   const attendance = 100 * (users.length / usersAmount);
   const attending = _.includes(users, currentUser);
-  const nickNames = (await UserModel.find({
+  const nicknames = (await UserModel.find({
     username: {
       $in: users
     }
+  }, {
+    nicknames: 1
   })).map(user => user.nicknames);
+  const events = await EventModel.find({
+    _id: {
+      $in: dbDay.events
+    }
+  }, {
+    name: 1,
+    time: 1
+  });
 
   return {
     attendance,
-    nickNames,
+    nicknames,
     date,
     events,
     attending

@@ -1,5 +1,8 @@
 import React from "react";
+import he from "moment/locale/he"
 import moment from "moment";
+
+moment.locale();
 
 class DayBlob extends React.Component {
   constructor(props) {
@@ -20,6 +23,8 @@ class DayBlob extends React.Component {
   }
 
   render() {
+    const dateObj = moment(this.state.date);
+    const isFirstInMonth = dateObj.date() === 1;
     return (
       <div
         onClick={this.props.onClick}
@@ -29,9 +34,22 @@ class DayBlob extends React.Component {
           className="day-blob-filler"
           style={{ top: this.getFillerHeight() }}
         ></div>
-        <div className="day-blob-mask">
-          {moment(this.state.date).format("DD")}
+        <div className="ml-1 mr-1 pt-1 day-blob-mask">
+          { this.state.events.map(event =>
+              <div key={event.name} className="day-blob-event"/>
+            )
+          }
         </div>
+        <div className="day-blob-mask">
+          <small>{dateObj.format("DD")}</small>
+        </div>
+        {
+          isFirstInMonth || this.props.showMonth ?
+          <div className="day-blob-mask month">
+            <small>{dateObj.format("MMM")}</small>
+          </div> :
+          ""
+        }
       </div>
     );
   }

@@ -2,42 +2,45 @@ const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Boom = require("boom");
 const Utils = require("../utils")
+const MongoHelpers = require("../models/mongoHelpers")
 
 const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
+const DayModel = Mongoose.model("Day");
 
 exports.getEvent = async (req, res) => {
   const {
-    name,
-    date
+    _id
   } = req.params;
   const {
     username
   } = req;
 
-  const event = await getEventFromDb(date, name, username);
+  const event = await getEventFromDb(_id, username);
 
-  return res.send(event);
+  if (event) {
+    return res.send({
+      event,
+      username
+    });
+  } else {
+    throw Boom.notFound(`Event does not exist: ${_id}`);
+  }
 };
 
 const sendEvent = (res, status, event) => {
   res.status(status).send(event);
 };
 
-const generateId = (date, name) => {
-  date = Utils.dateToDayQuery(date);
-  return `${date}_${name}`;
-}
-
-const getEventFromDb = async (eventDate, eventName, username) => {
+const getEventFromDb = async (_id, username) => {
   if (!username) {
     throw Boom.internal("No username was given");
   }
   const event = await EventModel.findOne({
-    eventId: `${generateId(eventDate, eventName)}`
+    _id
   });
   if (!event) {
-    throw Boom.notFound(`Event does not exist: ${eventDate}, ${eventName}`);
+    throw Boom.notFound(`Event does not exist: ${_id}`);
   }
 
   event.attending = _.includes(event.users, username);
@@ -50,11 +53,9 @@ const getEventFromDb = async (eventDate, eventName, username) => {
   return event;
 }
 
-const addAmount = async (item, eventDate, eventName, username, amount) => {
-  const eventId = generateId(eventDate, eventName);
-
+const addAmount = async (_id, item, amount, username) => {
   await EventModel.updateOne({
-    eventId: eventId,
+    _id,
     items: {
       $elemMatch: {
         name: item,
@@ -77,7 +78,7 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
   });
 
   const res = await EventModel.updateOne({
-    eventId: eventId
+    _id
   }, {
     $inc: {
       "items.$[outer].users.$[inner].amount": amount
@@ -94,16 +95,15 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
   })
 
   if (res.ok !== 1 || res.nModified !== 1) {
-    throw Boom.badRequest(`failed to update item: ${item}, ${eventDate}, ${eventName}, ${username}, ${amount}, ${res}`)
+    throw Boom.badRequest(`failed to update item: ${item}, in event ${_id}`);
   }
 
   await EventModel.updateOne({
-    eventId: eventId
+    _id
   }, {
     $max: {
       "items.$[outer].users.$[inner].amount": 0
     },
-
   }, {
     "arrayFilters": [{
       "outer.name": item
@@ -112,26 +112,25 @@ const addAmount = async (item, eventDate, eventName, username, amount) => {
     }]
   })
 
-  return getEventFromDb(eventDate, eventName, username);
+  return getEventFromDb(_id, username);
 };
 
 exports.addItem = async (req, res) => {
   const {
     item,
     amount,
-    eventName
+    _id,
   } = req.body;
   const {
     username
   } = req;
-  const eventDate = Utils.dateToDayQuery(req.body.eventDate);
 
   if (amount < 1) {
     throw Boom.badRequest("Amount must be bigger then 0");
   }
 
   const mongo_res = await EventModel.updateOne({
-    eventId: generateId(eventDate, eventName),
+    _id,
     items: {
       $not: {
         $elemMatch: {
@@ -150,38 +149,38 @@ exports.addItem = async (req, res) => {
   });
 
   if (mongo_res.ok !== 1 || mongo_res.nModified !== 1) {
-    throw Boom.badRequest(`failed to update item: ${item}, ${eventDate}, ${eventName}, ${mongo_res}`)
+    throw Boom.badRequest(`failed to update item: ${item} in event ${_id}`);
   }
 
-  const event = await getEventFromDb(eventDate, eventName, username);
+  const event = await getEventFromDb(_id, username);
 
   return sendEvent(res, 200, event);
 }
 
 exports.addOne = async (req, res) => {
-  const item = req.body.item
-  const eventDate = req.body.eventDate
-  const eventName = req.body.eventName
-  const updateEvent = await addAmount(
+  const {
     item,
-    eventDate,
-    eventName,
-    req.username,
-    1
+    _id
+  } = req.body;
+  const updateEvent = await addAmount(
+    _id,
+    item,
+    1,
+    req.username
   );
   return sendEvent(res, 200, updateEvent);
 };
 
 exports.subOne = async (req, res) => {
-  const item = req.body.item
-  const eventDate = req.body.eventDate
-  const eventName = req.body.eventName
+  const {
+    _id,
+    item
+  } = req.body;
   const updateEvent = await addAmount(
+    _id,
     item,
-    eventDate,
-    eventName,
-    req.username,
-    -1
+    -1,
+    req.username
   );
   return sendEvent(res, 200, updateEvent);
 };
@@ -201,10 +200,61 @@ exports.insertEvent = async (req, res) => {
   }
 }
 
+exports.updateEvent = async (req, res) => {
+  const {
+    _id
+  } = req.params;
+  const {
+    name,
+    time,
+    location,
+    description
+  } = req.body;
+  const {
+    username
+  } = req;
+
+  // remove event from old day
+  const oldEvent = await getEventFromDb(_id, username);
+  const oldDate = Utils.dateToDayQuery(oldEvent.time);
+  await DayModel.updateOne({
+    date: oldDate
+  }, {
+    $pull: {
+      events: _id
+    }
+  });
+
+  // add event to new day
+  const date = Utils.dateToDayQuery(time);
+  await MongoHelpers.getAndCreateIfEmpty(date);
+  await DayModel.updateOne({
+    date
+  }, {
+    $addToSet: {
+      events: _id
+    }
+  });
+
+  // update event data
+  await EventModel.updateOne({
+    _id,
+  }, {
+    $set: {
+      name,
+      time,
+      location,
+      description
+    }
+  });
+
+  const event = await getEventFromDb(_id, username);
+  return sendEvent(res, 200, event);
+}
+
 exports.updateItems = async (req, res) => {
   const {
-    date,
-    name
+    _id
   } = req.params;
   const {
     items
@@ -213,22 +263,21 @@ exports.updateItems = async (req, res) => {
     username
   } = req;
   const updateRes = await EventModel.updateOne({
-    eventId: generateId(date, name)
+    _id
   }, {
     $set: {
       items
     }
   });
 
-  const event = await getEventFromDb(date, name, username);
+  const event = await getEventFromDb(_id, username);
 
   return sendEvent(res, 200, event);
 }
 
 exports.updateEventAttendance = async (req, res) => {
   const {
-    date,
-    name
+    _id
   } = req.params;
   const {
     attending
@@ -247,15 +296,13 @@ exports.updateEventAttendance = async (req, res) => {
     }
   };
 
-  const eventId = generateId(date, name)
-
   await EventModel.update({
-    eventId: eventId
+    _id
   }, dbOperation);
 
   if (!attending) {
     await EventModel.update({
-      eventId: eventId
+      _id
     }, {
       $pull: {
         "items.$[].users": {
@@ -265,21 +312,18 @@ exports.updateEventAttendance = async (req, res) => {
     });
   }
 
-  const event = await getEventFromDb(date, name, username);
+  const event = await getEventFromDb(_id, username);
 
   sendEvent(res, 200, event);
 }
 
 exports.deleteEvent = async (req, res) => {
   const {
-    date,
-    name
+    _id
   } = req.body;
 
-  const eventId = generateId(date, name)
-
   await EventModel.remove({
-    eventId: eventId
+    _id
   });
 
   res.status(200).send();

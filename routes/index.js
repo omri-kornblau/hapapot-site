@@ -20,13 +20,14 @@ router.get("/api/calendar/:chunk", withAuth, CalendarRoutes.getCalendarChunk)
 router.get("/api/day/:date", withAuth, DayRoutes.getDay)
 router.post("/api/attend/day/:date", withAuth, DayRoutes.updateDayAttendancy)
 
-router.get("/api/event/:date/:name", withAuth, EventRoutes.getEvent);
-router.post("/api/newevent/:date/:name", withAuth, EventRoutes.insertEvent);
+router.get("/api/event/:_id", withAuth, EventRoutes.getEvent);
+router.post("/api/newevent", withAuth, EventRoutes.insertEvent);
+router.post("/api/updateevent/:_id", withAuth, EventRoutes.updateEvent);
 router.post("/api/event/item/add-one", withAuth, EventRoutes.addOne);
 router.post("/api/event/item/sub-one", withAuth, EventRoutes.subOne);
 router.post("/api/event/item/add", withAuth, EventRoutes.addItem);
-router.post("/api/event/:date/:name/items", withAuth, EventRoutes.updateItems);
-router.post("/api/attend/event/:date/:name", withAuth, EventRoutes.updateEventAttendance);
+router.post("/api/event/:_id/items", withAuth, EventRoutes.updateItems);
+router.post("/api/attend/event/:_id", withAuth, EventRoutes.updateEventAttendance);
 router.post("/api/event/delete", withAuth, EventRoutes.deleteEvent);
 
 router.post("/auth/authenticate", AuthRoutes.register);
