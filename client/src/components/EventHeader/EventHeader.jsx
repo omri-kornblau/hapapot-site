@@ -68,9 +68,10 @@ class EventHeader extends React.Component {
       <>
         <p className="m-0 event-description">
           {currentDescription}
-        </p>
-        <p onClick={this.toggleReadMore} className="text-primary m-0">
-          {readMoreText}
+          {this.state.isReadMore ? <br/> : "... "}
+          <a onClick={this.toggleReadMore} className="text-primary m-0">
+            {readMoreText}
+          </a>
         </p>
       </>
     )
@@ -114,7 +115,7 @@ class EventHeader extends React.Component {
     if (this.state.isEditMode) {
       return (
         <div className="text-center title">
-          <Row className="justify-content-center">
+          <Row className="justify-content-center mb-2">
             <Button onClick={this.cancelEdit} className="btn-icon btn-round" color="link">
               <i className="text-danger tim-icons icon-simple-remove"/>
             </Button>
@@ -154,17 +155,15 @@ class EventHeader extends React.Component {
       );
     } else {
       return (
-        <div className="text-center title">
-          <Row className="justify-content-center">
-            <i className="tim-icons icon-pencil m-2" onClick={this.enterEditMode}/>
-            <h3 className="m-1 justify-content-center">
+        <div className="event-header position-relative text-center">
+            <h3 className="m-1">
               {this.state.data.name}
             </h3>
-          </Row>
-          <h5 onClick={this.goToDay} className="m-1">
-            {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
-          </h5>
-          {this.renderDescription()}
+            <h5 onClick={this.goToDay} className="m-1">
+              {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
+            </h5>
+            {this.renderDescription()}
+            <i className="edit-event-header-btn tim-icons icon-pencil" onClick={this.enterEditMode}/>
         </div>
       );
     }

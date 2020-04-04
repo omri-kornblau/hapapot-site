@@ -76,6 +76,12 @@
   word-break: break-word;
 }
 
+.edit-event-header-btn {
+  position: absolute;
+  left: 5px;
+  bottom: -5px;
+}
+
 .popup-content {
   border-radius: 7px;
 }
