@@ -162,6 +162,7 @@ class EventHeader extends React.Component {
               <Input type="textarea" onChange={this.onInputChange} name="description" value={this.state.edit.description}/>
             </Col>
           </Row>
+          <br></br>
         </div>
       );
     } else {
