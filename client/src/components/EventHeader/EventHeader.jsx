@@ -180,8 +180,8 @@ class EventHeader extends React.Component {
               onChange={this.onAttendingChange}
               attending={this.state.attending}
             />
-            <i className="tim-icons icon-pencil" onClick={this.enterEditMode} style={{margin: "10px"}}/>
-            { navigator.share ? <i className="tim-icons icon-send" onClick={this.shareEvent} style={{margin: "10px"}}/> : <></> }
+            <i className="tim-icons icon-pencil" onClick={this.enterEditMode} style={{margin: "10px", marginLeft: "0", color: "#646464"}}/>
+            { navigator.share ? <i className="tim-icons icon-forward" onClick={this.shareEvent} style={{margin: "10px", color: "#646464"}}/> : <></> }
           </Row>
         </div>
       );
