@@ -50,6 +50,10 @@ class Event extends React.Component {
   }
   componentDidMount = () => {
     this.fetchEventData();
+    this.fetchInterval = setInterval(this.fetchEventData, 2000);
+  }
+  componentWillUnmount = () => {
+    clearInterval(this.fetchInterval);
   }
   fetchEventData = async () => {
     try {
