@@ -65,4 +65,26 @@ Utils.expectToExist = (fieldValue, fieldName) => {
   }
 }
 
+Utils.getBroughtAmount = item => {
+  return _.sumBy(item.users, user => user.amount)
+}
+
+Utils.sortItemsByMissing = items => {
+  return _.sortBy(items, item =>
+    item.broughtAmount - item.neededamount
+  );
+}
+
+Utils.sortItemsByOldItems = (items, oldItems) => {
+  return items.map(item => {
+    const oldIdx = _.findIndex(oldItems, {
+      name: item.name
+    });
+    oldItems[oldIdx] = '';
+
+    const sortingIdx = oldIdx < 0 ? items.length : oldIdx;
+    return [sortingIdx, item];
+  }).sort().map(result => result[1]);
+}
+
 module.exports = Utils;

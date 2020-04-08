@@ -9,6 +9,7 @@ import {
   Card,
   CardBody,
   Input,
+  UncontrolledTooltip,
   UncontrolledDropdown,
   DropdownMenu,
   DropdownToggle,
@@ -41,23 +42,40 @@ class Event extends React.Component {
       },
       isDeletingMode: false,
       isEditMode: false,
+      isItemsSorted: true,
       currentUser: "",
       isLoading: true,
       error: ""
     };
   }
-  componentDidMount = async () => {
+  componentDidMount = () => {
+    this.fetchEventData();
+  }
+  fetchEventData = async () => {
     try {
       const res = await EventHelper.getEvent(this._id);
+      const newEventData = res.data.event;
+      const oldEventData = this.state.eventData;
+      newEventData.items.forEach(item => {
+        item.broughtAmount = Utils.getBroughtAmount(item);
+        item.isMissing = item.broughtAmount < item.neededamount;
+      });
+      newEventData.items = this.state.isItemsSorted ?
+        Utils.sortItemsByMissing(newEventData.items)
+        : Utils.sortItemsByOldItems(newEventData.items, oldEventData.items);
+      newEventData.isItemsMissing = _.some(newEventData.items, item =>
+        item.broughtAmount < item.neededamount
+      );
+
       this.setState({
-        eventData: res.data.event,
+        eventData: newEventData,
         currentUser: res.data.username,
         isLoading: false,
         error: ""
       });
     } catch (err) {
       if (err.response.status === 404) {
-        this.setState({isLoading: false, error: "האירוע לא קיים אחי"});
+        this.setState({ isLoading: false, error: "האירוע לא קיים אחי" });
       } else {
         console.log(err);
       }
@@ -67,15 +85,15 @@ class Event extends React.Component {
     if (!this.state.eventData.attending) {
       return this.openAttendPopup();
     }
+
     const changeAmount = amount > 0 ?
       EventHelper.addOneItemToUser : EventHelper.subOneItemToUser;
 
+    this.setState({ isItemsSorted: false });
+
     try {
-      const { date, name } = this;
-      const res = await changeAmount(this._id, item);
-      this.setState({
-        eventData: res.data
-      });
+      await changeAmount(this._id, item.name);
+      this.fetchEventData();
     } catch(err) {
       console.error(err);
     }
@@ -101,8 +119,8 @@ class Event extends React.Component {
     eventData.attending = attending;
     this.setState({ eventData });
     try {
-      const res = await EventHelper.postAttendance(this._id , attending);
-      this.setState({ eventData: res.data });
+      await EventHelper.postAttendance(this._id , attending);
+      this.fetchEventData();
     } catch(err) {
       console.error(err);
     }
@@ -110,8 +128,8 @@ class Event extends React.Component {
   updateEventHeader = async (name, date, time, location, description) => {
     const finalTime = Utils.mergeDateAndTime(date, time);
     try {
-      const res = await EventHelper.updateEventHeader(this._id, name, finalTime, location, description);
-      this.setState({eventData: res.data});
+      await EventHelper.updateEventHeader(this._id, name, finalTime, location, description);
+      this.fetchEventData();
       return true;
     } catch(err) {
       console.error(err);
@@ -123,10 +141,9 @@ class Event extends React.Component {
     e.target.reset();
     try {
       const { name, amount } = this.state.newItem;
-      const res = await EventHelper.addItem(this._id, name, amount);
-      this.setState({
-        eventData: res.data
-      });
+      await EventHelper.addItem(this._id, name, amount);
+      this.setState({ isItemsSorted: false });
+      this.fetchEventData();
     } catch (err) {
       console.log(err);
     }
@@ -141,8 +158,9 @@ class Event extends React.Component {
   leaveItemsEditModeSaveChanges = async () => {
     const eventData = this.state.eventDataOnEdit;
     try {
-      const res = await EventHelper.updateItems(this._id, eventData.items);
-      this.setState({ isEditMode: false, eventData: res.data });
+      await EventHelper.updateItems(this._id, eventData.items);
+      await this.fetchEventData();
+      this.setState({ isEditMode: false });
     } catch(err) {
       console.error(err);
     }
@@ -168,6 +186,11 @@ class Event extends React.Component {
   closeAttendPopup = () => {
     this.setState({isAttendMode: false})
   }
+  sortItemsByMissing = () => {
+    const { eventData } = this.state;
+    eventData.items = Utils.sortItemsByMissing(eventData.items);
+    this.setState({ eventData, isItemsSorted: true });
+  }
   renderEditModeItemsRows = () => {
     return this.state.eventDataOnEdit.items.map(item =>
       <tr key={item.name}>
@@ -183,27 +206,33 @@ class Event extends React.Component {
     );
   }
   renderExistsItemsRows = () => {
-    return this.state.eventData.items.map((item, idx) => (
+    const { eventData } = this.state;
+
+    return eventData.items.map((item, idx) => (
       <tr key={item.name}>
-        <td>{item.name}</td>
         <td>
-          {item.neededamount} / {_.sumBy(item.users, user => user.amount)}
+          {item.name}
+        </td>
+        <td>
+          <div className={item.isMissing ? "text-danger" : ""}>
+            {item.neededamount} / {item.broughtAmount}
+          </div>
         </td>
         <td>
           <EventItemDropDown
             item={item}
             idx={idx}
             users={item.users.map(user => {
-              const currentUser = _.find(this.state.eventData.users, {username: user.name})
+              const currentUser = _.find(eventData.users, {username: user.name})
               return _.assign(_.clone(currentUser), user);
             })}
           />
         </td>
         <td>
-          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={() => this.changeItemUserAmount(1, item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={() => this.changeItemUserAmount(1, item)}>
             <i className="tim-icons icon-simple-add"> </i>
           </Button>
-          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={() => this.changeItemUserAmount(-1, item.name)}>
+          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={() => this.changeItemUserAmount(-1, item)}>
             <i className="tim-icons icon-simple-delete"/>
           </Button>
         </td>
@@ -215,8 +244,29 @@ class Event extends React.Component {
       <Card>
         <CardHeader>
           <Row className="justify-content-between mr-2 ml-2">
-            <h5 className="title">ציוד</h5>
+            <h5 className="title">
+              ציוד
+              <i className={`mr-3 tim-icons
+                ${this.state.eventData.isItemsMissing ?
+                  "text-danger icon-thumbs-down-1"
+                  : "text-success icon-thumbs-up-1"
+                } `}
+              />
+            </h5>
             <Row>
+              <span id="sort-btn"> {/* Wrap to enable tooltip on disabled button */}
+                <Button
+                  disabled={this.state.isItemsSorted}
+                  onClick={this.sortItemsByMissing}
+                  className="btn-icon btn-round" color="link">
+                  ↓
+                </Button>
+              </span>
+              {this.state.isItemsSorted ?
+                <UncontrolledTooltip target="sort-btn">
+                  הפריטים כבר ממוינים
+                </UncontrolledTooltip>
+              : ""}
               <UserItemsDropDown items={this.state.eventData.items} user={this.state.currentUser}/>
               <Button onClick={this.enterItemsEditMode} className="btn-icon btn-round" color="link">
                 <i className="tim-icons icon-pencil"/>
@@ -230,7 +280,10 @@ class Event extends React.Component {
             <thead className="text-primary">
               <tr>
                 <th>פריט</th>
-                <th>כמות</th>
+                <th>
+                  כמות
+                  {this.state.isItemsSorted ? " ↓ " : ""} {/* ↑*/}
+                </th>
                 <th>אנשים</th>
                 <th>פעולות</th>
               </tr>
@@ -351,7 +404,7 @@ class Event extends React.Component {
       </Popup>
       <div className="content text-right">
         <PageLoader isLoading={this.state.isLoading}>
-          { this.state.error === "" ? 
+          { this.state.error === "" ?
             <>
               <EventHeader
                 name={this.state.eventData.name}
