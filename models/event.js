@@ -62,9 +62,6 @@ const mongoFormat = {
   },
   rating: {
     type: Number
-  },
-  attending: {
-    type: Boolean
   }
 };
 

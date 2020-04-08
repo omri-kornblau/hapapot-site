@@ -39,18 +39,23 @@ const getEventFromDb = async (_id, username) => {
   const event = await EventModel.findOne({
     _id
   });
+
   if (!event) {
     throw Boom.notFound(`Event does not exist: ${_id}`);
   }
 
-  event.attending = _.includes(event.users, username);
+  const attending = _.includes(event.users, username);
+
   event.users = await UserModel.find({
     username: {
       $in: event.users
     }
   });
 
-  return event;
+  return {
+    attending,
+    ...event.toJSON()
+  };
 }
 
 const addAmount = async (_id, item, amount, username) => {
