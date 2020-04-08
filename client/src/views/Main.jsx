@@ -25,10 +25,11 @@ import DayHelper from "../helpers/day";
 class Main extends React.Component {
   constructor(props) {
     super(props);
-    const today = Utils.formatDateLikeDb(new Date());
+    const wantedDate = props.location.search.split("=")[1];
+    const selectedDate = Utils.formatDateLikeDb(wantedDate || new Date());
     this.state = {
       days: [],
-      selectedDay: { date: today },
+      selectedDay: { date: selectedDate },
       chunk: 0,
       isLoading: true
     };
