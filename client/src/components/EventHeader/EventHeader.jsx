@@ -4,7 +4,10 @@ import {
   Row,
   Button,
   Input,
-  Col
+  InputGroup,
+  Form,
+  Col,
+  Jumbotron
 } from "reactstrap"
 import Linkify from 'react-linkify';
 
@@ -82,7 +85,7 @@ class EventHeader extends React.Component {
           <div className="m-0 event-description">
             {currentDescription}
             {this.state.isReadMore ? <br/> : "... "}
-            <a onClick={this.toggleReadMore} className="text-primary m-0">
+            <a onClick={this.toggleReadMore} className="text-info m-0">
               {readMoreText}
             </a>
           </div>
@@ -135,65 +138,63 @@ class EventHeader extends React.Component {
   render() {
     if (this.state.isEditMode) {
       return (
-        <div className="text-center">
-          <Row className="justify-content-center mb-2">
-            <Button onClick={this.cancelEdit} className="btn-icon btn-round" color="link">
-              <i className="text-danger tim-icons icon-simple-remove"/>
-            </Button>
-            <Button onClick={this.saveEdit} className="btn-icon btn-round mr-3" color="success">
-              <i className="tim-icons icon-check-2"/>
-            </Button>
-          </Row>
-          {this.state.error !== "" ? <p className="text-danger">}>{this.state.error}</p> : <></>}
-          <Row>
-            <Col>
-              <Input
-                onChange={this.onInputChange}
-                name="name"
-                value={this.state.edit.name}
-                placeholder="הכנס שם"
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="6">
-              <DatePicker
-                onChange={this.onTimeChange}
-                value={Utils.formatTime(this.state.edit.time)}
-                showTimeSelect
-                showTimeSelectOnly
-                timeCaption="שעה"
-              />
-            </Col>
-            <Col xs="6">
-              <DatePicker
-                onChange={this.onDateChange}
-                value={Utils.formatDate(this.state.edit.date)}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Input
-                onChange={this.onInputChange}
-                name="location"
-                value={this.state.edit.location}
-                placeholder="הכנס מיקום"
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Input
-                type="textarea"
-                placeholder="הכנס תיאור"
-                onChange={this.onInputChange}
-                name="description"
-                value={this.state.edit.description}/>
-            </Col>
-          </Row>
-          <br></br>
-        </div>
+        <Jumbotron className="text-center">
+          <Form>
+            <Row className="justify-content-center mb-2">
+              <Button onClick={this.cancelEdit} className="btn-icon btn-round" color="link">
+                <i className="text-danger tim-icons icon-simple-remove"/>
+              </Button>
+              <Button onClick={this.saveEdit} className="btn-icon btn-round mr-3" color="success">
+                <i className="tim-icons icon-check-2"/>
+              </Button>
+            </Row>
+            {this.state.error !== "" ? <p className="text-danger">}>{this.state.error}</p> : <></>}
+            <Row>
+              <Col md="6">
+                <Input
+                  onChange={this.onInputChange}
+                  name="name"
+                  value={this.state.edit.name}
+                  placeholder="הכנס שם"
+                />
+              </Col>
+              <Col md="6">
+                <Input
+                  onChange={this.onInputChange}
+                  className="mt-3"
+                  name="location"
+                  value={this.state.edit.location}
+                  placeholder="הכנס מיקום"
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col xs="6">
+                <DatePicker
+                  onChange={this.onTimeChange}
+                  value={Utils.formatTime(this.state.edit.time)}
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeCaption="שעה"
+                />
+              </Col>
+              <Col xs="6">
+                <DatePicker
+                  onChange={this.onDateChange}
+                  value={Utils.formatDate(this.state.edit.date)}
+                />
+              </Col>
+            </Row>
+            <Input
+              type="textarea"
+              className="mt-1 mb-2"
+              placeholder="הכנס תיאור"
+              onChange={this.onInputChange}
+              name="description"
+              value={this.state.edit.description}
+            />
+          </Form>
+        </Jumbotron>
       );
     } else {
       return (
@@ -201,11 +202,15 @@ class EventHeader extends React.Component {
           <h3 className="m-1">
             {this.state.data.name}
           </h3>
-          <h5 onClick={this.goToDay} className="m-1">
+          <h5  className="m-1">
             {Utils.formatTime(this.state.data.time) + " - " + Utils.formatDate(this.state.data.time)}
+              <i
+                onClick={this.goToDay}
+                className="mr-2 mb-1 tim-icons icon-minimal-left"
+              />
           </h5>
-          <h5>
-            {this.state.data.location}
+          <h5 className="m-1">
+            מיקום: {this.state.data.location}
           </h5>
           {this.renderDescription()}
           <Row className="justify-content-center mt-1 mb-3">

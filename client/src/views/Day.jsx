@@ -52,11 +52,9 @@ class Day extends React.Component {
   };
   renderEventsTable = () => {
     return this.state.day.events.map(event => (
-      <tr onClick={
-          () => this.props.history.push(`/home/event/${event._id}`)
-          }>
+      <tr onClick={ () => this.props.history.push(`/home/event/${event._id}`) }>
         <td>
-          {event.name} <i className={event.icon} />
+          {event.name}
         </td>
         <td>{event.users.length}</td>
         <td>{Object.values(event.cars).length}</td>
@@ -72,19 +70,28 @@ class Day extends React.Component {
     await DayHelper.postAttendance(this.state.day.date, attending);
     await this.fetchDay();
   }
+  goToMain = () => {
+    this.props.history.push(`/home/main?date=${this.state.date}`);
+  }
 
   render() {
     return (
       <div className="content text-right">
       <PageLoader isLoading={this.state.isLoading}>
-        <Row className="justify-content-around">
-            <AttendingCheckbox
-              onChange={this.onAttendingChange}
-              attending={this.state.attending}
-            />
-            <h4 className="text-center title">
-              {Utils.formatDate(this.state.day.date)}
-            </h4>
+        <h4 className="text-center title mb-1">
+          {Utils.formatDate(this.state.day.date)}
+        </h4>
+        <Row className="justify-content-center mb-2">
+          <AttendingCheckbox
+            onChange={this.onAttendingChange}
+            attending={this.state.attending}
+          />
+          <Button
+            color="link"
+            className = "mr-4 btn-icon btn-sm"
+            onClick={this.goToMain}>
+            <i className="mt-0 tim-icons icon-calendar-60" />
+          </Button>
         </Row>
         <Row>
           <Col md="6">
@@ -116,7 +123,7 @@ class Day extends React.Component {
                 </Row>
               </CardHeader>
               <CardBody>
-                <Table className="tablesorter" responsive>
+                <Table className="tablesorter text-center" responsive>
                   <thead className="text-primary">
                     <tr>
                       <th>שם</th>
