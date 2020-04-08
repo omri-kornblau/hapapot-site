@@ -28,10 +28,6 @@ exports.getEvent = async (req, res) => {
   }
 };
 
-const sendEvent = (res, status, event) => {
-  res.status(status).send(event);
-};
-
 const getEventFromDb = async (_id, username) => {
   if (!username) {
     throw Boom.internal("No username was given");
@@ -116,8 +112,6 @@ const addAmount = async (_id, item, amount, username) => {
       "inner.name": username
     }]
   })
-
-  return getEventFromDb(_id, username);
 };
 
 exports.addItem = async (req, res) => {
@@ -157,9 +151,7 @@ exports.addItem = async (req, res) => {
     throw Boom.badRequest(`failed to update item: ${item} in event ${_id}`);
   }
 
-  const event = await getEventFromDb(_id, username);
-
-  return sendEvent(res, 200, event);
+  return res.status(204).send();
 }
 
 exports.addOne = async (req, res) => {
@@ -167,13 +159,13 @@ exports.addOne = async (req, res) => {
     item,
     _id
   } = req.body;
-  const updateEvent = await addAmount(
+  await addAmount(
     _id,
     item,
     1,
     req.username
   );
-  return sendEvent(res, 200, updateEvent);
+  return res.status(204).send();
 };
 
 exports.subOne = async (req, res) => {
@@ -181,20 +173,20 @@ exports.subOne = async (req, res) => {
     _id,
     item
   } = req.body;
-  const updateEvent = await addAmount(
+  await addAmount(
     _id,
     item,
     -1,
     req.username
   );
-  return sendEvent(res, 200, updateEvent);
+  return res.status(204).send();
 };
 
 exports.insertEvent = async (req, res) => {
   const newEvent = req.body;
   try {
     const newEventFromDb = await EventModel.create(newEvent);
-    return sendEvent(res, 201, newEventFromDb);
+    return res.status(201).send(newEventFromDb);
   } catch (err) {
     if (err.code === 11000) {
       throw Boom.badRequest("Event with this name already exists in this day", {
@@ -253,8 +245,7 @@ exports.updateEvent = async (req, res) => {
     }
   });
 
-  const event = await getEventFromDb(_id, username);
-  return sendEvent(res, 200, event);
+  return res.status(204).send();
 }
 
 exports.updateItems = async (req, res) => {
@@ -275,9 +266,7 @@ exports.updateItems = async (req, res) => {
     }
   });
 
-  const event = await getEventFromDb(_id, username);
-
-  return sendEvent(res, 200, event);
+  return res.status(204).send();
 }
 
 exports.updateEventAttendance = async (req, res) => {
@@ -317,9 +306,7 @@ exports.updateEventAttendance = async (req, res) => {
     });
   }
 
-  const event = await getEventFromDb(_id, username);
-
-  sendEvent(res, 200, event);
+  return res.status(204).send();
 }
 
 exports.deleteEvent = async (req, res) => {
