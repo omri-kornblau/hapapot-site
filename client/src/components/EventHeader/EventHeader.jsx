@@ -4,7 +4,6 @@ import {
   Row,
   Button,
   Input,
-  InputGroup,
   Form,
   Col,
   Jumbotron
