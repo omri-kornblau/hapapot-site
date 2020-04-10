@@ -117,28 +117,28 @@ class Main extends React.Component {
       <div className="content text-right">
         <Card>
           <CardHeader>
-            <Jumbotron>
-              <Container>
-                <h4 className="text-center title">
-                  {Utils.formatDate(this.state.selectedDay.date)}
-                </h4>
-                <h5 className="text-center mb-1">
-                  מי בבית:
-                </h5>
-                <Row className="justify-content-center">
-                  <this.renderUsersInDay/>
-                </Row>
-                <h5 className="text-center mb-1">
-                  מה עושים:
-                </h5>
-                <Row className="justify-content-center">
-                  <this.renderEventsInDay/>
-                  <a className="text-success ml-3 mr-3" color="link" onClick={this.openNewEvent}>
-                    +
-                  </a>
-                </Row>
-              </Container>
-            </Jumbotron>
+            <Container className="mt-4">
+              <h4 className="text-center title">
+                {Utils.formatDate(this.state.selectedDay.date)}
+              </h4>
+              <h5 className="text-center mb-1">
+                מי בבית:
+              </h5>
+              <Row className="justify-content-center">
+                <this.renderUsersInDay/>
+              </Row>
+              <div className="divider mt-3 mb-3"/>
+              <h5 className="text-center mb-1">
+                מה עושים:
+              </h5>
+              <Row className="justify-content-center">
+                <this.renderEventsInDay/>
+                <a className="text-success ml-3 mr-3" color="link" onClick={this.openNewEvent}>
+                  +
+                </a>
+              </Row>
+              <div className="divider mt-3 mb-3"/>
+            </Container>
             <Row className="justify-content-center">
               <AttendingCheckbox
                 onChange={this.onAttendingChange}
