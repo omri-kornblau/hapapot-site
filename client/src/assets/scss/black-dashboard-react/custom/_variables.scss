@@ -23,7 +23,7 @@ $gray-800: #32325d !default; // Line heading color
 $gray-900: #212529 !default;
 $link-disabled: #666666 !default;
 $transparent-bg: transparent !default;
-$light-bg: #f5f6fa !default;
+$light-bg: #f3f3f3 !default;
 $dark-background: #555555 !default;
 
 
@@ -95,7 +95,7 @@ $default: #646464 !default;
 $primary: #304ffe !default;
 $secondary: #f4f5f7 !default;
 $success: #00c853 !default;
-$info: #24b0bd !default;
+$info: #5b72f3 !default;
 $warning: #e76b00 !default;
 $danger: #d50000 !default;
 $black: #131313 !default;
@@ -105,7 +105,7 @@ $black: #131313 !default;
 $default-states: #4d4d4d !default;
 $primary-states: #0026ca !default;
 $success-states: #009624 !default;
-$info-states: #ba54f5 !default;
+$info-states: #304ffe !default;
 $warning-states: #a84f00 !default;
 $danger-states: #9b0000 !default;
 $black-states: #202020 !default;
@@ -317,7 +317,7 @@ $border-width: .0625rem !default;
 $border-color: $gray-200 !default;
 
 $border-radius: .25rem !default;
-$border-radius-xl: 0.875rem !default;
+$border-radius-xl: 1.125rem !default;
 $border-radius-lg: 0.4285rem !default;
 $border-radius-sm: 0.2857rem !default;
 $border-radius-xs: 0.1428rem !default;
@@ -884,13 +884,14 @@ $pagination-disabled-border-color: $gray-300 !default;
 $card-spacer-y: 1.25rem !default;
 $card-spacer-x: 1.5rem !default;
 $card-border-width: $border-width !default;
-$card-border-radius: $border-radius-sm !default;
-$card-border-color: rgba($black, .05);
+$card-border-radius: $border-radius-xl !default;
+$card-border-color: rgba($black, .01);
 $card-inner-border-radius: calc(#{$card-border-radius} - #{$card-border-width});
 $card-cap-bg: $gray-100 !default;
 $card-bg: $white !default;
 $card-black-background: #27293d !default;
 $card-img-overlay-padding: 1.25rem !default;
+$card-inset-box-shadow: -1px -1px 1px inset rgba(0, 0, 0, 0.5);
 
 //$card-group-margin:                 ($grid-gutter-width / 2);
 //$card-deck-margin:                  $card-group-margin !default;

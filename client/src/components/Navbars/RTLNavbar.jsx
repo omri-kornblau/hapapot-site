@@ -43,7 +43,7 @@ class AdminNavbar extends React.Component {
     this.state = {
       collapseOpen: false,
       modalSearch: false,
-      color: "navbar-transparent"
+      color: "bg-primary"
     };
   }
   componentDidMount() {
@@ -60,7 +60,7 @@ class AdminNavbar extends React.Component {
       });
     } else {
       this.setState({
-        color: "navbar-transparent"
+        color: "bg-primary"
       });
     }
   };

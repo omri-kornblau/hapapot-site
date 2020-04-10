@@ -70,7 +70,7 @@ class LoginPage extends React.Component {
           <Row className="justify-content-md-center">
             <Col className="text-right" md="6">
               {" "}
-              <Card className="card-user">
+              <Card className="card-user pb-2">
                 <CardHeader>
                   <CardTitle className="text-center" tag="h4">
                     תמלא פרטים גבר
@@ -79,7 +79,7 @@ class LoginPage extends React.Component {
                 <CardBody>
                   <Form className="text-right" onSubmit={this.onSubmit}>
                     <Row className="text-right">
-                      <Col className="text-right pr-1" md="7">
+                      <Col className="text-right" md="7">
                         <FormGroup>
                           <label> שם משתמש </label>
                           <Input
@@ -94,7 +94,7 @@ class LoginPage extends React.Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col className="text-right pr-1" md="5">
+                      <Col className="text-right" md="5">
                         <FormGroup>
                           <label> סיסמה </label>
                           <Input
