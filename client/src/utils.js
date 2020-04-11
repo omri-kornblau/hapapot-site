@@ -76,11 +76,12 @@ Utils.sortItemsByMissing = items => {
 }
 
 Utils.sortItemsByOldItems = (items, oldItems) => {
+  const clonedOldItems = [...oldItems];
   return items.map(item => {
     const oldIdx = _.findIndex(oldItems, {
       name: item.name
     });
-    oldItems[oldIdx] = '';
+    clonedOldItems[oldIdx] = '';
 
     const sortingIdx = oldIdx < 0 ? items.length : oldIdx;
     return [sortingIdx, item];

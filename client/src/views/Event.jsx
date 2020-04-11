@@ -7,21 +7,13 @@ import {
   Row,
   Col,
   Card,
-  CardBody,
-  Input,
-  UncontrolledTooltip,
-  UncontrolledDropdown,
-  DropdownMenu,
-  DropdownToggle,
-  Form
+  CardBody
 } from "reactstrap";
-
 import Popup from "reactjs-popup";
 
 import EventHeader from "../components/EventHeader/EventHeader";
-import EventItemDropDown from "../components/Dropdown/EventItemDropDown";
-import UserItemsDropDown from "../components/Dropdown/UserItemsDropDown";
 import PageLoader from "../components/Status/PageLoader";
+import EventItems from "../components/EventItems/EventItems";
 
 import EventModel from "../defaults/models/event";
 
@@ -35,14 +27,7 @@ class Event extends React.Component {
     this._id = path[1];
     this.state = {
       eventData: EventModel.data,
-      eventDataOnEdit: {},
-      newItem: {
-        name: "",
-        amount: 0
-      },
       isDeletingMode: false,
-      isEditMode: false,
-      isItemsSorted: true,
       currentUser: "",
       isLoading: true,
       error: ""
@@ -58,21 +43,9 @@ class Event extends React.Component {
   fetchEventData = async () => {
     try {
       const res = await EventHelper.getEvent(this._id);
-      const newEventData = res.data.event;
-      const oldEventData = this.state.eventData;
-      newEventData.items.forEach(item => {
-        item.broughtAmount = Utils.getBroughtAmount(item);
-        item.isMissing = item.broughtAmount < item.neededamount;
-      });
-      newEventData.items = this.state.isItemsSorted ?
-        Utils.sortItemsByMissing(newEventData.items)
-        : Utils.sortItemsByOldItems(newEventData.items, oldEventData.items);
-      newEventData.isItemsMissing = _.some(newEventData.items, item =>
-        item.broughtAmount < item.neededamount
-      );
 
       this.setState({
-        eventData: newEventData,
+        eventData: res.data.event,
         currentUser: res.data.username,
         isLoading: false,
         error: ""
@@ -85,15 +58,13 @@ class Event extends React.Component {
       }
     }
   }
-  changeItemUserAmount = async (amount, item) => {
+  onChangeItemUserAmount = async (item, amount) => {
     if (!this.state.eventData.attending) {
       return this.openAttendPopup();
     }
 
     const changeAmount = amount > 0 ?
       EventHelper.addOneItemToUser : EventHelper.subOneItemToUser;
-
-    this.setState({ isItemsSorted: false });
 
     try {
       await changeAmount(this._id, item.name);
@@ -108,16 +79,6 @@ class Event extends React.Component {
     newNewItem[name] = value;
     this.setState({newItem: newNewItem });
   };
-  onEditedItemInput = e => {
-    const { eventDataOnEdit } = this.state;
-    const { name, value } = e.target;
-    eventDataOnEdit.items.forEach(item => {
-      if (item.name === name) {
-        item.neededamount = value;
-      }
-    });
-    this.setState({ eventDataOnEdit });
-  }
   onAttendingChange = async attending => {
     const { eventData } = this.state;
     eventData.attending = attending;
@@ -140,39 +101,24 @@ class Event extends React.Component {
       return false;
     }
   }
-  onAddItemSubmit = async e => {
-    e.preventDefault();
-    e.target.reset();
+  onAddItem = async (name, amountNeeded) => {
     try {
-      const { name, amount } = this.state.newItem;
-      await EventHelper.addItem(this._id, name, amount);
-      this.setState({ isItemsSorted: false });
+      await EventHelper.addItem(this._id, name, amountNeeded);
       this.fetchEventData();
     } catch (err) {
       console.log(err);
     }
   }
-  enterItemsEditMode = () => {
-    const eventDataOnEdit = _.cloneDeep(this.state.eventData);
-    this.setState({ isEditMode: true, eventDataOnEdit });
-  }
-  leaveItemsEditModeNoChanges = () => {
-    this.setState({ isEditMode: false });
-  }
-  leaveItemsEditModeSaveChanges = async () => {
-    const eventData = this.state.eventDataOnEdit;
+  onItemsEditSave = async editedItems => {
     try {
-      await EventHelper.updateItems(this._id, eventData.items);
-      await this.fetchEventData();
-      this.setState({ isEditMode: false });
+      const { eventData } = this.state;
+      eventData.items = editedItems;
+      this.setState({ eventData });
+      await EventHelper.updateItems(this._id, editedItems);
+      this.fetchEventData();
     } catch(err) {
       console.error(err);
     }
-  }
-  deleteEditedItem = itemName => () => {
-    const { eventDataOnEdit } = this.state;
-    _.remove(eventDataOnEdit.items, item => item.name === itemName);
-    this.setState({ eventDataOnEdit });
   }
   openDeletePopup = () => {
     this.setState({isDeletingMode: true})
@@ -189,164 +135,6 @@ class Event extends React.Component {
   }
   closeAttendPopup = () => {
     this.setState({isAttendMode: false})
-  }
-  sortItemsByMissing = () => {
-    const { eventData } = this.state;
-    eventData.items = Utils.sortItemsByMissing(eventData.items);
-    this.setState({ eventData, isItemsSorted: true });
-  }
-  renderEditModeItemsRows = () => {
-    return this.state.eventDataOnEdit.items.map(item =>
-      <tr key={item.name}>
-        <td>{item.name}</td>
-        <td><Input onInput={this.onEditedItemInput} name={item.name} type="number" min={1} value={item.neededamount}/></td>
-        <td></td>
-        <td>
-          <Button onClick={this.deleteEditedItem(item.name)} color="link" className="btn-sm btn-round">
-            <i className="text-danger tim-icons icon-trash-simple" />
-          </Button>
-        </td>
-      </tr>
-    );
-  }
-  renderExistsItemsRows = () => {
-    const { eventData } = this.state;
-
-    return eventData.items.map((item, idx) => (
-      <tr key={item.name}>
-        <td>
-          {item.name}
-        </td>
-        <td>
-          <div className={item.isMissing ? "text-danger" : ""}>
-            {item.neededamount} / {item.broughtAmount}
-          </div>
-        </td>
-        <td>
-          <EventItemDropDown
-            item={item}
-            idx={idx}
-            users={item.users.map(user => {
-              const currentUser = _.find(eventData.users, {username: user.name})
-              return _.assign(_.clone(currentUser), user);
-            })}
-          />
-        </td>
-        <td>
-          <Button className="m-1 btn-icon btn-round" color="success" size="sm" onClick={() => this.changeItemUserAmount(1, item)}>
-            <i className="tim-icons icon-simple-add"> </i>
-          </Button>
-          <Button className="m-1 btn-icon btn-round" color="danger" size="sm" onClick={() => this.changeItemUserAmount(-1, item)}>
-            <i className="tim-icons icon-simple-delete"/>
-          </Button>
-        </td>
-      </tr>
-    ));
-  }
-  renderItemsCard = () => {
-    return (
-      <Card>
-        <CardHeader>
-          <Row className="justify-content-between mr-2 ml-2">
-            <h5 className="title">
-              ציוד
-              <i className={`mr-3 tim-icons
-                ${this.state.eventData.isItemsMissing ?
-                  "text-danger icon-thumbs-down-1"
-                  : "text-success icon-thumbs-up-1"
-                } `}
-              />
-            </h5>
-            <Row>
-              <span id="sort-btn"> {/* Wrap to enable tooltip on disabled button */}
-                <Button
-                  disabled={this.state.isItemsSorted}
-                  onClick={this.sortItemsByMissing}
-                  className="btn-icon btn-round" color="link">
-                  ↓
-                </Button>
-              </span>
-              {this.state.isItemsSorted ?
-                <UncontrolledTooltip target="sort-btn">
-                  הפריטים כבר ממוינים
-                </UncontrolledTooltip>
-              : ""}
-              <UserItemsDropDown items={this.state.eventData.items} user={this.state.currentUser}/>
-              <Button onClick={this.enterItemsEditMode} className="btn-icon btn-round" color="link">
-                <i className="tim-icons icon-pencil"/>
-              </Button>
-            </Row>
-          </Row>
-        </CardHeader>
-        <CardBody>
-          <Form onSubmit={this.onAddItemSubmit}>
-          <Table className="tablesorter text-center" responsive>
-            <thead className="text-primary">
-              <tr>
-                <th>פריט</th>
-                <th>
-                  כמות
-                  {this.state.isItemsSorted ? " ↓ " : ""} {/* ↑*/}
-                </th>
-                <th>אנשים</th>
-                <th>פעולות</th>
-              </tr>
-            </thead>
-            <tbody>
-              <this.renderExistsItemsRows/>
-              <tr>
-                <td>
-                  <Input required placeholder="פריט חדש" onChange={this.onInputChange} name="name"></Input>
-                </td>
-                <td colSpan="2">
-                  <Input required className="text-center" placeholder="כמות רצויה" type="number" onChange={this.onInputChange} name="amount" min="1"></Input>
-                </td>
-                <td>
-                  <Button color="link" className="text-success btn-icon" type="submit">
-                    <i className="tim-icons icon-simple-add" />
-                  </Button>
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-          </Form>
-        </CardBody>
-      </Card>
-    );
-  }
-  renderEditItemsCard = () => {
-    return (
-      <Card>
-        <CardHeader>
-          <Row className="justify-content-between mr-2 ml-2">
-            <h5 className="title">עריכת ציוד</h5>
-            <Row>
-              <Button onClick={this.leaveItemsEditModeNoChanges} className="btn-icon btn-round" color="link">
-                <i className="text-danger tim-icons icon-simple-remove"/>
-              </Button>
-              <Button onClick={this.leaveItemsEditModeSaveChanges} className="btn-icon btn-round mr-3" color="success">
-                <i className="tim-icons icon-check-2"/>
-              </Button>
-            </Row>
-          </Row>
-        </CardHeader>
-        <CardBody>
-          <Table className="tablesorter text-center" responsive>
-            <thead className="text-primary">
-              <tr>
-                <th>פריט</th>
-                <th>כמות רצויה</th>
-                <th/>
-                <th/>
-              </tr>
-            </thead>
-            <tbody>
-              <this.renderEditModeItemsRows/>
-            </tbody>
-          </Table>
-        </CardBody>
-      </Card>
-    );
   }
   renderCarTable = () => {
     return this.state.eventData.cars.map(car => {
@@ -374,12 +162,13 @@ class Event extends React.Component {
   };
 
   render() {
+    const { eventData } = this.state;
     return (
     <>
       <Popup open={this.state.isDeletingMode} closeOnDocumentClick onClose={this.closeDeletePopup}>
         <>
           <p className="text-center">
-          גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{this.state.eventData.name}"?
+          גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{eventData.name}"?
           </p>
           <Row className="justify-content-center mt-4 mb-2">
             <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
@@ -411,15 +200,15 @@ class Event extends React.Component {
           { this.state.error === "" ?
             <>
               <EventHeader
-                name={this.state.eventData.name}
-                time={this.state.eventData.time}
-                description={this.state.eventData.description}
-                date={Utils.formatDateLikeDb(this.state.eventData.time)}
-                location={this.state.eventData.location}
+                name={eventData.name}
+                time={eventData.time}
+                description={eventData.description}
+                date={Utils.formatDateLikeDb(eventData.time)}
+                location={eventData.location}
                 updateEvent={this.updateEventHeader}
                 history={this.props.history}
                 onAttendingChange={this.onAttendingChange}
-                attending={this.state.eventData.attending}
+                attending={eventData.attending}
               />
               <Row>
                 <Col md="6">
@@ -441,10 +230,14 @@ class Event extends React.Component {
                   </Card>
                 </Col>
                 <Col md="6">
-                  { this.state.isEditMode ?
-                    <this.renderEditItemsCard/> :
-                    <this.renderItemsCard/>
-                  }
+                  <EventItems
+                    items={eventData.items}
+                    users={eventData.users}
+                    user={this.state.currentUser}
+                    onChangeItemUserAmount={this.onChangeItemUserAmount}
+                    onEditSave={this.onItemsEditSave}
+                    onAddItem={this.onAddItem}
+                  />
                 </Col>
               </Row>
               <Row className="justify-content-center">
