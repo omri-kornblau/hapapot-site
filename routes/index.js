@@ -11,7 +11,6 @@ const router = Express.Router();
 
 router.post("/api/user", withAuth, UserRoutes.upsertUser)
 router.post("/api/newuser", UserRoutes.insertUser)
-router.post("/auth/authenticate", AuthRoutes.register)
 
 router.get("/api/user", withAuth, UserRoutes.getUser);
 router.get("/api/aboutus", withAuth, UserRoutes.getUsers)
@@ -32,5 +31,6 @@ router.post("/api/event/delete", withAuth, EventRoutes.deleteEvent);
 
 router.post("/auth/authenticate", AuthRoutes.register);
 router.get("/auth/checktoken", withAuth, AuthRoutes.checkToken);
+router.get("/auth/logout", withAuth, AuthRoutes.logout)
 
 module.exports = router;

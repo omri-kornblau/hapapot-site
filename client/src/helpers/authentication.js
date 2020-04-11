@@ -15,4 +15,8 @@ Auther.checkToken = async () => {
   }
 }
 
+Auther.logout = async () => {
+  await Axios.get("/auth/logout");
+}
+
 export default Auther;
