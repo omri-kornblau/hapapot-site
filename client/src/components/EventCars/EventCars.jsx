@@ -179,6 +179,7 @@ function EventCars(props) {
     switch (action.type) {
       case SAVE: {
         if (await props.onCarUpdated(edit.actions)) {
+          console.log("cars: ", props.cars);
           dispatch({type: EXIT});
           return;
         } else {

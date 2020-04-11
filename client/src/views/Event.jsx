@@ -144,7 +144,7 @@ class Event extends React.Component {
   addCar = async maxPassengers => {
     try {
       await EventHelper.addCar(this._id, maxPassengers);
-      this.fetchEventData();
+      await this.fetchEventData();
       return true;
     } catch(err) {
       console.error(err);
@@ -154,7 +154,7 @@ class Event extends React.Component {
   movePassenger = async (passenger, destCarId, isDriver) => {
     try {
       await EventHelper.movePassenger(this._id, passenger, destCarId, isDriver);
-      this.fetchEventData();
+      await this.fetchEventData();
       return true;
     } catch(err) {
       console.error(err);
@@ -164,7 +164,7 @@ class Event extends React.Component {
   updateCars = async actions => {
     try {
       await EventHelper.updateCars(this._id, actions);
-      this.fetchEventData();
+      await this.fetchEventData();
       return true;
     } catch(err) {
       console.error(err);
