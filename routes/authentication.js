@@ -50,3 +50,13 @@ exports.register = async (req, res) => {
 exports.checkToken = (req, res) => {
   res.send();
 }
+
+exports.logout = async (req, res) => {
+  const {
+    username
+  } = req;
+  await CookieModel.remove({
+    username
+  });
+  res.send();
+}

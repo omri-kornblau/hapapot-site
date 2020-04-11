@@ -37,6 +37,8 @@ import {
   Modal
 } from "reactstrap";
 
+import AuthHelper from "../../helpers/authentication";
+
 class AdminNavbar extends React.Component {
   constructor(props) {
     super(props);
@@ -85,6 +87,10 @@ class AdminNavbar extends React.Component {
       modalSearch: !this.state.modalSearch
     });
   };
+  onLogout = async () => {
+    await AuthHelper.logout();
+    this.props.history.push("/");
+  }
   render() {
     return (
       <>
@@ -192,18 +198,18 @@ class AdminNavbar extends React.Component {
                       <img alt="..." src={require("assets/img/anime3.png")} />
                     </div>
                     <b className="caret d-none d-lg-block d-xl-block" />
-                    <p className="d-lg-none">Log out</p>
+                    <p className="d-lg-none">התנתק</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" tag="ul">
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Profile</DropdownItem>
+                      <DropdownItem className="nav-item">חשבון</DropdownItem>
                     </NavLink>
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Settings</DropdownItem>
+                      <DropdownItem className="nav-item">הגדרות</DropdownItem>
                     </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Log out</DropdownItem>
+                      <DropdownItem onClick={this.onLogout} className="nav-item">התנתק</DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>
