@@ -3,6 +3,7 @@ const Mongoose = require("mongoose");
 const Boom = require("boom");
 const Utils = require("../utils")
 const MongoHelpers = require("../models/mongoHelpers")
+const Mongodb = require("mongodb")
 
 const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
@@ -265,6 +266,114 @@ exports.updateItems = async (req, res) => {
       items
     }
   });
+
+  return res.status(204).send();
+}
+
+exports.addCar = async (req, res) => {
+  const {
+    _id
+  } = req.params;
+  const {
+    maxPassengers
+  } = req.body;
+
+  await EventModel.updateOne({
+    _id
+  }, {
+    $push: {
+      cars: {
+        driver: "",
+        passengers: [],
+        _id: Mongodb.ObjectID().toString(),
+        maxPassengers,
+      }
+    }
+  })
+
+  return res.status(204).send();
+}
+
+exports.movePassenger = async (req, res) => {
+  const {
+    username
+  } = req;
+  const {
+    _id
+  } = req.params;
+  const {
+    passenger,
+    destCarId,
+    isDriver
+  } = req.body;
+
+  console.log(username, _id, passenger, destCarId, isDriver);
+
+  // Remove passenger from old car
+  // Maybe it will be better to recieve also the source car
+  // from the client, insted of loop over all the cars
+  console.log("removing passenger");
+  await EventModel.updateOne({
+    _id
+  }, {
+    $pull: {
+      "cars.$[].passengers": passenger
+    },
+    $set: {
+      "cars.$[car].driver": ""
+    }
+  }, {
+    "arrayFilters": [{
+      "car.driver": passenger
+    }]
+  });
+
+  if (isDriver) {
+    // Set the passenger as driver
+    await EventModel.updateOne({
+      _id,
+      cars: {
+        $elemMatch: {
+          _id: destCarId
+        }
+      }
+    }, {
+      $set: {
+        "cars.$.driver": passenger
+      }
+    });
+  } else {
+    // Get car MaxPassengers
+    var event = await getEventFromDb(_id, username);
+    var maxPassengers = 0;
+    event.cars.forEach(car => {
+      if (car._id === destCarId) {
+        maxPassengers = car.maxPassengers
+      }
+    });
+
+    // Add passenger to the car
+    await EventModel.updateOne({
+      _id,
+      cars: {
+        $elemMatch: {
+          _id: destCarId,
+          passengers: {
+            $not: {
+              $in: [passenger]
+            }
+          }
+        },
+      }
+    }, {
+      $push: {
+        "cars.$.passengers": {
+          $each: [passenger],
+          $slice: maxPassengers
+        }
+      }
+    });
+  }
 
   return res.status(204).send();
 }

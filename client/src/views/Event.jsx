@@ -12,6 +12,7 @@ import {
 import Popup from "reactjs-popup";
 
 import EventHeader from "../components/EventHeader/EventHeader";
+import EventCars from "../components/EventCars/EventCars";
 import PageLoader from "../components/Status/PageLoader";
 import EventItems from "../components/EventItems/EventItems";
 
@@ -51,7 +52,7 @@ class Event extends React.Component {
         error: ""
       });
     } catch (err) {
-      if (err.response.status === 404) {
+      if (err.response && err.response.status === 404) {
         this.setState({ isLoading: false, error: "האירוע לא קיים אחי" });
       } else {
         console.log(err);
@@ -101,7 +102,28 @@ class Event extends React.Component {
       return false;
     }
   }
-  onAddItem = async (name, amountNeeded) => {
+  addCar = async maxPassengers => {
+    try {
+      await EventHelper.addCar(this._id, maxPassengers);
+      this.fetchEventData();
+      return true;
+    } catch(err) {
+      console.error(err);
+      return false;
+    }
+  }
+  movePassenger = async (passenger, destCarId, isDriver) => {
+    try {
+      await EventHelper.movePassenger(this._id, passenger, destCarId, isDriver);
+      this.fetchEventData();
+      return true;
+    } catch(err) {
+      console.error(err);
+      return false;
+    }
+
+  }
+  onAddItem = async e => {
     try {
       await EventHelper.addItem(this._id, name, amountNeeded);
       this.fetchEventData();
@@ -136,30 +158,6 @@ class Event extends React.Component {
   closeAttendPopup = () => {
     this.setState({isAttendMode: false})
   }
-  renderCarTable = () => {
-    return this.state.eventData.cars.map(car => {
-      return (
-        <tr key={car["driver"]}>
-          <td>
-            <Button className="btn-icon btn-round" color="success" size="sm">
-              <i className="tim-icons icon-simple-add" />
-            </Button>
-          </td>
-          <td>
-            {car["driver"]}
-          </td>
-          <td>
-            {car["passengers"]}
-          </td>
-          <td>
-            <Button className="btn-icon btn-round" color="warning" size="sm">
-              <i className="tim-icons icon-simple-delete" />
-            </Button>
-          </td>
-        </tr>
-      );
-    });
-  };
 
   render() {
     const { eventData } = this.state;
@@ -213,22 +211,12 @@ class Event extends React.Component {
               </PageLoader>
               <Row>
                 <Col md="6">
-                  <Card>
-                    <CardHeader>
-                      <h5 className="title">רכבים</h5>
-                    </CardHeader>
-                    <CardBody>
-                      <Table className="tablesorter table-sm table-striped" responsive>
-                        <thead className="text-primary">
-                          <tr>
-                            <th>שם</th>
-                            <th>תמונה</th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderCarTable()}</tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
+                  <EventCars
+                    passengers={this.state.eventData.users}
+                    cars={this.state.eventData.cars}
+                    addCar={this.addCar}
+                    movePassenger={this.movePassenger}
+                   />
                 </Col>
                 <Col md="6">
                   <EventItems
