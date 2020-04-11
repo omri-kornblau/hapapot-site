@@ -104,4 +104,12 @@ EventHelper.movePassenger = async (_id, passenger, destCarId, isDriver) => {
   });
 }
 
+EventHelper.updateCars = async (_id, actions) => {
+  Utils.expectToExist(_id, "event _id");
+  Utils.expectToExist(actions, "actions");
+  return post(`/api/event/${_id}/cars/update`, {
+    actions
+  });
+}
+
 export default EventHelper;
