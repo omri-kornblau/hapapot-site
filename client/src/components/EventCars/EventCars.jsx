@@ -127,7 +127,7 @@ function EventCars(props) {
     setState(newState);
   })
 
-  const [edit, dispatchEdit] = useReducer(
+  const [edit, dispatch] = useReducer(
     (edit, action) => {
       switch (action.type) {
         case ENTER_EDIT_MOTE: {
@@ -162,8 +162,6 @@ function EventCars(props) {
           return {...edit, actions, cars};
         }
         case SAVE: {
-          console.log(edit);
-          props.onCarUpdated(edit.actions);
           return {...edit, isEditMode: false};
         }
         case EXIT: {
@@ -176,6 +174,22 @@ function EventCars(props) {
       actions: {},
     }
   );
+
+  const dispatchEdit = async action => {
+    switch (action.type) {
+      case SAVE: {
+        if (await props.onCarUpdated(edit.actions)) {
+          dispatch({type: EXIT});
+          return;
+        } else {
+          return;
+        }
+      }
+      default: {
+        dispatch(action);
+      }
+    }
+  }
 
   const onInputChange = async (event) => {
     const { value } = event.target;
