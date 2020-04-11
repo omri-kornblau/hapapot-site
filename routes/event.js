@@ -307,12 +307,9 @@ exports.movePassenger = async (req, res) => {
     isDriver
   } = req.body;
 
-  console.log(username, _id, passenger, destCarId, isDriver);
-
   // Remove passenger from old car
   // Maybe it will be better to recieve also the source car
   // from the client, insted of loop over all the cars
-  console.log("removing passenger");
   await EventModel.updateOne({
     _id
   }, {
@@ -386,7 +383,6 @@ exports.updateCars = async (req, res) => {
     actions
   } = req.body;
 
-  console.log(actions);
   await Promise.all(Object.keys(actions).map(async carId => {
     var operation = {};
     car = actions[carId];
@@ -405,7 +401,6 @@ exports.updateCars = async (req, res) => {
         }
         break;
       case DELETE:
-        console.log("deleting");
         operation = {
           $pull: {
             cars: {

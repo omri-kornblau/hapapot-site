@@ -139,7 +139,6 @@ function EventCars(props) {
           }
         }
         case DELETE: {
-          console.log(edit);
           const cars = edit.cars.filter(car => (
             car._id !== action._id
           ));
@@ -149,7 +148,6 @@ function EventCars(props) {
           return {...edit, actions, cars};
         }
         case EDIT_MAX_PASSENGERS: {
-          console.log(edit);
           const cars = edit.cars.map(car => {
             if (car._id === action._id) {
               car.maxPassengers = action.value;
@@ -179,7 +177,6 @@ function EventCars(props) {
     switch (action.type) {
       case SAVE: {
         if (await props.onCarUpdated(edit.actions)) {
-          console.log("cars: ", props.cars);
           dispatch({type: EXIT});
           return;
         } else {
