@@ -2,7 +2,10 @@ const Mongoose = require("mongoose");
 const Jwt = require("jsonwebtoken");
 const Boom = require("boom");
 
+const Utils = require("../utils");
+
 const UserModel = Mongoose.model("User");
+const CookieModel = Mongoose.model("Cookie");
 
 const secretKey = require("../config/server").secretTokenKey;
 
@@ -25,10 +28,17 @@ exports.register = async (req, res) => {
       appCode: 2200
     });
   }
+
   // Issue token
+  const tokenPassword = Utils.getRandomPassword(16);
   const payload = {
+    username,
+    tokenPassword
+  }
+  await CookieModel.remove({
     username
-  };
+  });
+  await CookieModel.create(payload);
   const token = Jwt.sign(payload, secretKey, {
     expiresIn: "1h"
   });

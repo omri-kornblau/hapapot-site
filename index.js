@@ -7,13 +7,13 @@ const Path = require("path");
 
 const AsyncErrorsHandler = require("./errors/express-async-errors");
 const ErrorsRouter = require("./errors/errors-router");
-const withAuth = require("./middleware").withAuth;
 
 // Import configurations
 const DbConfig = require("./config/database");
 const ServerConfig = require("./config/server");
 
 // Import models
+require("./models/cookie");
 require("./models/user");
 require("./models/day");
 require("./models/event");
