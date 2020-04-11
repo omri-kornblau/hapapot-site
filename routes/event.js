@@ -378,6 +378,59 @@ exports.movePassenger = async (req, res) => {
   return res.status(204).send();
 }
 
+exports.updateCars = async (req, res) => {
+  const {
+    _id
+  } = req.params;
+  const {
+    actions
+  } = req.body;
+
+  console.log(actions);
+  await Promise.all(Object.keys(actions).map(async carId => {
+    var operation = {};
+    car = actions[carId];
+    const DELETE = "delete";
+    const EDIT_MAX_PASSENGERS = "editMaxPassengers";
+    switch (car.type) {
+      case EDIT_MAX_PASSENGERS:
+        if (car.value > 0) {
+          operation = {
+            $set: {
+              "cars.$.maxPassengers": car.value
+            }
+          };
+        } else {
+          return;
+        }
+        break;
+      case DELETE:
+        console.log("deleting");
+        operation = {
+          $pull: {
+            cars: {
+              _id: carId
+            }
+          }
+        }
+        break;
+      default:
+        return
+    }
+
+    await EventModel.updateOne({
+      _id,
+      cars: {
+        $elemMatch: {
+          _id: carId
+        }
+      }
+    }, operation);
+  }))
+
+  return res.status(204).send();
+}
+
 exports.updateEventAttendance = async (req, res) => {
   const {
     _id

@@ -28,6 +28,7 @@ router.post("/api/event/item/add", withAuth, EventRoutes.addItem);
 router.post("/api/event/:_id/items", withAuth, EventRoutes.updateItems);
 router.post("/api/event/:_id/cars/add", withAuth, EventRoutes.addCar);
 router.post("/api/event/:_id/cars/movePassenger", withAuth, EventRoutes.movePassenger);
+router.post("/api/event/:_id/cars/update", withAuth, EventRoutes.updateCars);
 router.post("/api/attend/event/:_id", withAuth, EventRoutes.updateEventAttendance);
 router.post("/api/event/delete", withAuth, EventRoutes.deleteEvent);
 

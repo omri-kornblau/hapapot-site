@@ -121,7 +121,16 @@ class Event extends React.Component {
       console.error(err);
       return false;
     }
-
+  }
+  updateCars = async actions => {
+    try {
+      await EventHelper.updateCars(this._id, actions);
+      this.fetchEventData();
+      return true;
+    } catch(err) {
+      console.error(err);
+      return false;
+    }
   }
   onAddItem = async e => {
     try {
@@ -214,8 +223,9 @@ class Event extends React.Component {
                   <EventCars
                     passengers={this.state.eventData.users}
                     cars={this.state.eventData.cars}
-                    addCar={this.addCar}
-                    movePassenger={this.movePassenger}
+                    onCarAdded={this.addCar}
+                    onPassengerMoved={this.movePassenger}
+                    onCarUpdated={this.updateCars}
                    />
                 </Col>
                 <Col md="6">

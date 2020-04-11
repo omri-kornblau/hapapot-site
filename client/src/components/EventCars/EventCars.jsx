@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React, { useState } from "react";
+import React, { useState, useContext, useReducer } from "react";
 import {
   Card,
   CardBody,
@@ -14,12 +14,9 @@ import {
 } from "reactstrap"
 
 import { DndProvider, useDrag, useDrop } from "react-dnd"
-import Html5Backend from "react-dnd-html5-backend"
-import TouchBackend from "react-dnd-touch-backend"
-import { isMobile } from "react-device-detect"
 
-import MultiBackend from 'react-dnd-multi-backend';
-import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
+import MultiBackend, { Preview } from 'react-dnd-multi-backend';
+import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch'; 
 
 import Utils from "./Utils"
 import { useEffect } from "react";
@@ -109,60 +106,192 @@ function PassengersBox(props) {
   );
 }
 
+const ENTER_EDIT_MOTE = "init";
+const DELETE = "delete";
+const EDIT_MAX_PASSENGERS = "editMaxPassengers";
+const SAVE = "save";
+const EXIT = "exit";
+
 function EventCars(props) {
   const [state, setState] = useState({
     cars: props.cars,
     passengersWithoutCar: Utils.getPassengerswithoutCar(props.passengers, props.cars),
     newCar:{maxPassengers: 0},
-    error: ""
+    error: "",
   });
 
   useEffect(() => {
     state.cars = props.cars;
     state.passengersWithoutCar = Utils.getPassengerswithoutCar(props.passengers, props.cars);
-    var newState = _.clone(state)
+    const newState = _.clone(state)
     setState(newState);
   })
 
-  const renderCarList = () => {
-    return state.cars.map((car, index) => (
-      <Car
-        key={car._id}
-        driver={car.driver}
-        passengers={car.passengers}
-        maxPassengers={car.maxPassengers}
-        carId={car._id}
-        movePassenger={props.movePassenger}/>
-    ))
-  }
+  const [edit, dispatchEdit] = useReducer(
+    (edit, action) => {
+      switch (action.type) {
+        case ENTER_EDIT_MOTE: {
+
+          return {
+            isEditMode: true,
+            cars: _.clone(state.cars),
+            actions: {},
+          }
+        }
+        case DELETE: {
+          console.log(edit);
+          const cars = edit.cars.filter(car => (
+            car._id !== action._id
+          ));
+
+          const actions = _.clone(edit.actions);
+          actions[action._id] = {type: action.type};
+          return {...edit, actions, cars};
+        }
+        case EDIT_MAX_PASSENGERS: {
+          console.log(edit);
+          const cars = edit.cars.map(car => {
+            if (car._id === action._id) {
+              car.maxPassengers = action.value;
+            }
+            return car;
+          });
+
+          const actions = _.clone(edit.actions);
+          actions[action._id] = action;
+          return {...edit, actions, cars};
+        }
+        case SAVE: {
+          console.log(edit);
+          props.onCarUpdated(edit.actions);
+          return {...edit, isEditMode: false};
+        }
+        case EXIT: {
+          return {...edit, isEditMode: false};
+        }
+      }
+    }, {
+      isEditMode: false,
+      cars: [],
+      actions: {},
+    }
+  );
 
   const onInputChange = async (event) => {
     const { value } = event.target;
     state.newCar = {maxPassengers: parseInt(value)};
-    var newState = _.clone(state)
+    const newState = _.clone(state)
     setState(newState);
   }
 
   const submitForm = async event => {
     event.preventDefault();
     event.target.reset();
-    if (await props.addCar(state.newCar.maxPassengers)) {
+    if (await props.onCarAdded(state.newCar.maxPassengers)) {
       state.newCar.maxPassengers = 0;
       state.error = "";
     } else {
       state.error = "Failed creating car";
     }
-    var newState = _.clone(state)
+    const newState = _.clone(state)
     setState(newState);
   }
 
+  const _movePassenger = async (passenger, destCarId, isDriver) => {
+    state.cars = state.cars.map(car => {
+      car.passengers = car.passengers.filter(currentPassenger => (
+        passenger !== currentPassenger
+      ));
+
+      if (car._id === destCarId) {
+        if (isDriver) {
+          car.driver = passenger;
+        } else {
+          if (car.passengers.length < car.maxPassengers) {
+            car.passengers.push(passenger);
+          }
+        }
+      }
+      return car;
+    });
+
+    const newState = _.clone(state)
+    setState(newState);
+
+    props.onPassengerMoved(passenger, destCarId, isDriver);
+  }
+
+  const GeneratePreview = () => {
+    const {style, item} = useContext(Preview.Context);
+    return (
+      <span style={style}>
+        <Badge  color="primary">
+          {item.passenger}
+        </Badge>
+      </span>
+    );
+  }
+
   return (
+    edit.isEditMode ?
     <Card>
       <CardHeader>
-        <h5 className="title">רכבים</h5>
+        <Row className="justify-content-between mr-2 ml-2">
+          <h5 className="title">עריכת מכוניות</h5>
+          <Row>
+            <Button onClick={() => {dispatchEdit({type: EXIT})}} className="btn-icon btn-round" color="link">
+              <i className="text-danger tim-icons icon-simple-remove"/>
+            </Button>
+            <Button onClick={() => {dispatchEdit({type: SAVE})}} className="btn-icon btn-round mr-3" color="success">
+              <i className="tim-icons icon-check-2"/>
+            </Button>
+          </Row>
+        </Row>
       </CardHeader>
       <CardBody>
-        <DndProvider backend={isMobile ? TouchBackend : Html5Backend}>
+        <Table className="tablesorter text-center">
+          <thead className="text-primary">
+            <tr>
+              <th>כמות מקומות (לא כולל נהג)</th>
+              <th/>
+            </tr>
+          </thead>
+            {edit.cars.map(car => (
+              <tr>
+                <td>
+                  <Input type="number" name={car._id} value={car.maxPassengers} onChange={(e) => {dispatchEdit({type: EDIT_MAX_PASSENGERS, _id: car._id, value: Number.parseInt(e.target.value)})}}/>
+                </td>
+                <td>
+                  <i className="text-danger tim-icons icon-trash-simple" onClick={() => {dispatchEdit({type: DELETE, _id: car._id})}}/>
+                </td>
+              </tr>
+            ))}
+          <tbody>
+          </tbody>
+        </Table>
+      </CardBody>
+    </Card>
+    :
+    <Card>
+      <CardHeader>
+        <Row className="justify-content-between mr-2 ml-2">
+          <h5 className="title">
+            רכבים
+            <i className={`mr-3 tim-icons
+              ${state.passengersWithoutCar.length === 0 ?
+                "text-success icon-thumbs-up-1"
+                : "text-danger icon-thumbs-down-1"
+              } `}
+            />
+          </h5>
+          <i className="tim-icons icon-pencil" onClick={() => {dispatchEdit({type: ENTER_EDIT_MOTE})}}/>
+        </Row>
+      </CardHeader>
+      <CardBody>
+        <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+          <Preview>
+            <GeneratePreview/>
+          </Preview>
           <Form onSubmit={submitForm}>
             <Table className="tablesorter table-sm table-striped" style={{tableLayout: "fixed"}}>
               <thead className="text-primary">
@@ -172,7 +301,17 @@ function EventCars(props) {
                 </tr>
               </thead>
               <tbody>
-              {renderCarList()} 
+                {
+                  state.cars.map((car) => (
+                    <Car
+                      key={car._id}
+                      driver={car.driver}
+                      passengers={car.passengers}
+                      maxPassengers={car.maxPassengers}
+                      carId={car._id}
+                      movePassenger={_movePassenger}/>
+                  ))
+                }
               </tbody>
             </Table>
             <Row>
@@ -187,7 +326,7 @@ function EventCars(props) {
             </Row>
             {state.error !== "" ? <p className="text-danger">{state.error}</p> : <></>}
             <h6>מחפשים מקום</h6>
-            <PassengersBox passengers={state.passengersWithoutCar} movePassenger={props.movePassenger}/>
+            <PassengersBox passengers={state.passengersWithoutCar} movePassenger={_movePassenger}/>
           </Form>
         </DndProvider>
       </CardBody>
