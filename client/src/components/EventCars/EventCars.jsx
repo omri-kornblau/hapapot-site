@@ -18,6 +18,9 @@ import Html5Backend from "react-dnd-html5-backend"
 import TouchBackend from "react-dnd-touch-backend"
 import { isMobile } from "react-device-detect"
 
+import MultiBackend from 'react-dnd-multi-backend';
+import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
+
 import Utils from "./Utils"
 import { useEffect } from "react";
 
@@ -42,14 +45,10 @@ function DragableBadge(props) {
 }
 
 function Seat(props) {
-  const [state, setState] = useState({
-    user: props.user
-  })
-
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.PASSENGER,
     drop: (item, monitor) => {
-      if (!state.user) {
+      if (!props.user) {
         props.movePassenger(item.passenger, props.carId, props.isDriver ? true : false)
       }
     },
@@ -58,16 +57,11 @@ function Seat(props) {
     })
   })
 
-  useEffect(() => {
-    state.user = props.user;
-    setState(state);
-  });
-
   return (
     <td style={{border: "solid 2px black"}} ref={drop}>
         {
-        state.user ?
-        <DragableBadge key={state.user.username} color="primary" passenger={state.user}/> :
+        props.user ?
+        <DragableBadge key={props.user.username} color="primary" passenger={props.user}/> :
         <></>
         }
     </td>
@@ -76,29 +70,17 @@ function Seat(props) {
 }
 
 function Car(props) {
-  const [state, setState] = useState({
-    driver: props.driver,
-    passengers: props.passengers,
-    maxPassengers: props.maxPassengers
-  });
-  
-  useEffect(() => {
-    state.driver = props.driver;
-    state.passengers = props.passengers;
-    setState(state);
-  });
-
   return (
     <tr>
       {
-        state.driver === "" ?
+        props.driver === "" ?
         <Seat carId={props.carId} isDriver={true} movePassenger={props.movePassenger}/> :
-        <Seat carId={props.carId} isDriver={true} movePassenger={props.movePassenger} user={state.driver}/>
+        <Seat carId={props.carId} isDriver={true} movePassenger={props.movePassenger} user={props.driver}/>
       }
       {
-        [...Array(state.maxPassengers).keys()].map(index => (
-          state.passengers.length > index ?
-          <Seat carId={props.carId} movePassenger={props.movePassenger} user={state.passengers[index]}/> :
+        [...Array(props.maxPassengers).keys()].map(index => (
+          props.passengers.length > index ?
+          <Seat carId={props.carId} movePassenger={props.movePassenger} user={props.passengers[index]}/> :
           <Seat carId={props.carId} movePassenger={props.movePassenger}/>
         ))
       }
@@ -107,10 +89,6 @@ function Car(props) {
 }
 
 function PassengersBox(props) {
-  const [state, setState] = useState({
-    passengers: props.passengers
-  })
-  
   const [, drop] = useDrop({
     accept: ItemTypes.PASSENGER,
     drop: (item, monitor) => {
@@ -118,16 +96,11 @@ function PassengersBox(props) {
     },
   })
 
-  useEffect(() => {
-    state.passengers = props.passengers
-    setState(state);
-  })
-
   return (
     <div style={{border: "solid 2px black", borderRadius: "7px"}} ref={drop}>
       {
-        state.passengers.length > 0 ?
-        state.passengers.map(passenger =>
+        props.passengers.length > 0 ?
+        props.passengers.map(passenger =>
           <DragableBadge key={passenger.username} color="primary" passenger={passenger.username}/>
         )
         : "לכולם יש מקום"
@@ -147,7 +120,8 @@ function EventCars(props) {
   useEffect(() => {
     state.cars = props.cars;
     state.passengersWithoutCar = Utils.getPassengerswithoutCar(props.passengers, props.cars);
-    setState(state);
+    var newState = _.clone(state)
+    setState(newState);
   })
 
   const renderCarList = () => {
@@ -165,7 +139,8 @@ function EventCars(props) {
   const onInputChange = async (event) => {
     const { value } = event.target;
     state.newCar = {maxPassengers: parseInt(value)};
-    setState(state);
+    var newState = _.clone(state)
+    setState(newState);
   }
 
   const submitForm = async event => {
@@ -177,7 +152,8 @@ function EventCars(props) {
     } else {
       state.error = "Failed creating car";
     }
-    setState(state);
+    var newState = _.clone(state)
+    setState(newState);
   }
 
   return (
