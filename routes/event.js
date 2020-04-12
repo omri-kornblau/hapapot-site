@@ -472,8 +472,16 @@ exports.updateEventAttendance = async (req, res) => {
       $pull: {
         "items.$[].users": {
           name: username
-        }
+        },
+        "cars.$[].passengers": username
+      },
+      $set: {
+        "cars.$[car].driver": ""
       }
+    }, {
+      "arrayFilters": [{
+        "car.driver": username
+      }]
     });
   }
 
