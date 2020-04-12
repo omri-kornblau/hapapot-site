@@ -4,6 +4,7 @@ const Boom = require("boom");
 const Utils = require("../utils")
 const MongoHelpers = require("../models/mongoHelpers")
 const Mongodb = require("mongodb")
+const Index = require("../index");
 
 const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
@@ -307,70 +308,75 @@ exports.movePassenger = async (req, res) => {
     isDriver
   } = req.body;
 
-  // Remove passenger from old car
-  // Maybe it will be better to recieve also the source car
-  // from the client, insted of loop over all the cars
-  await EventModel.updateOne({
-    _id
-  }, {
-    $pull: {
-      "cars.$[].passengers": passenger
-    },
-    $set: {
-      "cars.$[car].driver": ""
-    }
-  }, {
-    "arrayFilters": [{
-      "car.driver": passenger
-    }]
-  });
-
-  if (isDriver) {
-    // Set the passenger as driver
-    await EventModel.updateOne({
-      _id,
-      cars: {
-        $elemMatch: {
-          _id: destCarId
+  await Index.carsLock.acquireRead(Index.carsLockKey, () => {
+    return new Promise(async (resolve, reject) => {
+      // Remove passenger from old car
+      // Maybe it will be better to recieve also the source car
+      // from the client, insted of loop over all the cars
+      await EventModel.updateOne({
+        _id
+      }, {
+        $pull: {
+          "cars.$[].passengers": passenger
+        },
+        $set: {
+          "cars.$[car].driver": ""
         }
-      }
-    }, {
-      $set: {
-        "cars.$.driver": passenger
-      }
-    });
-  } else {
-    // Get car MaxPassengers
-    var event = await getEventFromDb(_id, username);
-    var maxPassengers = 0;
-    event.cars.forEach(car => {
-      if (car._id === destCarId) {
-        maxPassengers = car.maxPassengers
-      }
-    });
+      }, {
+        "arrayFilters": [{
+          "car.driver": passenger
+        }]
+      });
 
-    // Add passenger to the car
-    await EventModel.updateOne({
-      _id,
-      cars: {
-        $elemMatch: {
-          _id: destCarId,
-          passengers: {
-            $not: {
-              $in: [passenger]
+      if (isDriver) {
+        // Set the passenger as driver
+        await EventModel.updateOne({
+          _id,
+          cars: {
+            $elemMatch: {
+              _id: destCarId
             }
           }
-        },
+        }, {
+          $set: {
+            "cars.$.driver": passenger
+          }
+        });
+      } else {
+        // Get car MaxPassengers
+        var event = await getEventFromDb(_id, username);
+        var maxPassengers = 0;
+        event.cars.forEach(car => {
+          if (car._id === destCarId) {
+            maxPassengers = car.maxPassengers
+          }
+        });
+
+        // Add passenger to the car
+        await EventModel.updateOne({
+          _id,
+          cars: {
+            $elemMatch: {
+              _id: destCarId,
+              passengers: {
+                $not: {
+                  $in: [passenger]
+                }
+              }
+            },
+          }
+        }, {
+          $push: {
+            "cars.$.passengers": {
+              $each: [passenger],
+              $slice: maxPassengers
+            }
+          }
+        });
       }
-    }, {
-      $push: {
-        "cars.$.passengers": {
-          $each: [passenger],
-          $slice: maxPassengers
-        }
-      }
+      resolve();
     });
-  }
+  });
 
   return res.status(204).send();
 }
@@ -383,45 +389,53 @@ exports.updateCars = async (req, res) => {
     actions
   } = req.body;
 
-  await Promise.all(Object.keys(actions).map(async carId => {
-    var operation = {};
-    car = actions[carId];
-    const DELETE = "delete";
-    const EDIT_MAX_PASSENGERS = "editMaxPassengers";
-    switch (car.type) {
-      case EDIT_MAX_PASSENGERS:
-        if (car.value > 0) {
+  await Index.carsLock.acquireWrite(Index.carsLockKey, () => {
+    return Promise.all(Object.keys(actions).map(async carId => {
+      var operation = {};
+      car = actions[carId];
+      const DELETE = "delete";
+      const EDIT_MAX_PASSENGERS = "editMaxPassengers";
+      switch (car.type) {
+        case EDIT_MAX_PASSENGERS:
+          if (car.value > 0) {
+            operation = {
+              $set: {
+                "cars.$.maxPassengers": car.value
+              },
+              $push: {
+                "cars.$.passengers": {
+                  $each: [],
+                  $slice: car.value
+                }
+              }
+            };
+          } else {
+            return;
+          }
+          break;
+        case DELETE:
           operation = {
-            $set: {
-              "cars.$.maxPassengers": car.value
-            }
-          };
-        } else {
-          return;
-        }
-        break;
-      case DELETE:
-        operation = {
-          $pull: {
-            cars: {
-              _id: carId
+            $pull: {
+              cars: {
+                _id: carId
+              }
             }
           }
-        }
-        break;
-      default:
-        return
-    }
-
-    await EventModel.updateOne({
-      _id,
-      cars: {
-        $elemMatch: {
-          _id: carId
-        }
+          break;
+        default:
+          return
       }
-    }, operation);
-  }))
+
+      await EventModel.updateOne({
+        _id,
+        cars: {
+          $elemMatch: {
+            _id: carId
+          }
+        }
+      }, operation);
+    }))
+  })
 
   return res.status(204).send();
 }
