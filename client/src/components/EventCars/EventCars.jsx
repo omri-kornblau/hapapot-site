@@ -211,6 +211,9 @@ function EventCars(props) {
 
   const _movePassenger = async (passenger, destCarId, isDriver) => {
     state.cars = state.cars.map(car => {
+      if (car.driver === passenger) {
+        car.driver = 0;
+      }
       car.passengers = car.passengers.filter(currentPassenger => (
         passenger !== currentPassenger
       ));
