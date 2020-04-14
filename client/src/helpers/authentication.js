@@ -2,8 +2,8 @@ import Axios from "axios"
 
 const Auther = {};
 
-Auther.authenticate = async userData => {
-  await Axios.post("/auth/authenticate", userData);
+Auther.authenticate = async (userData, stayLogged) => {
+  await Axios.post(`/auth/authenticate?stay=${stayLogged}`, userData);
 }
 
 Auther.checkToken = async () => {
@@ -16,7 +16,7 @@ Auther.checkToken = async () => {
 }
 
 Auther.logout = async () => {
-  await Axios.get("/auth/logout");
+  return await Axios.get("/auth/logout");
 }
 
 export default Auther;

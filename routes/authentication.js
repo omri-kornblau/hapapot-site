@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Jwt = require("jsonwebtoken");
 const Boom = require("boom");
@@ -37,6 +38,9 @@ exports.register = async (req, res) => {
     username,
     tokenPassword
   }
+  const {
+    stay
+  } = req.query;
   const cookieAmount = await CookieModel.countDocuments({
     username
   });
@@ -56,9 +60,10 @@ exports.register = async (req, res) => {
     });
   }
   await CookieModel.create(payload);
-  const token = Jwt.sign(payload, secretTokenKey, {
-    expiresIn: "1h"
-  });
+  const tokenOptions = stay ? null : {
+    expiresIn: "12h"
+  };
+  const token = Jwt.sign(payload, secretTokenKey, tokenOptions);
   return res.cookie("token", token, {
     httpOnly: true
   }).send();
@@ -82,11 +87,7 @@ exports.logout = async (req, res) => {
   ));
   // There will be at least one cookie because this
   // route has 'withAuth' middleware
-  cookieValids.some(async (valid, key) => {
-    if (valid) {
-      await CookieModel.remove(userCookies[key]);
-      res.send();
-    }
-    return valid;
-  });
+  const foundCookieIdx = _.findIndex(cookieValids);
+  await CookieModel.remove(userCookies[foundCookieIdx]);
+  res.send();
 }
