@@ -7,7 +7,10 @@ const Utils = require("../utils");
 const UserModel = Mongoose.model("User");
 const CookieModel = Mongoose.model("Cookie");
 
-const secretKey = require("../config/server").secretTokenKey;
+const {
+  secretTokenKey,
+  maxUserLogins
+} = require("../config/server");
 
 exports.register = async (req, res) => {
   const {
@@ -29,17 +32,31 @@ exports.register = async (req, res) => {
     });
   }
 
-  // Issue token
   const tokenPassword = Utils.getRandomPassword(16);
   const payload = {
     username,
     tokenPassword
   }
-  await CookieModel.remove({
+  const cookieAmount = await CookieModel.countDocuments({
     username
   });
+
+  if (cookieAmount >= maxUserLogins) {
+    const oldCookies =
+      await CookieModel.find({
+        username
+      }).sort({
+        _id: -1
+      }).limit(maxUserLogins - cookieAmount + 1);
+    const oldCookeiIds = oldCookies.map(cookie => cookie._id);
+    await CookieModel.remove({
+      _id: {
+        $in: oldCookeiIds
+      }
+    });
+  }
   await CookieModel.create(payload);
-  const token = Jwt.sign(payload, secretKey, {
+  const token = Jwt.sign(payload, secretTokenKey, {
     expiresIn: "1h"
   });
   return res.cookie("token", token, {
@@ -52,11 +69,24 @@ exports.checkToken = (req, res) => {
 }
 
 exports.logout = async (req, res) => {
+  const token = req.cookies.token;
   const {
-    username
-  } = req;
-  await CookieModel.remove({
+    username,
+    tokenPassword
+  } = await Jwt.verify(token, secretTokenKey)
+  const userCookies = await CookieModel.find({
     username
   });
-  res.send();
+  const cookieValids = await Promise.all(userCookies.map(cookie =>
+    cookie.isCorrectCookie(tokenPassword)
+  ));
+  // There will be at least one cookie because this
+  // route has 'withAuth' middleware
+  cookieValids.some(async (valid, key) => {
+    if (valid) {
+      await CookieModel.remove(userCookies[key]);
+      res.send();
+    }
+    return valid;
+  });
 }
