@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Jwt = require("jsonwebtoken");
 const Boom = require("boom");
@@ -16,16 +17,18 @@ exports.withAuth = async (req, res, next) => {
         username,
         tokenPassword
       } = await Jwt.verify(token, secretKey)
-      const userCookie = await CookieModel.findOne({
+      const userCookies = await CookieModel.find({
         username
       });
-      const isValid = await userCookie.isCorrectCookie(tokenPassword);
-      if (isValid) {
+      const cookieValids = await Promise.all(userCookies.map(cookie =>
+        cookie.isCorrectCookie(tokenPassword)
+      ));
+      if (_.some(cookieValids)) {
         req.username = username;
         return next();
       }
 
-      throw new Error();
+      throw Boom.unauthorized("Unauthorized: Invalid token");
     } catch (err) {
       throw Boom.unauthorized("Unauthorized: Invalid token");
     }
