@@ -84,6 +84,39 @@
 
   &.bg-primary {
     background-color: $primary !important;
+    box-shadow: 0 6px 12px rgba($black, 0.2), inset 0 -3px 3px rgba($black, 0.1) !important;
+
+    .search-bar.input-group {
+      i {
+        color: $white;
+      }
+    }
+
+    .search-bar.input-group .form-control {
+      background: rgba($white, 0.1);
+      border-radius: 4px;
+    }
+
+    a.nav-link {
+      color: $white !important;
+
+      p {
+        color: $white;
+      }
+    }
+
+    .navbar-text,
+    .navbar-brand {
+      color: $white;
+    }
+
+    .form-control {
+      color: $white !important;
+    }
+
+    .dropdown-item {
+      color: $white !important;
+    }
   }
 
   &.bg-warning {
