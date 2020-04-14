@@ -95,7 +95,7 @@ class AdminNavbar extends React.Component {
   };
   onLogout = async () => {
     await AuthHelper.logout();
-    this.props.history.push("/");
+    this.props.history.push("/login");
   }
   render() {
     return (

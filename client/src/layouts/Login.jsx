@@ -7,12 +7,13 @@ import {
   CardBody,
   CardTitle,
   FormGroup,
+  Label,
   Input,
   Row,
   Col,
   Form,
   Container,
-  Jumbotron
+  Jumbotron,
 } from "reactstrap";
 
 import Auther from "../helpers/authentication";
@@ -30,6 +31,7 @@ class LoginPage extends React.Component {
         password: ""
       },
       triedLogin: false,
+      stayLogged: false,
       loginSucceeded: false,
       loginMessage: ""
     };
@@ -47,10 +49,16 @@ class LoginPage extends React.Component {
       userData
     });
   };
+  onStayLoggedChange = () => {
+    this.setState({
+      stayLogged: !this.state.stayLogged
+    });
+  };
   onSubmit = async event => {
+    const { userData, stayLogged } = this.state;
     event.preventDefault();
     try {
-      await Auther.authenticate(this.state.userData);
+      await Auther.authenticate(userData, stayLogged);
       this.setState({
         loginSucceeded: true
       });
@@ -109,6 +117,21 @@ class LoginPage extends React.Component {
                           />
                         </FormGroup>
                       </Col>
+                    </Row>
+                    <Row className="justify-content-center mb-3">
+                      <FormGroup check>
+                        <Label check>
+                          <p>הישאר מחובר</p>
+                          <Input
+                            onChange={this.onStayLoggedChange}
+                            checked={this.state.stayLogged}
+                            type="checkbox"
+                          />
+                          <span className="form-check-sign">
+                            <span className="check" />
+                          </span>
+                        </Label>
+                      </FormGroup>
                     </Row>
                     <Row>
                       <Col className="text-center" md="12">
