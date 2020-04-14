@@ -39,6 +39,12 @@ import {
 
 import AuthHelper from "../../helpers/authentication";
 
+import instagramLogo from "../../assets/img/instagram-logo.png";
+import driveLogo from "../../assets/img/drive-logo.png";
+
+const instagramUrl = "https://www.instagram.com/habolbolim/";
+const driveUrl = "https://www.instagram.com/habolbolim/";
+
 class AdminNavbar extends React.Component {
   constructor(props) {
     super(props);
@@ -70,11 +76,11 @@ class AdminNavbar extends React.Component {
   toggleCollapse = () => {
     if (this.state.collapseOpen) {
       this.setState({
-        color: "navbar-transparent"
+        color: "bg-primary"
       });
     } else {
       this.setState({
-        color: "bg-white"
+        color: "bg-primary"
       });
     }
     this.setState({
@@ -135,57 +141,31 @@ class AdminNavbar extends React.Component {
             </button>
             <Collapse navbar isOpen={this.state.collapseOpen}>
               <Nav className="mr-auto" navbar>
+                <div className="divider mt-1"/>
                 <InputGroup className="search-bar">
-                  <Button
-                    color="link"
-                    data-target="#searchModal"
-                    data-toggle="modal"
-                    id="search-button"
-                    onClick={this.toggleModalSearch}
+                  <NavLink
+                    className="mr-1"
+                    onClick={() => this.props.history.push(driveUrl)}
                   >
-                    <i className="tim-icons icon-zoom-split" />
-                    <span className="d-lg-none d-md-block">Search</span>
-                  </Button>
+                    <div className="photo">
+                      <img alt="..." src={driveLogo} />
+                    </div>
+                    <span className="d-lg-none d-md-block">לדרייב</span>
+                  </NavLink>
                 </InputGroup>
-                <UncontrolledDropdown nav>
-                  <DropdownToggle
-                    caret
-                    color="default"
-                    data-toggle="dropdown"
-                    nav
+                <div className="divider mt-1"/>
+                <InputGroup className="search-bar">
+                  <NavLink
+                    className="mr-1"
+                    onClick={() => this.props.history.push(instagramUrl)}
                   >
-                    <div className="notification d-none d-lg-block d-xl-block" />
-                    <i className="tim-icons icon-sound-wave" />
-                    <p className="d-lg-none">Notifications</p>
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" tag="ul" right>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Mike John responded to your email
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        You have 5 more tasks
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Your friend Michael is in town
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Another notification
-                      </DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">
-                        Another one
-                      </DropdownItem>
-                    </NavLink>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
+                    <div className="photo">
+                      <img alt="..." src={instagramLogo} />
+                    </div>
+                    <span className="d-lg-none d-md-block">לאינסטגרם</span>
+                  </NavLink>
+                </InputGroup>
+                <div className="divider mt-1"/>
                 <UncontrolledDropdown nav>
                   <DropdownToggle
                     caret
@@ -200,12 +180,12 @@ class AdminNavbar extends React.Component {
                     <b className="caret d-none d-lg-block d-xl-block" />
                     <p className="d-lg-none">התנתק</p>
                   </DropdownToggle>
-                  <DropdownMenu className="dropdown-navbar" tag="ul">
+                  <DropdownMenu className="dropdown-navbar text-right" tag="ul">
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">חשבון</DropdownItem>
-                    </NavLink>
-                    <NavLink tag="li">
-                      <DropdownItem className="nav-item">הגדרות</DropdownItem>
+                      <DropdownItem onClick={() => {
+                        this.props.history.push("/home/userprofile");
+                        this.toggleCollapse();
+                      }} className="nav-item">לאיזור האישי</DropdownItem>
                     </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink tag="li">
