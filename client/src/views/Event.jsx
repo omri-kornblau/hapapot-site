@@ -2,19 +2,15 @@ import _ from "lodash";
 import React from "react";
 import {
   Button,
-  Table,
-  CardHeader,
   Row,
   Col,
-  Card,
-  CardBody
 } from "reactstrap";
 import Popup from "reactjs-popup";
 
 import EventHeader from "../components/EventHeader/EventHeader";
 import EventCars from "../components/EventCars/EventCars";
-import PageLoader from "../components/Status/PageLoader";
 import EventItems from "../components/EventItems/EventItems";
+import PageLoader from "../components/Status/PageLoader";
 
 import EventModel from "../defaults/models/event";
 
@@ -55,7 +51,7 @@ class Event extends React.Component {
       if (err.response && err.response.status === 404) {
         this.setState({ isLoading: false, error: "האירוע לא קיים אחי" });
       } else {
-        console.log(err);
+        console.errro(err);
       }
     }
   }
@@ -116,28 +112,20 @@ class Event extends React.Component {
     try {
       await EventHelper.movePassenger(this._id, passenger, destCarId, isDriver);
       await this.fetchEventData();
-      return true;
     } catch(err) {
       console.error(err);
-      return false;
     }
   }
   updateCars = async actions => {
-    try {
-      await EventHelper.updateCars(this._id, actions);
-      await this.fetchEventData();
-      return true;
-    } catch(err) {
-      console.error(err);
-      return false;
-    }
+    await EventHelper.updateCars(this._id, actions);
+    await this.fetchEventData();
   }
-  onAddItem = async e => {
+  onAddItem = async (name, amountNeeded) => {
     try {
       await EventHelper.addItem(this._id, name, amountNeeded);
       this.fetchEventData();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
   onItemsEditSave = async editedItems => {
@@ -167,6 +155,7 @@ class Event extends React.Component {
   closeAttendPopup = () => {
     this.setState({isAttendMode: false})
   }
+
 
   render() {
     const { eventData } = this.state;

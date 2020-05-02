@@ -4,7 +4,6 @@ const BodyParser = require("body-parser");
 const CookieParser = require("cookie-parser");
 const Logger = require("morgan");
 const Path = require("path");
-const ReadwriteLock = require('readwrite-lock');
 
 const AsyncErrorsHandler = require("./errors/express-async-errors");
 const ErrorsRouter = require("./errors/errors-router");
@@ -46,9 +45,6 @@ if (ServerConfig.production) {
     res.sendFile(Path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
-
-exports.carsLock = new ReadwriteLock();
-exports.carsLockKey = "carLock";
 
 app.listen(ServerConfig.port, () => {
   console.log(`Server running on port ${ServerConfig.port}`);

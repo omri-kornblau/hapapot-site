@@ -4,11 +4,14 @@ const Boom = require("boom");
 const Utils = require("../utils")
 const MongoHelpers = require("../models/mongoHelpers")
 const Mongodb = require("mongodb")
-const Index = require("../index");
+const ReadwriteLock = require('readwrite-lock');
 
 const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
 const DayModel = Mongoose.model("Day");
+
+const carsLock = new ReadwriteLock();
+const carsLockKey = "carLock";
 
 exports.getEvent = async (req, res) => {
   const {
@@ -308,7 +311,7 @@ exports.movePassenger = async (req, res) => {
     isDriver
   } = req.body;
 
-  await Index.carsLock.acquireRead(Index.carsLockKey, () => {
+  await carsLock.acquireRead(carsLockKey, () => {
     return new Promise(async (resolve, reject) => {
       // Remove passenger from old car
       // Maybe it will be better to recieve also the source car
@@ -389,7 +392,7 @@ exports.updateCars = async (req, res) => {
     actions
   } = req.body;
 
-  await Index.carsLock.acquireWrite(Index.carsLockKey, () => {
+  await carsLock.acquireWrite(carsLockKey, () => {
     return Promise.all(Object.keys(actions).map(async carId => {
       var operation = {};
       car = actions[carId];
