@@ -4,9 +4,6 @@ import {
 } from "./wrappedRequests";
 
 import Utils from "../utils";
-import {
-  Util
-} from "reactstrap";
 
 const EventHelper = {};
 

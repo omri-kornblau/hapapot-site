@@ -10,9 +10,6 @@ import {
   CardBody,
   Input,
   UncontrolledTooltip,
-  UncontrolledDropdown,
-  DropdownMenu,
-  DropdownToggle,
   Form
 } from "reactstrap";
 
@@ -82,7 +79,7 @@ class Event extends React.Component {
       if (err.response && err.response.status === 404) {
         this.setState({ isLoading: false, error: "האירוע לא קיים אחי" });
       } else {
-        console.log(err);
+        console.errro(err);
       }
     }
   }
@@ -155,21 +152,13 @@ class Event extends React.Component {
     try {
       await EventHelper.movePassenger(this._id, passenger, destCarId, isDriver);
       await this.fetchEventData();
-      return true;
     } catch(err) {
       console.error(err);
-      return false;
     }
   }
   updateCars = async actions => {
-    try {
-      await EventHelper.updateCars(this._id, actions);
-      await this.fetchEventData();
-      return true;
-    } catch(err) {
-      console.error(err);
-      return false;
-    }
+    await EventHelper.updateCars(this._id, actions);
+    await this.fetchEventData();
   }
   onAddItemSubmit = async e => {
     e.preventDefault();
@@ -180,7 +169,7 @@ class Event extends React.Component {
       this.setState({ isItemsSorted: false });
       this.fetchEventData();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
   enterItemsEditMode = () => {
@@ -379,6 +368,7 @@ class Event extends React.Component {
       </Card>
     );
   }
+
 
   render() {
     return (
