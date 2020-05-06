@@ -3,10 +3,15 @@ const Mongoose = require("mongoose");
 const Boom = require("boom");
 const Utils = require("../utils")
 const MongoHelpers = require("../models/mongoHelpers")
+const Mongodb = require("mongodb")
+const ReadwriteLock = require('readwrite-lock');
 
 const EventModel = Mongoose.model("Event");
 const UserModel = Mongoose.model("User");
 const DayModel = Mongoose.model("Day");
+
+const carsLock = new ReadwriteLock();
+const carsLockKey = "carLock";
 
 exports.getEvent = async (req, res) => {
   const {
@@ -269,6 +274,175 @@ exports.updateItems = async (req, res) => {
   return res.status(204).send();
 }
 
+exports.addCar = async (req, res) => {
+  const {
+    _id
+  } = req.params;
+  const {
+    maxPassengers
+  } = req.body;
+
+  await EventModel.updateOne({
+    _id
+  }, {
+    $push: {
+      cars: {
+        driver: "",
+        passengers: [],
+        _id: Mongodb.ObjectID().toString(),
+        maxPassengers,
+      }
+    }
+  })
+
+  return res.status(204).send();
+}
+
+exports.movePassenger = async (req, res) => {
+  const {
+    username
+  } = req;
+  const {
+    _id
+  } = req.params;
+  const {
+    passenger,
+    destCarId,
+    isDriver
+  } = req.body;
+
+  await carsLock.acquireRead(carsLockKey, () => {
+    return new Promise(async (resolve, reject) => {
+      // Remove passenger from old car
+      // Maybe it will be better to recieve also the source car
+      // from the client, insted of loop over all the cars
+      await EventModel.updateOne({
+        _id
+      }, {
+        $pull: {
+          "cars.$[].passengers": passenger
+        },
+        $set: {
+          "cars.$[car].driver": ""
+        }
+      }, {
+        "arrayFilters": [{
+          "car.driver": passenger
+        }]
+      });
+
+      if (isDriver) {
+        // Set the passenger as driver
+        await EventModel.updateOne({
+          _id,
+          cars: {
+            $elemMatch: {
+              _id: destCarId
+            }
+          }
+        }, {
+          $set: {
+            "cars.$.driver": passenger
+          }
+        });
+      } else {
+        // Get car MaxPassengers
+        var event = await getEventFromDb(_id, username);
+        var maxPassengers = 0;
+        event.cars.forEach(car => {
+          if (car._id === destCarId) {
+            maxPassengers = car.maxPassengers
+          }
+        });
+
+        // Add passenger to the car
+        await EventModel.updateOne({
+          _id,
+          cars: {
+            $elemMatch: {
+              _id: destCarId,
+              passengers: {
+                $not: {
+                  $in: [passenger]
+                }
+              }
+            },
+          }
+        }, {
+          $push: {
+            "cars.$.passengers": {
+              $each: [passenger],
+              $slice: maxPassengers
+            }
+          }
+        });
+      }
+      resolve();
+    });
+  });
+
+  return res.status(204).send();
+}
+
+exports.updateCars = async (req, res) => {
+  const {
+    _id
+  } = req.params;
+  const {
+    actions
+  } = req.body;
+
+  await carsLock.acquireWrite(carsLockKey, () => {
+    return Promise.all(Object.keys(actions).map(async carId => {
+      var operation = {};
+      car = actions[carId];
+      const DELETE = "delete";
+      const EDIT_MAX_PASSENGERS = "editMaxPassengers";
+      switch (car.type) {
+        case EDIT_MAX_PASSENGERS:
+          if (car.value > 0) {
+            operation = {
+              $set: {
+                "cars.$.maxPassengers": car.value
+              },
+              $push: {
+                "cars.$.passengers": {
+                  $each: [],
+                  $slice: car.value
+                }
+              }
+            };
+          } else {
+            return;
+          }
+          break;
+        case DELETE:
+          operation = {
+            $pull: {
+              cars: {
+                _id: carId
+              }
+            }
+          }
+          break;
+        default:
+          return
+      }
+
+      await EventModel.updateOne({
+        _id,
+        cars: {
+          $elemMatch: {
+            _id: carId
+          }
+        }
+      }, operation);
+    }))
+  })
+
+  return res.status(204).send();
+}
+
 exports.updateEventAttendance = async (req, res) => {
   const {
     _id
@@ -301,8 +475,16 @@ exports.updateEventAttendance = async (req, res) => {
       $pull: {
         "items.$[].users": {
           name: username
-        }
+        },
+        "cars.$[].passengers": username
+      },
+      $set: {
+        "cars.$[car].driver": ""
       }
+    }, {
+      "arrayFilters": [{
+        "car.driver": username
+      }]
     });
   }
 

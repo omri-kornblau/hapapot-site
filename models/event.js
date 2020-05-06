@@ -9,7 +9,9 @@ const promisify = require("util").promisify;
 
 const carJoiFormat = Joi.object().keys({
   driver: Joi.string(),
-  passengers: Joi.array().items(Joi.string())
+  passengers: Joi.array().items(Joi.string()),
+  maxPassengers: Joi.number().integer(),
+  _id: Joi.string()
 });
 
 const userInItemJoiFormat = Joi.object().keys({

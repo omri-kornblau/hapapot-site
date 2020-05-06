@@ -81,4 +81,32 @@ EventHelper.addItem = async (_id, item, amount) => {
   });
 }
 
+EventHelper.addCar = async (_id, maxPassengers) => {
+  Utils.expectToExist(_id, "event _id");
+  Utils.expectToExist(maxPassengers, "max passengers");
+  return post(`/api/event/${_id}/cars/add`, {
+    maxPassengers
+  });
+}
+
+EventHelper.movePassenger = async (_id, passenger, destCarId, isDriver) => {
+  Utils.expectToExist(_id, "event _id");
+  Utils.expectToExist(passenger, "passenger");
+  Utils.expectToExist(destCarId, "destination car id");
+  Utils.expectToExist(isDriver, "isDriver");
+  return post(`/api/event/${_id}/cars/movePassenger`, {
+    passenger,
+    destCarId,
+    isDriver
+  });
+}
+
+EventHelper.updateCars = async (_id, actions) => {
+  Utils.expectToExist(_id, "event _id");
+  Utils.expectToExist(actions, "actions");
+  return post(`/api/event/${_id}/cars/update`, {
+    actions
+  });
+}
+
 export default EventHelper;
