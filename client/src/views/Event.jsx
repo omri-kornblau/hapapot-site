@@ -168,7 +168,7 @@ class Event extends React.Component {
       <Popup open={this.state.isDeletingMode} closeOnDocumentClick onClose={this.closeDeletePopup}>
         <>
           <p className="text-center">
-          גבר, אתה בטוח שאתה רוצה למחוק את האירוע: "{eventData.name}"?
+          אתה בטוח שאתה רוצה למחוק את האירוע: "{eventData.name}"?
           </p>
           <Row className="justify-content-center mt-4 mb-2">
             <Button className="btn-danger btn-sm ml-3" onClick={this.deleteEvent}>כן</Button>
@@ -196,20 +196,21 @@ class Event extends React.Component {
         </Row>
       </Popup>
       <div className="content text-right">
-        <PageLoader isLoading={this.state.isLoading}>
           { this.state.error === "" ?
             <>
-              <EventHeader
-                name={eventData.name}
-                time={eventData.time}
-                description={eventData.description}
-                date={Utils.formatDateLikeDb(eventData.time)}
-                location={eventData.location}
-                updateEvent={this.updateEventHeader}
-                history={this.props.history}
-                onAttendingChange={this.onAttendingChange}
-                attending={eventData.attending}
-              />
+              <PageLoader isLoading={this.state.isLoading}>
+                <EventHeader
+                  name={eventData.name}
+                  time={eventData.time}
+                  description={eventData.description}
+                  date={Utils.formatDateLikeDb(eventData.time)}
+                  location={eventData.location}
+                  updateEvent={this.updateEventHeader}
+                  history={this.props.history}
+                  onAttendingChange={this.onAttendingChange}
+                  attending={eventData.attending}
+                />
+              </PageLoader>
               <Row>
                 <Col md="6">
                   <Card>
@@ -251,7 +252,6 @@ class Event extends React.Component {
                 <h3 style={{color: "red"}}>{this.state.error}</h3>
               </div>
             }
-        </PageLoader>
       </div>
     </>);
   }
