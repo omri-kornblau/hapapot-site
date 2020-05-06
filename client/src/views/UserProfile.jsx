@@ -38,7 +38,7 @@ class UserProfile extends React.Component {
     try {
       const res = await UserHelper.getUser();
       this.setState({
-        userData: res.data
+        userData: res.data.user
       });
     } catch (err) {
       console.error(err);
@@ -90,32 +90,6 @@ class UserProfile extends React.Component {
                 </CardHeader>
                 <CardBody>
                   <Form>
-                    <Row>
-                      <Col className="px-md-1" md="6">
-                        <FormGroup>
-                          <label>שם משתמש</label>
-                          <Input
-                            value={this.state.userData.username}
-                            onChange={this.onInputChange}
-                            name="username"
-                            placeholder="השם של המשתמש"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col className="px-md-1" md="6">
-                        <FormGroup>
-                          <label>ססימה</label>
-                          <Input
-                            name="password"
-                            value=""
-                            onChange={this.onInputChange}
-                            placeholder="זה סוד"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
                     <Row>
                       <Col className="pr-md-1" md="6">
                         <FormGroup>

@@ -1,9 +1,12 @@
+const _ = require("lodash");
 const Mongoose = require("mongoose");
 const Boom = require("boom");
 
 const UserModel = Mongoose.model("User");
 
 const sendUser = (res, status, userFromDb) => {
+  user = _.clone(userFromDb);
+  user.password = '';
   res.status(status).send({
     error: false,
     user: userFromDb
@@ -26,7 +29,7 @@ exports.getUser = async (req, res) => {
   const user = await UserModel.findOne({
     username
   })
-  return res.send(user);
+  return sendUser(res, 200, user);
 }
 
 exports.insertUser = async (req, res) => {
@@ -49,17 +52,20 @@ exports.upsertUser = async (req, res) => {
       const updatedUser =
         await UserModel.updateOne({
           username: user.username
-        }, user);
+        }, {
+          $set: {
+            'nicknames': user.nicknames,
+            'birthday': user.birthday,
+            'single': user.single,
+            'aboutme': user.aboutme,
+            'firstname': user.firstname,
+            'lastname': user.lastname,
+          }
+        });
       return sendUser(res, 204, updatedUser);
     } catch (err) {
       handleErrors(err);
     }
-  }
-  try {
-    const createdUser = await UserModel.create(req.body);
-    return sendUser(res, 201, createdUser);
-  } catch (err) {
-    handleErrors(err);
   }
 }
 
