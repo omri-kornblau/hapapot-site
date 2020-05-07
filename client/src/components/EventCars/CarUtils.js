@@ -49,4 +49,8 @@ CarUtils.deleteCar = (state, action) => {
   };
 }
 
+CarUtils.getCarUser = (users, driverUserName) => {
+  return _.find(users, { username: driverUserName });
+}
+
 export default CarUtils;
