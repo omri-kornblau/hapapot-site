@@ -1,5 +1,5 @@
-const moment = require("moment");
-const _ = require("lodash");
+import moment from "moment";
+import _ from "lodash";
 
 const Utils = {};
 

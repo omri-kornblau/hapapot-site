@@ -12,7 +12,7 @@ import {
   DropdownItem
 } from "reactstrap";
 
-const Utils = require("../../utils");
+import Utils from "../../utils";
 
 const noUsersText = "אין מתנדבים";
 
