@@ -16,13 +16,13 @@ import {
 import { DndProvider } from "react-dnd"
 
 import MultiBackend, { Preview } from 'react-dnd-multi-backend';
-import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch'; 
+import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
 
 import CarUtils from "./CarUtils"
 
 import {
   Seat,
-  PassengersBox 
+  PassengersBox
 } from "./DndComponents"
 
 import {
@@ -41,9 +41,9 @@ function Car(props) {
   return (
     <tr>
       {
-        props.driver === "" ?
-        <Seat carId={carId} isDriver={true} movePassenger={movePassenger}/> :
-        <Seat carId={carId} isDriver={true} movePassenger={movePassenger} user={driver}/>
+        driver === "" ?
+        <Seat carId={carId} isDriver={true} movePassenger={movePassenger}/>
+        : <Seat carId={carId} isDriver={true} movePassenger={movePassenger} user={driver}/>
       }
       {
         _.range(maxPassengers).map(index => (
@@ -128,7 +128,7 @@ function EventCars(props) {
     setState({...state});
 
     onPassengerMoved(passenger, destCarId, isDriver);
-  } 
+  }
 
   const enterEditMode = () => {
     setState({...state, isEditMode: true});
@@ -149,6 +149,8 @@ function EventCars(props) {
     );
   }
 
+  const carsMaxPassengers = _.get(_.maxBy(state.cars, "maxPassengers"), "maxPassengers");
+
   return (
     state.isEditMode ?
     <EditCars cars={state.cars} exitEditMode={exitEditMode} onCarUpdated={onCarUpdated}/>
@@ -165,48 +167,50 @@ function EventCars(props) {
               } `}
             />
           </h5>
-          <i className="tim-icons icon-pencil" onClick={enterEditMode}/>
+          <Button onClick={enterEditMode} className="btn-icon btn-round" color="link">
+            <i className="tim-icons icon-pencil"/>
+          </Button>
         </Row>
       </CardHeader>
-      <CardBody>
+      <CardBody className="pt-0">
         <DndProvider backend={MultiBackend} options={HTML5toTouch}>
           <Preview>
             <GeneratePreview/>
           </Preview>
           <Form onSubmit={submitForm}>
-            <Table className="tablesorter table-sm table-striped" style={{tableLayout: "fixed"}}>
-              <thead className="text-primary">
-                <tr>
-                  <th>נהג</th>
-                  <th>נוסעים</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="cars-table text-center mb-0 mt-0">
+              <tbody className="mb-0">
                 {
-                  state.cars.map((car) => (
-                    <Car
+                  state.cars.map(car => {
+                    const driverUser = CarUtils.getCarUser(passengers, car.driver);
+                    const passengersUsers = car.passengers.map(passenger =>
+                      CarUtils.getCarUser(passengers, passenger)
+                    );
+
+                    return <Car
                       key={car._id}
-                      driver={car.driver}
-                      passengers={car.passengers}
+                      driver={driverUser}
+                      passengers={passengersUsers}
                       maxPassengers={car.maxPassengers}
                       carId={car._id}
                       movePassenger={_movePassenger}/>
-                  ))
+                  })
                 }
+                <tr style={{ height: "15px" }}/>
+                <tr>
+                  <td style={{ border: "none" }} colSpan={carsMaxPassengers}>
+                    <Input required placeholder="כמות מקומות" type="number" onChange={onInputChange} name="maxPassengers"></Input>
+                  </td>
+                  <td style={{ border: "none" }}>
+                    <Button color="link" className="text-success btn-icon" type="submit">
+                      <i className="tim-icons icon-simple-add" />
+                    </Button>
+                  </td>
+                </tr>
               </tbody>
             </Table>
-            <Row>
-              <Col>
-                <Input required placeholder="כמות מקומות" type="number" onChange={onInputChange} name="maxPassengers"></Input>
-              </Col>
-              <Col>
-                <Button color="link" className="text-success btn-icon" type="submit">
-                  <i className="tim-icons icon-simple-add" />
-                </Button>
-              </Col>
-            </Row>
+            <div className="divider mt-4 mb-4"></div>
             {state.error !== "" ? <p className="text-danger">{state.error}</p> : <></>}
-            <h6>מחפשים מקום</h6>
             <PassengersBox passengers={state.passengersWithoutCar} movePassenger={_movePassenger}/>
           </Form>
         </DndProvider>

@@ -5,6 +5,8 @@ import {
 
 import { useDrag, useDrop } from "react-dnd"
 
+import Utils from "../../utils";
+
 const itemTypes = {
   passenger: 'passenger'
 }
@@ -21,33 +23,38 @@ const Seat = props => {
     accept: itemTypes.passenger,
     drop: (item, monitor) => {
       if (!user) {
-        movePassenger(item.passenger, carId, isDriver ? true : false)
+        movePassenger(item.user.username, carId, !!isDriver)
       }
     }
   })
 
   return (
-    <td style={{border: "solid 2px black"}} ref={drop}>
-        {
+    <td className={isDriver ? "driver" : ""} ref={drop}>
+      {
         user ?
-        <DragableBadge key={user.username} color="primary" passenger={user}/>
-        : ""
-        }
+        <DragableBadge
+          color="primary"
+          passenger={Utils.pickNickName(user.nicknames)}
+          user={user}
+        />
+        : isDriver ? <span>נהג</span> : ""
+      }
     </td>
-    
+
   );
 }
 
-const DragableBadge = props => { 
+const DragableBadge = props => {
   const {
     color,
     className,
     passenger,
+    user
   } = props;
 
   const [, drag] = useDrag({
-    item: {type: itemTypes.passenger , passenger: passenger},
-  })
+    item: { type: itemTypes.passenger, passenger, user },
+  });
 
   return (
     <span ref={drag}>
@@ -66,16 +73,21 @@ const PassengersBox = props => {
   const [, drop] = useDrop({
     accept: itemTypes.passenger,
     drop: (item, monitor) => {
-      props.movePassenger(item.passenger, "", false);
+      props.movePassenger(item.user.username, "", false);
     },
   })
 
   return (
-    <div style={{border: "solid 2px black", borderRadius: "7px"}} ref={drop}>
+    <div className="passengers-box" ref={drop}>
       {
         passengers.length > 0 ?
         passengers.map(passenger =>
-          <DragableBadge key={passenger.username} color="primary" passenger={passenger.username}/>
+          <DragableBadge
+            key={passenger.username}
+            color="primary"
+            passenger={Utils.pickNickName(passenger.nicknames)}
+            user={passenger}
+          />
         )
         : "לכולם יש מקום"
       }

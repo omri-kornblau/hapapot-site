@@ -88,6 +88,49 @@
   border-radius: 7px;
 }
 
+table.cars-table {
+  border-spacing: 0.5em;
+  margin: 1rem auto;
+  border-collapse: separate;
+  table-layout: auto;
+}
+
+.cars-table tr {
+  height: 40px;
+}
+
+.cars-table td {
+  display: flex;
+  float: right;
+  min-width: 30px;
+  border-radius: 6px;
+  border: 1px solid black;
+  margin: 0 2px 0 2px;
+  height: 40px;
+  align-items: center;
+}
+
+.cars-table td.driver {
+  min-width: 50px;
+  margin-left: 10px;
+  background-color: #ececec;
+}
+
+.cars-table td.driver > span {
+  color: #c5c5c5;
+}
+
+.passengers-box {
+  border-radius: 7px;
+  padding: 10px;
+  background-color: #eeeeee;
+  color: #c5c5c5;
+}
+
+.passengers-box > span {
+  margin: 0 3px 0 3px;
+}
+
 .col-6 {
   transition: all ease-in-out 0.15s;
 }
