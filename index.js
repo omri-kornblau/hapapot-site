@@ -46,6 +46,6 @@ if (ServerConfig.production) {
   });
 }
 
-app.listen(ServerConfig.port, () => {
+app.listen(ServerConfig.port, ServerConfig.address, () => {
   console.log(`Server running on port ${ServerConfig.port}`);
 });
