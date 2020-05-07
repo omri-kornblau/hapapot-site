@@ -1,9 +1,9 @@
 import React from "react";
-import { 
+import {
   Card,
   CardFooter,
-  CardBody, 
-  CardText, 
+  CardBody,
+  CardText,
   Col
    } from "reactstrap";
 
@@ -26,7 +26,7 @@ class UserCard extends React.Component {
     return this.state.userData.single ? "bg-success" : "bg-danger";
   }
   renderOpenCard(){
-    return(<div >      
+    return(<div >
       <h5 className="title">{Utils.pickNickName(this.state.userData.nicknames)}</h5>
         <p className="birthday">
           {Utils.formatDate(this.state.userData.birthday)}
@@ -39,7 +39,7 @@ class UserCard extends React.Component {
     );
   }
   renderClosedCard(){
-    return(<div>      
+    return(<div>
             <h5 className="title">{Utils.pickNickName(this.state.userData.nicknames)}</h5>
               <p className="birthday">
                 {Utils.formatDate(this.state.userData.birthday)}
@@ -58,7 +58,7 @@ class UserCard extends React.Component {
   render() {
     return (
       <Col key={this.state.userData.username}
-        onFocus = {this.onFocus}  
+        onFocus = {this.onFocus}
         onBlur = {this.onBlur}
         tabIndex = {1}
         xs = {this.state.isOpen? 12 : 6} >
@@ -70,27 +70,11 @@ class UserCard extends React.Component {
               <div className="block block-two" />
               <div className="block block-three" />
               <div className="block block-four" />
-              <a href="#pablo" onClick={e => e.preventDefault()}>
-                <img
-                  alt="..."
-                  className="avatar"
-                  src={require("assets/img/emilyz.jpg")}
-                  />
-              </a>
             </div>
               {this.state.isOpen? this.renderOpenCard() : this.renderClosedCard()}
             <div className="card-description"></div>
         </CardBody>
-        <CardFooter className={this.getCardBackgroundColor()}>
-          {/*<div className="button-container">
-            <Button className="btn-icon btn-round">
-              <i className="fab fa-facebook" />
-            </Button>
-            <Button className="btn-icon btn-round">
-              <i className="fab fa-Instegram" />
-            </Button>
-          </div>*/}
-        </CardFooter>
+        <CardFooter className={this.getCardBackgroundColor()}/>
       </Card>
       </Col>
     );

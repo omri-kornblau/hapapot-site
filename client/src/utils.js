@@ -88,4 +88,4 @@ Utils.sortItemsByOldItems = (items, oldItems) => {
   }).sort().map(result => result[1]);
 }
 
-module.exports = Utils;
+export default Utils;
