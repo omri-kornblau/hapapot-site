@@ -4,6 +4,8 @@ const Boom = require("boom");
 
 const UserModel = Mongoose.model("User");
 
+const ServerConfig = require("../config/server");
+
 const sendUser = (res, status, userFromDb) => {
   user = _.clone(userFromDb);
   user.password = '';
@@ -33,7 +35,12 @@ exports.getUser = async (req, res) => {
 }
 
 exports.insertUser = async (req, res) => {
+  if (req.body.code !== ServerConfig.registrationCode) {
+    throw Boom.badRequest("Wrong registration code");
+  }
+
   try {
+    delete req.body.code;
     const createdUser = await UserModel.create(req.body);
     return sendUser(res, 201, createdUser);
   } catch (err) {

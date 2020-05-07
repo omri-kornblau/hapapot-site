@@ -163,6 +163,16 @@ class SignUpPage extends React.Component {
                     <Row className="justify-content-center text-right">
                       <Col md="7">
                         <this.createInputs/>
+                        <FormGroup>
+                          <label>קוד הרשמה</label>
+                          <Input
+                            name="code"
+                            className="text-right"
+                            placeholder={"קוד הרשמה"}
+                            onChange={this.onInputChange}
+                            required={true}
+                          />
+                        </FormGroup>
                       </Col>
                     </Row>
                     <Row>

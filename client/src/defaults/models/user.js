@@ -10,7 +10,8 @@ User.data = {
   picture: "",
   firstname: "",
   lastname: "",
-  aboutme: ""
+  aboutme: "",
+  code: ""
 };
 
 User.inputAttributes = {
