@@ -36,6 +36,7 @@ class SignUpPage extends React.Component {
       signUpMessage: ""
     };
     this.state.userData.passwordConfirmation = "";
+    this.origin = props.location.search.split("=")[1] || "/home/main";
   }
   componentDidMount() {
     document.body.classList.add("rtl", "menu-on-right");
@@ -135,7 +136,7 @@ class SignUpPage extends React.Component {
     try {
       await UserHelper.addUser(this.state.userData);
       this.setState({ signUpSucceeded: true });
-      this.props.history.push("/");
+      this.props.history.push(this.origin);
     } catch (err) {
       this.setState({
         signUpSucceeded: false,

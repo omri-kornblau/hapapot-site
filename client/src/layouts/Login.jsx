@@ -153,7 +153,11 @@ class LoginPage extends React.Component {
                     </Row>
                   </Form>
                 </CardBody>
-                <a className="text-default text-center" href="/signup"><u>אין לך חשבון? הירשם!</u></a>
+                <a
+                  className="text-default text-center"
+                  href={`/signup?origin=${this.origin}`}>
+                    <u>אין לך חשבון? הירשם!</u>
+                </a>
               </Card>
             </Col>
           </Row>
