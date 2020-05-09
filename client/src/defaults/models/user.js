@@ -16,12 +16,12 @@ User.data = {
 
 User.inputAttributes = {
   username: {
-    label: "שם משתמש",
+    label: "שם משתמש (לפחות 3 אותיות)",
     type: "username",
     require: true
   },
   password: {
-    label: "סיסמה",
+    label: "סיסמה (באורך 6 לפחות, לא רוצים שהגלרז יפרצו)",
     type: "password",
     require: true
   },
