@@ -43,7 +43,7 @@ import instagramLogo from "../../assets/img/instagram-logo.png";
 import driveLogo from "../../assets/img/drive-logo.png";
 
 const instagramUrl = "https://www.instagram.com/habolbolim/";
-const driveUrl = "https://www.instagram.com/habolbolim/";
+const driveUrl = "https://drive.google.com/drive/folders/0B6kNLDQHXZlOOG9STlJsRkpOXzQ?usp=sharing";
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -145,7 +145,7 @@ class AdminNavbar extends React.Component {
                 <InputGroup className="search-bar">
                   <NavLink
                     className="mr-1"
-                    onClick={() => this.props.history.push(driveUrl)}
+                    href={driveUrl}
                   >
                     <div className="photo">
                       <img alt="..." src={driveLogo} />
@@ -157,7 +157,7 @@ class AdminNavbar extends React.Component {
                 <InputGroup className="search-bar">
                   <NavLink
                     className="mr-1"
-                    onClick={() => this.props.history.push(instagramUrl)}
+                    href={instagramUrl}
                   >
                     <div className="photo">
                       <img alt="..." src={instagramLogo} />
