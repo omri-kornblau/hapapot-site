@@ -127,10 +127,13 @@ class EventHeader extends React.Component {
     this.setState({ isEditMode: false });
   }
   shareEvent = async () => {
+    const messageBody =`שותפת באירוע ${this.state.data.name} ` +
+    `באמצעות האתר של הפאפות:\n${this.state.data.description}`;
+
     await navigator.share({
       title: "Hapapot Site",
       url: window.location.href,
-      text: `שותפת באירוע זה באמצעות האתר של הפאפות:\n${this.state.data.description}`
+      text: messageBody
     });
   }
 
