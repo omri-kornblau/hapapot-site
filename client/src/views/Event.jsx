@@ -51,7 +51,7 @@ class Event extends React.Component {
       if (err.response && err.response.status === 404) {
         this.setState({ isLoading: false, error: "האירוע לא קיים אחי" });
       } else {
-        console.errro(err);
+        console.error(err);
       }
     }
   }
